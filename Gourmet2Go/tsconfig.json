@@ -1,7 +1,13 @@
 {
-  "files": [],
+  "compilerOptions": {
+    "composite": true,
+    "module": "esnext"
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx"
+  ],
   "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
+    { "path": "./tsconfig.app.json" }
   ]
 }
