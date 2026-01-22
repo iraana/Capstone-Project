@@ -5,12 +5,16 @@ import { supabase } from "../../supabase-client"; // Import the configured Supab
 // Defines the shape of the authentication context, nothing else is allowed in or out
 interface AuthContextType {
   user: User | null; // Who is signed in or null
-  signUpWithEmail: (email: string, password: string) => void; // How to sign up
+  signUpWithEmail: (params: { 
+    email: string, 
+    password: string, 
+    options: { data: {first_name: string, last_name: string } }
+  }) => void; // How to sign up
   signInWithEmail: (email: string, password: string) => void; // How to sign in
   signOut: () => void; // How to sign out
 }
 
-// Global authentication context to manage user state 
+// Global authentication context to manage user state
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // The AuthProvider component that wraps the app
@@ -34,19 +38,39 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, []); // Empty array ensures this runs once on mount
 
-  async function signUpWithEmail(email: string, password: string) {
+  async function signUpWithEmail({
+    email,
+    password,
+    options
+  } : {
+    email: string;
+    password: string;
+    options: {
+      data: {
+        first_name: string;
+        last_name: string;
+      };
+    };
+  }) {
+
+    const { first_name, last_name } = options.data; 
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: 'http://localhost:5173',
-    },
-  })
+        data: {
+          first_name,
+          last_name,
+        },
+      },
+    });
 
     if (error) {
       console.error('Error signing up:', error.message);
       return;
     }
+
   }
 
   async function signInWithEmail(email: string, password: string) {
