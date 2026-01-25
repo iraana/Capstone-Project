@@ -1,15 +1,16 @@
 import type { User } from "@supabase/supabase-js";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { supabase } from "../../supabase-client"; // Import the configured Supabase client
 
 // Defines the shape of the authentication context, nothing else is allowed in or out
 interface AuthContextType {
   user: User | null; // Who is signed in or null
+  role: "NO_ACCESS" | "USER" | "ADMIN" | null; // What role they have
   signUpWithEmail: (params: { 
     email: string, 
     password: string, 
     options: { data: {first_name: string, last_name: string } }
-  }) => void; // How to sign up
+  }) => Promise<{ data: any; error: any }>; // How to sign up
   signInWithEmail: (email: string, password: string) => void; // How to sign in
   signOut: () => void; // How to sign out
 }
@@ -20,16 +21,46 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 // The AuthProvider component that wraps the app
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null); // State to hold the current user
+  const [role, setRole] = useState<"NO_ACCESS" | "USER" | "ADMIN" | null>(null); // State to hold the user's role
+
+  const fetchUserRole = useCallback(async (userId: string) => {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", userId)
+      .single();
+      
+      if (error) {
+        setRole(null); // Set to null on error as a fallback
+        return;
+      }
+      
+      setRole(data.role); 
+  }, []);
 
   useEffect(() => {
     // Check for existing session on mount, asks Supabase if someone if already logged in
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null); // Set user if session exists
+      const currentUser = session?.user ?? null; 
+      setUser(currentUser); // Set user if session exists
+
+      if (currentUser) {
+        fetchUserRole(currentUser.id);
+      } else {
+        setRole(null);
+      }
     });
 
     // Listen for auth state changes
     const { data: listener } = supabase.auth.onAuthStateChange((_, session) => {
-      setUser(session?.user ?? null); // Update user state on auth changes
+      const currentUser = session?.user ?? null;
+      setUser(currentUser); // Update user state on auth changes
+
+      if (currentUser) {  
+        fetchUserRole(currentUser.id);
+      } else {
+        setRole(null);
+      }
     });
 
     // Stops listening on unmount
@@ -52,9 +83,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       };
     };
   }) {
-
     const { first_name, last_name } = options.data; 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -66,10 +96,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       },
     });
 
-    if (error) {
-      console.error('Error signing up:', error.message);
-      return;
-    }
+    return { data, error };
 
   }
 
@@ -85,14 +112,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }
 
-  const signOut = () => {
+  const signOut = async () => {
     supabase.auth.signOut(); // Supabase sign out
+    setUser(null); // Clear user state
+    setRole(null); // Reset role on sign out
   };
 
 
   // Provides these values to the child components 
   return (
-    <AuthContext.Provider value={{ user, signUpWithEmail, signInWithEmail, signOut }}>
+    <AuthContext.Provider value={{ user, signUpWithEmail, signInWithEmail, signOut, role }}>
       {children}
     </AuthContext.Provider>
   );
