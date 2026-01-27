@@ -7,26 +7,31 @@ import { Routes, Route } from "react-router";
 // import { UserListPage } from "./pages/UserListPage";
 // import { SecretPage } from "./pages/SecretPage";
 import { AddItempage } from "./pages/AddItempage";
+import { Aboutpage } from "./pages/Aboutpage";
 
 function App() {
   return (
-    // Outer div to style the whole app, then the Navbar and the main content area 
     <div className="min-h-screen bg-white text-black transition-opacity duration-700 pt-20">
-      {/* <Navbar /> */}
       <div className="container mx-auto px-4 py-6">
-        {/*All the routes are defined here*/}
-          <Routes>
-            <Route path="/add-item" element={<AddItempage />} />
-            {/* <Route path="/" element={<HomePage />} />
-            <Route path="/add-message" element={<AddMessagePage />} />
-            <Route path="/update-message" element={<UpdateMessagePage />} />
-            <Route path="/users" element={<UserListPage />} />
-            <Route path="/secret" element={<SecretPage />} />
-            <Route path="*" element={<NotFoundPage />} /> */}
-          </Routes>
+        <Routes>
+          <Route path="/" element={
+            <div className="text-center py-20">
+              <h1 className="text-4xl font-bold mb-4">Gourmet2Go Admin</h1>
+              <p className="text-gray-600 mb-6">Welcome to the admin panel</p>
+              <a 
+                href="/add-item" 
+                className="bg-blue-700 text-white px-6 py-3 rounded-md hover:bg-blue-800 inline-block"
+              >
+                Go to Add Menu Item
+              </a>
+            </div>
+          } />
+          <Route path="/add-item" element={<AddItempage />} />
+          <Route path="/about" element={<Aboutpage />} />
+        </Routes>
       </div>
     </div>
   )
 }
 
-export default App
+export default App;
