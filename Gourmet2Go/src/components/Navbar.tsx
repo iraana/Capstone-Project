@@ -1,35 +1,45 @@
-import { NavLink } from 'react-router'
+import { NavLink } from 'react-router-dom'
 
-
-interface NavLinkType {
+interface NavItem {
   name: string
   path: string
 }
 
-const navLinks: NavLinkType[] = [
-  { name: 'About', path: '/' },
-  { name: 'Menu', path: '/' },
-  { name: 'Add Item', path: '/' },
-  { name: 'Cart', path: '/' }
+const navItems: NavItem[] = [
+  { name: 'Home', path: '/home' },
+  { name: 'Menu', path: '/menu' },
+  { name: 'Orders', path: '/orders' },
+  { name: 'Reports', path: '/reports' },
 ]
 
 export const Navbar = () => {
   return (
-    <header className='fixed w-full px-8 shadow-sm shadow-neutral-500 h-[--navbar-height] flex items-center'>
-    <nav className='flex justify-between items-center w-full'>
-        <NavLink to='/' className='font-bold'>
-            NavigationBar
+    <header className="w-full bg-primary text-white shadow-md">
+      <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+        <NavLink
+          to="/"
+          className="text-xl font-bold tracking-wide"
+        >
+          Gourmet2Go
         </NavLink>
-        <ul className='flex items-center gap-8'>
-            {navLinks.map((link) => (
-                <li key={link.name}>
-                    <NavLink to={link.path} className='text-secondary'>
-                {link.name}
-          </NavLink>
-        </li>
-      ))}
-    </ul>
-  </nav>
-</header>
+
+        <ul className="flex items-center gap-6">
+          {navItems.map((item) => (
+            <li key={item.name}>
+              <NavLink
+                to={item.path}
+                className={({ isActive }) =>
+                  `transition-colors hover:text-blue-200 ${
+                    isActive ? 'font-semibold underline' : ''
+                  }`
+                }
+              >
+                {item.name}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </header>
   )
 }

@@ -1,12 +1,19 @@
-import { Routes, Route } from "react-router";
+import { Routes, Route } from "react-router-dom";
 import { SignUpPage } from "./pages/SignUpPage";
 import { SignInPage } from "./pages/SignInPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { ToSPage } from "./pages/ToSPage";
 import { PrivacyPolicyPage } from "./pages/PrivacyPolicyPage";
 import { Navbar } from "./components/Navbar";
+import { Footer } from "./components/Footer";
+import { AdminHomePage } from "./pages/AdminHomePage";
+import { AdminMenuPage } from "./pages/AdminMenuPage";
+import { AdminAddMenuPage } from "./pages/AdminAddMenuPage";
+import { AdminEditMenuPage } from "./pages/AdminEditMenuPage";
+import { AdminEditMenuItemPage } from "./pages/AdminEditMenuItemPage";
+import { AdminNewMenuItemPage } from "./pages/AdminNewMenuItemPage";
 // import { HomePage } from "./pages/HomePage";
-import { Navbar } from "./components/Navbar";
+// import { Navbar } from "./components/Navbar";
 // import { AddMessagePage } from "./pages/AddMessagePage";
 // import { UpdateMessagePage } from "./pages/UpdateMessagePage";
 // import { UserListPage } from "./pages/UserListPage";
@@ -26,14 +33,15 @@ function App() {
             <Route path="*" element={<NotFoundPage />} />
             <Route path="/terms-of-service" element={<ToSPage />} />
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-            {/* <Route path="/" element={<HomePage />} />
-            <Route path="/add-message" element={<AddMessagePage />} />
-            <Route path="/update-message" element={<UpdateMessagePage />} />
-            <Route path="/users" element={<UserListPage />} />
-            <Route path="/secret" element={<SecretPage />} />
-            <Route path="*" element={<NotFoundPage />} /> */}
+            <Route path="/home" element={<AdminHomePage />} />
+            <Route path="/menu" element={<AdminMenuPage />} />
+            <Route path="/menu/add/:date" element={<AdminAddMenuPage />} />
+            <Route path="/menu/edit/:date" element={<AdminEditMenuPage />} />
+            <Route path="/menu/item/edit/:name" element={<AdminEditMenuItemPage />} />
+            <Route path="/menu/item/new" element={<AdminNewMenuItemPage />} />
           </Routes>
       </div>
+      <Footer />
     </div>
   )
 }
