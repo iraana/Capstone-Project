@@ -12,6 +12,7 @@ import { AdminAddMenuPage } from "./pages/AdminAddMenuPage";
 import { AdminEditMenuPage } from "./pages/AdminEditMenuPage";
 import { AdminEditMenuItemPage } from "./pages/AdminEditMenuItemPage";
 import { AdminNewMenuItemPage } from "./pages/AdminNewMenuItemPage";
+import { AdminOrdersPage } from "./pages/AdminOrdersPage";
 // import { HomePage } from "./pages/HomePage";
 // import { Navbar } from "./components/Navbar";
 // import { AddMessagePage } from "./pages/AddMessagePage";
@@ -39,6 +40,7 @@ function App() {
             <Route path="/menu/edit/:date" element={<AdminEditMenuPage />} />
             <Route path="/menu/item/edit/:name" element={<AdminEditMenuItemPage />} />
             <Route path="/menu/item/new" element={<AdminNewMenuItemPage />} />
+            <Route path ="/orders" element={<AdminOrdersPage />} />
           </Routes>
       </div>
       <Footer />
