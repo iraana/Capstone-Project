@@ -1,16 +1,15 @@
 import { Routes, Route } from "react-router";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 import { SignUpPage } from "./pages/SignUpPage";
 import { SignInPage } from "./pages/SignInPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { ToSPage } from "./pages/ToSPage";
 import { PrivacyPolicyPage } from "./pages/PrivacyPolicyPage";
 import { Navbar } from "./components/Navbar";
-// import { HomePage } from "./pages/HomePage";
-// import { Navbar } from "./components/Navbar";
-// import { AddMessagePage } from "./pages/AddMessagePage";
-// import { UpdateMessagePage } from "./pages/UpdateMessagePage";
-// import { UserListPage } from "./pages/UserListPage";
-// import { SecretPage } from "./pages/SecretPage";
+import { AboutPage } from "./pages/AboutPage";
+import { AdminHomePage } from "./pages/admin/AdminHomePage";
+import { AnalyticsPage } from "./pages/admin/AnalyticsPage";
+import { AddDishPage } from "./pages/admin/AddDishPage";
 
 function App() {
   return (
@@ -26,12 +25,15 @@ function App() {
             <Route path="*" element={<NotFoundPage />} />
             <Route path="/terms-of-service" element={<ToSPage />} />
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-            {/* <Route path="/" element={<HomePage />} />
-            <Route path="/add-message" element={<AddMessagePage />} />
-            <Route path="/update-message" element={<UpdateMessagePage />} />
-            <Route path="/users" element={<UserListPage />} />
-            <Route path="/secret" element={<SecretPage />} />
-            <Route path="*" element={<NotFoundPage />} /> */}
+            <Route path="/about" element={<AboutPage />} />
+
+            {/* Admin only routes */}
+            <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
+              <Route path="/admin" element={<AdminHomePage />} />
+              <Route path="/admin/analytics" element={<AnalyticsPage />} />
+              <Route path="/admin/add-dish" element={<AddDishPage />} />
+            </Route>
+
           </Routes>
       </div>
     </div>
