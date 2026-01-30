@@ -1,11 +1,14 @@
 import type { User } from "@supabase/supabase-js";
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "../../supabase-client"; // Import the configured Supabase client
+import { useQuery } from "@tanstack/react-query";
 
 // Defines the shape of the authentication context, nothing else is allowed in or out
 interface AuthContextType {
   user: User | null; // Who is signed in or null
-  role: "NO_ACCESS" | "USER" | "ADMIN" | null; // What role they have
+  role?: "NO_ACCESS" | "USER" | "ADMIN"; // What role they have
+  roleLoading: boolean; // Whether the role is currently loading
+  roleError: boolean; // Whether there was an error fetching the role
   signUpWithEmail: (params: { 
     email: string, 
     password: string, 
@@ -20,10 +23,9 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // The AuthProvider component that wraps the app
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null); // State to hold the current user
-  const [role, setRole] = useState<"NO_ACCESS" | "USER" | "ADMIN" | null>(null); // State to hold the user's role
+  const [user, setUser] = useState<User | null>(null); // State to hold the current use
 
-  const fetchUserRole = useCallback(async (userId: string) => {
+  const fetchUserRole = async (userId: string) => {
     const { data, error } = await supabase
       .from("profiles")
       .select("role")
@@ -31,43 +33,31 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       .single();
       
       if (error) {
-        setRole(null); // Set to null on error as a fallback
-        return;
+        throw error;
       }
       
-      setRole(data.role); 
-  }, []);
+      return data.role as "NO_ACCESS" | "USER" | "ADMIN";
+  };
+  
+  const { data: role, isLoading, isError } = useQuery({
+    queryKey: ["userRole", user?.id],
+    queryFn: () => fetchUserRole(user!.id), // Calls this function 
+    enabled: !!user?.id, // Once user.id is available
+  });
 
   useEffect(() => {
-    // Check for existing session on mount, asks Supabase if someone if already logged in
     supabase.auth.getSession().then(({ data: { session } }) => {
-      const currentUser = session?.user ?? null; 
-      setUser(currentUser); // Set user if session exists
-
-      if (currentUser) {
-        fetchUserRole(currentUser.id);
-      } else {
-        setRole(null);
-      }
+      setUser(session?.user ?? null);
     });
-
-    // Listen for auth state changes
+    
     const { data: listener } = supabase.auth.onAuthStateChange((_, session) => {
-      const currentUser = session?.user ?? null;
-      setUser(currentUser); // Update user state on auth changes
-
-      if (currentUser) {  
-        fetchUserRole(currentUser.id);
-      } else {
-        setRole(null);
-      }
+      setUser(session?.user ?? null);
     });
-
-    // Stops listening on unmount
+    
     return () => {
       listener.subscription.unsubscribe();
     };
-  }, []); // Empty array ensures this runs once on mount
+  }, []);
 
   async function signUpWithEmail({
     email,
@@ -115,13 +105,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signOut = async () => {
     supabase.auth.signOut(); // Supabase sign out
     setUser(null); // Clear user state
-    setRole(null); // Reset role on sign out
   };
 
 
   // Provides these values to the child components 
   return (
-    <AuthContext.Provider value={{ user, signUpWithEmail, signInWithEmail, signOut, role }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      signUpWithEmail, 
+      signInWithEmail, 
+      signOut, 
+      roleLoading: isLoading,
+      roleError: isError,
+      role
+    }}>
       {children}
     </AuthContext.Provider>
   );
