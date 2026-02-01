@@ -1,7 +1,7 @@
 export const NotFoundPage = () => {
     return (
         <div>
-            <h2 className="text-6xl font-bold text-center">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-5">
                 404 - Page Not Found
             </h2>
             <p className="text-md text-center mt-15 mb-2">
