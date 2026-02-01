@@ -8,7 +8,10 @@ import { Routes, Route } from "react-router";
 // import { SecretPage } from "./pages/SecretPage";
 import { AddItempage } from "./pages/AddItempage";
 import { Aboutpage } from "./pages/Aboutpage";
-
+import { Menupage } from "./pages/Menupage";
+import { Orderspage } from "./pages/Orderspage";
+import { Cartpage } from "./pages/Cartpage";
+import { Loginpage } from "./pages/Loginpage";
 function App() {
   return (
     <div className="min-h-screen bg-white text-black transition-opacity duration-700 pt-20">
@@ -28,6 +31,11 @@ function App() {
           } />
           <Route path="/add-item" element={<AddItempage />} />
           <Route path="/about" element={<Aboutpage />} />
+          <Route path="/menu" element={<Menupage />} />
+          <Route path="/orders" element={<Orderspage />} />
+          <Route path="/cart" element={<Cartpage />} />
+          <Route path="/login" element={<Loginpage />} />  
+          <Route path="/signup" element={<Loginpage />} />
         </Routes>
       </div>
     </div>
