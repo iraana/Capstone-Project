@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
 
 export interface MenuItem {
+  dish_id: number;
   name: string;
   price: number;
   category: string;

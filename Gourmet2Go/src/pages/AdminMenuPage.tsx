@@ -1,27 +1,35 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MenuCard } from "../components/admin/MenuCard";
-import type { MenuItem } from "../components/admin/MenuCard";
 import dayjs from "dayjs";
+import { supabase } from "../../supabase-client";
 
-// Sample menus data we will need to replace this with real data fetching logic
-const sampleMenus: Record<string, MenuItem[]> = {
-  "2026-01-26": [
-    { name: "Salad", price: 5.5, category: "Appetizer" },
-    { name: "Soup", price: 4.0, category: "Appetizer" },
-    { name: "Steak", price: 15.0, category: "Main Course" },
-  ],
-  "2026-01-27": [
-    { name: "Pasta", price: 8.0, category: "Main Course" },
-    { name: "Chicken Curry", price: 12.0, category: "Main Course" },
-    { name: "Rice", price: 3.5, category: "Side Dish" },
-  ],
-  "2026-01-28": [
-    { name: "Fish", price: 14.0, category: "Main Course" },
-    { name: "Vegetables", price: 6.0, category: "Side Dish" },
-    { name: "Bread", price: 2.0, category:"Side Dish" },
-  ],
+const fetchMenus = async () => {
+  const {data, error} = await supabase.from('MenuDays')
+    .select('*, MenuDayDishes ( *, Dishes ( * ) )');
+  if (error) {
+    throw error;
+  }
+  return data;
 };
 
+type Dish = {
+  dish_id: number;
+  name: string;
+  price: number;
+  category: string;
+}
+
+type MenuDayDish = {
+  dish_id: number;
+  stock: number;
+  Dishes: Dish;
+}
+
+type MenuDay = {
+  menu_day_id: number;
+  date: string;
+  MenuDayDishes: MenuDayDish[];
+}
 // This function generates an array of dates for the week starting from 'startDate'
 // I'm not sure if they would like this approach or would they always want to start from Monday every week no matter what day it is today
 const getWeekDates = (startDate: dayjs.Dayjs) => {
@@ -30,12 +38,25 @@ const getWeekDates = (startDate: dayjs.Dayjs) => {
 
 export const AdminMenuPage = () => {
   const [weekStart, setWeekStart] = useState(dayjs()); // today as start
+  const [menus, setMenus] = useState<MenuDay[]>([]);
   const today = dayjs();
 
   const weekDates = getWeekDates(weekStart);
 
   const handlePrevWeek = () => setWeekStart(weekStart.subtract(1, "week"));
   const handleNextWeek = () => setWeekStart(weekStart.add(1, "week"));
+
+  useEffect(() => {
+    const loadMenus = async () => {
+      try {
+        const data = await fetchMenus();
+        setMenus(data);
+      } catch (error) {
+        console.error("Error loading menus:", error);
+      } 
+    };
+    loadMenus();
+  }, []);
 
   return (
     <div className="p-6 space-y-6">
@@ -60,11 +81,10 @@ export const AdminMenuPage = () => {
         </button>
       </div>
 
-      {/* Menu Cards */}
       <div className="flex gap-6 flex-wrap">
         {weekDates.map((date) => {
             const dateStr = date.format("YYYY-MM-DD");
-            const menuItems = sampleMenus[dateStr];
+            const menuItems = menus.find(menu => dayjs(menu.date).format("YYYY-MM-DD") === dateStr)?.MenuDayDishes.map(md => md.Dishes) ?? [];
             const isPast = date.isBefore(today, "day");
 
             let editable = false;
@@ -74,8 +94,8 @@ export const AdminMenuPage = () => {
             
             if (!isPast) {
                 editable = true;
-                empty = !menuItems;
-
+                empty = !menuItems.length;
+                
                 actionLabel = empty ? "Add Menu" : "Edit Menu";
                 actionLink = empty
                 ? `/menu/add/${dateStr}`
