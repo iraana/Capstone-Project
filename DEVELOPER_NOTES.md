@@ -8,14 +8,18 @@ This is an **informal** place to write about changes, library choices, and what 
 important for the client and users.
 
 
-## Incomplete Components/Pages
+## TODO
 
 
-1. Analytics
-2. AdminHome
-3. AboutPage
-4. PrivacyPolicyPage
-5. ToSPage
+- Analytics
+- AdminHome
+- AboutPage
+- PrivacyPolicyPage
+- ToSPage
+- Robust testing
+- Remove .env and annihilate it from commit history somehow
+- Fix that stupid refresh bug on protected routes
+- RLS on **all** database tables
 
 
 ## Library Choices
@@ -26,6 +30,11 @@ important for the client and users.
 - React Hook Form for simpler submitting
 - React Query for fetching and caching 
 - Zod for validation 
+- vitest to run the tests in our project as we use Vite
+- React Testing Library is used to test our components
+- jsdom is used to create a testing browser which provides a realistic testing environment
+- jest-dom provides custom Jest matchers. This means we have more intuitive assertions.
+- user-event is used to simulate user input with stuff like ```await user.click(submitButton)```
 
 
 ## Conventions 
@@ -74,6 +83,55 @@ protect the routes that should be protected such as admin routes.
 
 - When refreshing in a protected route, the user is always sent back to home regardless of role. It still works but this is
 annoying and not user friendly
+
+
+## Testing
+
+
+(01/30/2026)
+
+
+Obviously still working on just getting the actual functionality of the app completed right now. However, just
+wanted to get a quick headstart on how to do testing in React. Still not confident with testing in React but our knowledge with
+JUnit testing appears to be transferable, just new syntax to learn, that's all. In all likelihood there is good documentation for
+all the testing libraries I installed. So where am I at right now for testing? Well, I got it set up and made a simple test on my
+AddDish.tsx. I ran all the testing commands you can see below. So yeah, another thing we can add in for our presentation on 
+Tuesday.
+
+
+#### Testing Commands
+
+
+- npm test (basic way to run tests)
+- npm test -- --coverage (see test coverage)
+- npm test -- --ui (testing in the browser)
+
+
+#### JUnit Compared to Our Testing Stack
+
+
+| JUnit | Our Stack |
+|:---:|:---:|
+| @Test | it() |
+| @BeforeEach | beforeEach() |
+| @AfterEach | afterEach() |
+| @BeforeAll | beforeAll() |
+| @AfterAll | afterAll() |
+| assertEquals(expected, actual) | expect(actual).toBe(expected) |
+| assertTrue(condition) | expect(condition).toBe(true) |
+| assertThrows(Exception.class, () -> ...) | expect(() => ...).toThrow() |
+| @Mock | vi.mock() |
+| verify(mock).method() | expect(mock).toHaveBeenCalled() |
+
+
+#### Things to Test
+
+
+- Zod schemas
+- Fetching/inserting functions
+- Component behaviour 
+- Authentication 
+- Navigation 
 
 
 ## Misc
