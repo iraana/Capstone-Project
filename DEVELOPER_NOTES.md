@@ -16,10 +16,12 @@ important for the client and users.
 - AboutPage
 - PrivacyPolicyPage
 - ToSPage
+- NotAuthorizedPage
 - Robust testing
 - Remove .env and annihilate it from commit history somehow
-- Fix that stupid refresh bug on protected routes
 - RLS on **all** database tables
+- Mobile responsiveness, ensure there is a good UI/UX on mobile devices
+- Accessibility standards (can navigate with keyboard, alt-text for images, etc.)
 
 
 ## Library Choices
@@ -78,11 +80,18 @@ in the router. The path defined in the router goes on the Navbar or somewhere el
 protect the routes that should be protected such as admin routes.
 
 
+New addition to the standards for mobile UI/UX. Ensure that text changes sizes depending on device size. I'll provide an example
+I have on some of my pages.
+
+```html
+<h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-5">
+```
+
+
 ## Current Issues
 
 
-- When refreshing in a protected route, the user is always sent back to home regardless of role. It still works but this is
-annoying and not user friendly
+- Mobile responsiveness
 
 
 ## Testing
@@ -135,3 +144,9 @@ Tuesday.
 
 
 ## Misc
+
+
+## Questions for Stakeholders
+
+
+- Can users order days in advance (make a order for Wednesday menu on a Monday)?
