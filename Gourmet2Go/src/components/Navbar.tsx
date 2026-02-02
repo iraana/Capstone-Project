@@ -1,6 +1,7 @@
 import { NavLink } from "react-router";
 import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
+import { DarkModeToggle } from "./DarkModeToggle";
 
 type Role = "NO_ACCESS" | "USER" | "ADMIN";
 
@@ -59,6 +60,8 @@ export const Navbar = () => {
           </ul>
 
           <div className="hidden md:flex items-center gap-4">
+            <DarkModeToggle />
+
             {user ? (
               <>
                 <span className="text-sm">Hi, {displayName}</span>
@@ -121,12 +124,13 @@ export const Navbar = () => {
                 <NavLink
                   to={link.path}
                   className="block px-3 py-2 rounded text-white hover:bg-secondary hover:text-white"
-                  onClick={() => setMenuOpen(false)} // Close menu on link click
+                  onClick={() => setMenuOpen(false)} 
                 >
                   {link.name}
                 </NavLink>
               </li>
             ))}
+            <DarkModeToggle />
 
             <li className="border-t border-white/20 mt-2 pt-2">
               {user ? (

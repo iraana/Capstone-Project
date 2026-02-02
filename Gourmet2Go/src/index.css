@@ -1,1 +1,16 @@
 @import "tailwindcss";
+
+.bg-primary {
+  background-color: #00659B;
+}
+
+.text-primary {
+  color: #00659B;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@variant dark (&:where(.dark, .dark *));
