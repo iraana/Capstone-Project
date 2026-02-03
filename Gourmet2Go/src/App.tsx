@@ -16,9 +16,6 @@ import { UnauthorizedPage } from "./pages/UnauthorizedPage";
 import { EditMenuPage } from "./pages/admin/EditMenuPage";
 import { Footer } from "./components/Footer";
 
-// Added flex, flex-col, and flex-grow to make footer stick to bottom
-// Added EditMenu
-
 function App() {
   return (
     // Outer div to style the whole app, then the Navbar and the main content area

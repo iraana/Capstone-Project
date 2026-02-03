@@ -1,5 +1,3 @@
-// Current date + added to id of EditMenu
-
 import { Link } from "react-router";
 import { useAuth } from "../../context/AuthContext";
 

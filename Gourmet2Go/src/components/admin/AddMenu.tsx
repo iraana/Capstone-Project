@@ -1,269 +1,252 @@
-import { useEffect, useState } from "react";
-import { useParams, NavLink } from "react-router-dom";
-import { supabase } from "../../../supabase-client";
-import {z} from "zod";
-import {zodResolver} from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useState } from 'react';
+import { useForm, useFieldArray } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { supabase } from '../../../supabase-client';
+import * as z from 'zod';
+import { useQuery } from '@tanstack/react-query';
+import { NavLink } from 'react-router';
 
-type MenuItem = {
+type Dish = {
   dish_id: number;
   name: string;
   price: number;
   category: string;
-  stock?: number;
-}
- 
-const fetchAvailableDishes = async () => {
-  const { data, error } = await supabase.from('Dishes')
-    .select('*');
-  
-  if (error) {
-    console.error("Error fetching dishes:", error);
-    return [];
-  }
-  return data;
 };
 
-const menuDishSchema = z.object({
-  dish_id: z.number().int().positive(),
-  stock: z.number().int().min(1),
+const menuSchema = z.object({
+  day: z.enum(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']),
+  dishes: z
+    .array(
+      z.object({
+        dish_id: z.number().min(1, 'Dish is required'),
+        stock: z.number().min(1, 'Stock is required'),
+      })
+    )
+    .min(1, 'Please add at least one dish')
+    .refine(
+      (dishes) => new Set(dishes.map((d) => d.dish_id)).size === dishes.length,
+      'Each dish can only be added once'
+    ),
 });
 
-export const addMenuSchema = z.object({
-  date: z.string().refine(
-    (dateValue) => !isNaN(Date.parse(dateValue)),
-    { message: "Invalid date format" }
-  ),
-  day: z.string().min(1, { message: "Day is required" }),
-  dishes: z.array(menuDishSchema).min(1, { message: "At least one dish must be selected" })
-});
-
-
-type MenuFormData = z.infer<typeof addMenuSchema>;
+type MenuFormValues = z.infer<typeof menuSchema>;
 
 export const AddMenu = () => {
+  const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [availableDishes, setAvailableDishes] = useState<MenuItem[]>([]);
-  const [loadingAvailableDishes, setLoadingAvailableDishes] = useState(false);
-  const [selectedDishes, setSelectedDishes] = useState<MenuItem[]>([]);
-  const {date} = useParams<{date: string}>();
-  const [menuDate] = useState<string>(date || "");
-  const [dishStock, setDishStock] = useState<Record<number, number>>({});
-
-  const handleAddToMenu = (item: MenuItem, stock: number) => {
-    if (selectedDishes.find(dish => dish.dish_id === item.dish_id)) {
-      return; // already added
-    }
-    setSelectedDishes(previouslySelectedDishes => [{
-      ...item,
-      stock: stock || 1,
-    }, 
-    ...previouslySelectedDishes
-    ]);
-  };
-
-  const handleRemoveFromMenu = (dishId: number) => {
-    setSelectedDishes(previouslySelectedDishes => 
-      previouslySelectedDishes.filter(dish => dish.dish_id !== dishId)
-    );
-  }
-
-  useEffect(() => {
-    const loadDishes = async () => {
-      try {
-        setLoadingAvailableDishes(true);
-        const dishes = await fetchAvailableDishes();
-        setAvailableDishes(dishes);
-      }catch (error) {
-        console.error("Error loading dishes:", error);
-      } finally {
-        setLoadingAvailableDishes(false);
-      }
-    };
-    loadDishes();
-  }, []);
 
   const {
-    register,
+    control,
     handleSubmit,
-    setValue,
-    watch,
+    register,
     formState: { errors },
     reset,
-  } = useForm<MenuFormData>({
-    resolver: zodResolver(addMenuSchema),
+    watch,
+  } = useForm<MenuFormValues>({
+    resolver: zodResolver(menuSchema),
+    defaultValues: {
+      day: 'Monday',
+      dishes: [],
+    },
   });
 
-  useEffect(() => {
-      if (!menuDate) return;
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'dishes',
+  });
 
-      const dayOfWeek = new Date(menuDate).toLocaleDateString('en-US', { weekday: 'long' });
-      setValue('date', menuDate);
-      setValue('day', dayOfWeek);
-    }, [menuDate, setValue]);
-    
-  useEffect(() => {
-    setValue('dishes', selectedDishes.map(dish => ({
-      dish_id: dish.dish_id,
-      stock: dish.stock ?? 1,
-    })));
-  }, [selectedDishes, setValue]);
+  const { data: dishes = [] } = useQuery({
+    queryKey: ['dishes'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('Dishes')
+        .select('dish_id, name, price, category')
+        .order('name');
 
-  const onSubmit = async (data: MenuFormData) => {
+      if (error) throw error;
 
-    if (selectedDishes.length === 0) {
-      setErrorMsg("Please add at least one dish to the menu.");
-      setSuccessMsg(null);
-      return;
-    }
-    
-    const {data:menuData, error:MenuError} = await supabase.from('MenuDays')
-      .insert({
-        date: menuDate,
-        day: data.day,
-      })
-      .select()
-      .single();
-    if (MenuError || !menuData) {
-      setErrorMsg("Failed to create save menu.");
-      setSuccessMsg(null);
-      return;
-    }
+      return data as Dish[];
+    },
+    refetchOnWindowFocus: true,
+  });
 
-    const menuDayId = menuData.menu_day_id;
-
-    const {error:MenuDishError} = await supabase.from('MenuDayDishes')
-      .insert(
-        data.dishes.map(dish => ({
-          dish_id: dish.dish_id,
-          menu_id: menuDayId,
-          stock: dish.stock,
-        }))
-      );
-
-    if (MenuDishError) {
-      setErrorMsg("Failed to save menu dishes.");
-      setSuccessMsg(null);
-      return;
-    }
-
-    setSuccessMsg("Menu saved successfully!");
+  const onSubmit = async (data: MenuFormValues) => {
     setErrorMsg(null);
-    reset();
-  }
+    setSuccessMsg(null);
+    setLoading(true);
+
+    try {
+      const { data: menuData, error: menuError } = await supabase
+        .from('MenuDays')
+        .insert({ day: data.day })
+        .select('menu_day_id')
+        .single();
+
+      if (menuError) throw menuError;
+
+      const menuDayDishes = data.dishes.map((d) => ({
+        menu_id: menuData.menu_day_id,
+        dish_id: d.dish_id,
+        stock: d.stock,
+      }));
+
+      const { error: dishesError } = await supabase
+        .from('MenuDayDishes')
+        .insert(menuDayDishes);
+
+      if (dishesError) throw dishesError;
+
+      setSuccessMsg('Menu saved successfully!');
+      reset();
+    } catch (err: any) {
+      console.error('Error creating menu:', err);
+      setErrorMsg(err.message || 'Failed to create menu');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const selectedDishIds = fields.map((_, i) => watch(`dishes.${i}.dish_id`));
+
+  const availableDishes = dishes.filter(
+    (dish) => !selectedDishIds.includes(dish.dish_id)
+  );
+
+  const selectedDishes = fields
+    .map((_, index) => {
+      const dishId = watch(`dishes.${index}.dish_id`);
+      const stock = watch(`dishes.${index}.stock`);
+      const dish = dishes.find((d) => d.dish_id === dishId);
+      return dish ? { ...dish, stock, fieldIndex: index } : null;
+    })
+    .filter((d) => d !== null);
+
+  const handleAddToMenu = (dish: Dish) => {
+    append({ dish_id: dish.dish_id, stock: 1 });
+  };
+
+  const handleRemoveFromMenu = (fieldIndex: number) => {
+    remove(fieldIndex);
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold text-gray-800">
-        Add Menu for Selected Date
-      </h1>
+        <h1 className="text-2xl font-bold text-gray-800">
+          Add Menu for Selected Date
+        </h1>
 
-      <div>
-        <h2 className="font-semibold text-lg mb-2">Current Menu Preview</h2>
+        {successMsg && (
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+            {successMsg}
+          </div>
+        )}
+
+        {errorMsg && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            {errorMsg}
+          </div>
+        )}
+
+        <div>
+          <h2 className="font-semibold text-lg mb-2">Current Menu Preview</h2>
+          <table className="min-w-full border border-gray-200 bg-white shadow-md rounded-lg">
+            <thead className="bg-gray-100">
+              <tr>
+                <th></th>
+                <th className="px-3 py-2 text-center align-middle">Dish</th>
+                <th className="px-3 py-2 text-center align-middle">Category</th>
+                <th className="px-3 py-2 text-center align-middle">Price</th>
+                <th className="px-3 py-2 text-center align-middle">Stock</th>
+              </tr>
+            </thead>
+            <tbody>
+              {selectedDishes.map((item) => (
+                <tr className="border-b border-gray-200" key={item.fieldIndex}>
+                  <td className="px-3 py-2 text-center align-middle flex justify-center">
+                    <button
+                      type="button"
+                      className="px-3 py-1 rounded hover:bg-gray-200"
+                      onClick={() => handleRemoveFromMenu(item.fieldIndex)}
+                    >
+                      ❌
+                    </button>
+                  </td>
+                  <td className="px-3 py-2 text-center align-middle">{item.name}</td>
+                  <td className="px-3 py-2 text-center align-middle">{item.category}</td>
+                  <td className="px-3 py-2 text-center align-middle">{item.price}</td>
+                  <td className="px-3 py-2 text-center align-middle">
+                    <input
+                      type="number"
+                      min={1}
+                      {...register(`dishes.${item.fieldIndex}.stock`, {
+                        valueAsNumber: true,
+                      })}
+                      className="w-16 px-2 py-1 text-sm border rounded text-center"
+                    />
+                    {errors.dishes?.[item.fieldIndex]?.stock && (
+                      <p className="text-red-600 text-xs mt-1">
+                        {errors.dishes[item.fieldIndex]?.stock?.message}
+                      </p>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {errors.dishes?.message && (
+            <div className="text-red-600 text-sm mt-2">{errors.dishes.message}</div>
+          )}
+        </div>
+
+        <h2 className="font-semibold text-lg mt-6 mb-2">Available Menu Items</h2>
+
         <table className="min-w-full border border-gray-200 bg-white shadow-md rounded-lg">
           <thead className="bg-gray-100">
             <tr>
-              <th></th>
               <th className="px-3 py-2 text-center align-middle">Dish</th>
               <th className="px-3 py-2 text-center align-middle">Category</th>
               <th className="px-3 py-2 text-center align-middle">Price</th>
-              <th className="px-3 py-2 text-center align-middle">Stock</th>
+              <th className="px-3 py-2 text-center align-middle">Action</th>
             </tr>
           </thead>
           <tbody>
-            {selectedDishes.map((item) => (
-            <tr className="border-b border-gray-200" key={item.dish_id}>
-                <td className="px-3 py-2 text-center align-middle flex justify-center">
-                  <button
-                    type="button"
-                    className="px-3 py-1 rounded hover:bg-gray-200"
-                    onClick={() => handleRemoveFromMenu(item.dish_id)}
-                  >
-                    ❌
-                  </button>
-                </td>
+            {availableDishes.map((item) => (
+              <tr className="border-b border-gray-200" key={item.dish_id}>
                 <td className="px-3 py-2 text-center align-middle">{item.name}</td>
-                <td className="px-3 py-2 text-center align-middle">{item.category}</td> 
+                <td className="px-3 py-2 text-center align-middle">{item.category}</td>
                 <td className="px-3 py-2 text-center align-middle">{item.price}</td>
-                <td className="px-3 py-2 text-center align-middle">{item.stock}</td>
+                <td className="px-3 py-2 text-center align-middle flex justify-center gap-2">
+                  <button
+                    className="bg-[#00659B] text-white px-3 py-1 rounded hover:bg-[#005082]"
+                    type="button"
+                    onClick={() => handleAddToMenu(item)}
+                  >
+                    Add to Menu
+                  </button>
+                  <NavLink
+                    to={`/menu/item/edit/${item.dish_id}`}
+                    className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
+                  >
+                    Edit Item
+                  </NavLink>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
+
+        <div className="flex gap-4 mt-4">
+          <button
+            type="submit"
+            disabled={loading}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          >
+            {loading ? 'Saving...' : 'Save Menu'}
+          </button>
+        </div>
       </div>
-
-      <h2 className="font-semibold text-lg mt-6 mb-2">Available Menu Items</h2>
-
-      <table className="min-w-full border border-gray-200 bg-white shadow-md rounded-lg">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="px-3 py-2 text-center align-middle">Dish</th>
-            <th className="px-3 py-2 text-center align-middle">Category</th>
-            <th className="px-3 py-2 text-center align-middle">Price</th>
-            <th className="px-3 py-2 text-center align-middle">Stock</th>
-            <th className="px-3 py-2 text-center align-middle">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {availableDishes.map((item) => (
-          <tr className="border-b border-gray-200" key={item.dish_id}>
-              <td className="px-3 py-2 text-center align-middle">{item.name}</td>
-              <td className="px-3 py-2 text-center align-middle">{item.category}</td>
-              <td className="px-3 py-2 text-center align-middle">{item.price}</td>
-              <td className="px-3 py-2 text-center align-middle">
-                <input 
-                  type="number" 
-                  min={1}
-                  value={dishStock[item.dish_id] ?? 1}
-                  className="w-16 px-2 py-1 text-sm border rounded text-center" 
-                  onChange={(e) =>
-                    setDishStock(previousStock => ({
-                      ...previousStock,
-                      [item.dish_id]: Number(e.target.value),
-                    })) 
-                   }>
-                </input>
-              </td>
-              <td className="px-3 py-2 text-center align-middle flex justify-center gap-2">
-                <button className="bg-[#00659B] text-white px-3 py-1 rounded hover:bg-[#005082]"
-                  type="button"
-                  onClick={() => {
-                    handleAddToMenu(item, dishStock[item.dish_id]);
-                  }}
-                >
-                  Add to Menu
-                </button>
-                <NavLink
-                  to={`/menu/item/edit/${item.dish_id}`}
-                  className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
-                >
-                  Edit Item
-                </NavLink>
-            </td>
-          </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <div className="flex gap-4 mt-4">
-        <NavLink
-          to="/menu/item/new"
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-        >
-          Create New Menu Item
-        </NavLink>
-
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          Save Menu
-        </button>
-      </div>
-    </div>
-  </form>
-);
-  
-}
+    </form>
+  );
+};
