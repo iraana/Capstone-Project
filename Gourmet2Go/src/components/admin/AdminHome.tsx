@@ -16,7 +16,17 @@ const adminPages: AdminPage[] = [
   {
     id: 'add-dish',
     title: 'Add Dish',
+    icon: '🍲',
+  },
+  {
+    id: 'add-menu',
+    title: 'Add Menu',
     icon: '🍽️',
+  },
+  {
+    id: 'view-orders',
+    title: 'View Orders',
+    icon: '📋',
   }
 ];
 

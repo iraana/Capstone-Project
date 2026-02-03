@@ -11,9 +11,14 @@ interface NavLinkType {
 }
 
 const getNavLinks = (): NavLinkType[] => [
-  { name: "About", path: "/about" },
-  { name: "Administration", path: "/admin", roles: ["ADMIN"] },
-  { name: "Menu", path: "/" },
+  { name: "About", path: "/about", roles: ["USER"]},
+  { name: "Menu", path: "/",  roles: ["USER"]},
+  { name: "Orders", path: "/orders", roles: ["USER"] },
+  { name: "Cart", path: "/cart", roles: ["USER"] },
+  { name: "Dashboard", path: "/admin/dashboard", roles: ["ADMIN"] },
+  { name: "Analytics", path: "/admin/analytics", roles: ["ADMIN"] },
+  { name: "Menu", path: "/admin/menu", roles: ["ADMIN"] },
+  { name: "Orders", path: "/admin/orders", roles: ["ADMIN"] },
 ];
 
 export const Navbar = () => {
