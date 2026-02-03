@@ -10,19 +10,20 @@ import { AboutPage } from "./pages/user/AboutPage";
 import { AdminHomePage } from "./pages/admin/AdminHomePage";
 import { AnalyticsPage } from "./pages/admin/AnalyticsPage";
 import { AddDishPage } from "./pages/admin/AddDishPage";
-// import { AddMenuPage } from "./pages/admin/AddMenuPage";
+import { AddMenuPage } from "./pages/admin/AddMenuPage";
 import { MenuPage } from "./pages/MenuPage";
 import { UnauthorizedPage } from "./pages/UnauthorizedPage";
 import { CartPage } from "./pages/user/CartPage";
 import { OrdersPage } from "./pages/user/OrderPage";
 import { Footer } from "./components/Footer";
+import { EditMenuPage } from "./pages/admin/EditMenuPage";
 
 function App() {
   return (
-    // Outer div to style the whole app, then the Navbar and the main content area 
-    <div className="min-h-screen bg-white text-black transition-opacity duration-700 pt-20">
+    // Outer div to style the whole app, then the Navbar and the main content area
+    <div className="min-h-screen flex flex-col bg-white dark:bg-zinc-900 text-black dark:text-white transition-colors duration-700 pt-20">
       <Navbar />
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto px-4 py-6 grow">
         {/*All the routes are defined here*/}
           <Routes>
             <Route path="/sign-up" element={<SignUpPage />} />
@@ -38,6 +39,9 @@ function App() {
               <Route path="/admin/analytics" element={<AnalyticsPage />} />
               <Route path="/admin/add-dish" element={<AddDishPage />} />
               {/* <Route path="/admin/add-menu" element={<AddMenuPage />} /> */}
+              <Route path="/admin/add-menu" element={<AddMenuPage />} />
+              <Route path="/admin/edit-menu/:date" element={<EditMenuPage />} />
+            
             </Route>
 
             

@@ -7,6 +7,8 @@ interface AdminPage {
   icon: string;
 }
 
+const today = new Date().toISOString().split("T")[0];
+
 const adminPages: AdminPage[] = [
   {
     id: 'analytics',
@@ -27,7 +29,12 @@ const adminPages: AdminPage[] = [
     id: 'view-orders',
     title: 'View Orders',
     icon: '📋',
-  }
+  },
+  {
+    id: `edit-menu/${today}`,
+    title: 'Edit Menu',
+    icon: '🛠️',
+  },
 ];
 
 export const AdminHome = () => {
@@ -40,7 +47,7 @@ export const AdminHome = () => {
 
   return (
     <div className="max-w-8xl mx-auto px-4">
-      <h2 className="text-4xl font-bold mb-8 text-center">Welcome back, {displayName}, what is it you want to do today?</h2>
+      <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-8 text-center">Welcome back, {displayName}, what is it you want to do today?</h2>
       <div className="flex flex-wrap gap-6 justify-center">
         {adminPages.map((adminPage) => (
           <div key={adminPage.id} className="relative group w-80">

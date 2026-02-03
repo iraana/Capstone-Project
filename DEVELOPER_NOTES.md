@@ -38,6 +38,9 @@ important for the client and users.
 - jest-dom provides custom Jest matchers. This means we have more intuitive assertions.
 - user-event is used to simulate user input with stuff like ```await user.click(submitButton)```
 
+- vite-plugin-pwa to turn the web app into a PWA. Users can install it like a desktop app and can bookmark it on mobile. Allows
+us to optimize some features to work offline.
+
 
 ## Conventions 
 
@@ -83,9 +86,26 @@ protect the routes that should be protected such as admin routes.
 New addition to the standards for mobile UI/UX. Ensure that text changes sizes depending on device size. I'll provide an example
 I have on some of my pages.
 
+
 ```html
 <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-5">
 ```
+
+
+Another small detail is that all tsx files must follow PascalCase. That means that a page that contains an item adding component 
+would be `AddItemPage.tsx` and not `addItemPage.tsx` or `add_item_page.tsx` and so on. But, if you happen to add a .ts file it
+would be camelCase so `helperStuff.ts` as an example.
+
+
+Will also make it clear that the creation of types, interfaces, schemas, fetching, submitting, all happens in the .tsx file that
+uses it. So we are not creating our types in a plain .ts file to be imported into a .tsx. However, there is a caveat to this.  
+**IF** and only **IF** you are exporting your type, interface, schema, fetch, or submission to multiple .tsx files, then you can
+put it in a .ts file to be imported.
+
+
+Next, a convention I'll add for the sake of consistency. All styles must be TailwindCSS. React inline styles and vanilla CSS are
+not used for this project. Now this is a convention that could be broken **IF** you can defend your reasoning. If you are not
+using TailwindCSS just because, then it breaks the convention.
 
 
 ## Current Issues
@@ -143,10 +163,12 @@ Tuesday.
 - Navigation 
 
 
-## Misc
-
-
 ## Questions for Stakeholders
 
 
 - Can users order days in advance (make a order for Wednesday menu on a Monday)?
+- Do they want peak hours on the app? (analytics)
+- Would they like to have an Admin Chatroom? (trying to sneak in some Supabase Realtime)
+
+
+## Misc

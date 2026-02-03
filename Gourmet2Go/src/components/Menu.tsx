@@ -54,7 +54,6 @@ export const Menu = () => {
   return (
     <div className="flex flex-col items-center text-center">
       {menuDays?.map(day => {
-        // Group dishes by category
         const dishesByCategory: Record<string, MenuDayDish[]> = {};
         day.MenuDayDishes.forEach(dishItem => {
           const category = dishItem.Dishes.category;
@@ -64,10 +63,8 @@ export const Menu = () => {
 
         return (
           <div key={day.menu_day_id} className="mt-8 w-full max-w-lg">
-            {/* Big header for day and date */}
             <h1 className="text-4xl font-bold mb-6">{day.day} - {day.date}</h1>
 
-            {/* Categories as subheaders */}
             {Object.entries(dishesByCategory).map(([category, dishes]) => (
               <div key={category} className="mb-6">
                 <h2 className="text-2xl font-semibold mb-3">{category}</h2>
