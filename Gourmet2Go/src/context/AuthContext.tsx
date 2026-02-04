@@ -25,10 +25,10 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null); // State to hold the current use
 
-  const fetchUserRole = async (userId: string) => {
+  const fetchUserProfile = async (userId: string) => {
     const { data, error } = await supabase
       .from("profiles")
-      .select("role")
+      .select("role, is_banned")
       .eq("id", userId)
       .single();
       
@@ -36,14 +36,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         throw error;
       }
       
-      return data.role as "NO_ACCESS" | "USER" | "ADMIN";
+      return data as {
+        role: "NO_ACCESS" | "USER" | "ADMIN";
+        is_banned: boolean;
+      };
   };
   
-  const { data: role, isLoading, isError } = useQuery({
-    queryKey: ["userRole", user?.id],
-    queryFn: () => fetchUserRole(user!.id), // Calls this function 
+  const { data: profile, isLoading, isError } = useQuery({
+    queryKey: ["userProfile", user?.id],
+    queryFn: () => fetchUserProfile(user!.id), // Calls this function 
     enabled: !!user?.id, // Once user.id is available
   });
+
+  useEffect(() => {
+    if (!profile) return;
+    
+    if (profile.is_banned || profile.role === "NO_ACCESS") {
+      console.warn("Banned/no access user detected. Signing out.");
+      signOut();
+    }
+  }, [profile]);
+
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -117,7 +130,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       signOut, 
       roleLoading: isLoading,
       roleError: isError,
-      role
+      role: profile?.role
     }}>
       {children}
     </AuthContext.Provider>

@@ -14,6 +14,10 @@ type Dish = {
 };
 
 const menuSchema = z.object({
+  date: z.string().refine(
+    (val) => !isNaN(Date.parse(val)),
+    'Invalid date'
+  ),
   day: z.enum(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']),
   dishes: z
     .array(
@@ -30,6 +34,12 @@ const menuSchema = z.object({
 });
 
 type MenuFormValues = z.infer<typeof menuSchema>;
+
+const getDayFromDate = (date: string) => {
+  return new Date(date).toLocaleDateString('en-US', {
+    weekday: 'long',
+  }) as MenuFormValues['day'];
+};
 
 export const AddMenu = () => {
   const [loading, setLoading] = useState(false);
@@ -72,14 +82,16 @@ export const AddMenu = () => {
   });
 
   const onSubmit = async (data: MenuFormValues) => {
-    setErrorMsg(null);
-    setSuccessMsg(null);
     setLoading(true);
-
+    
     try {
+      const day = getDayFromDate(data.date);
       const { data: menuData, error: menuError } = await supabase
         .from('MenuDays')
-        .insert({ day: data.day })
+        .insert({
+          date: data.date,
+          day,
+        })
         .select('menu_day_id')
         .single();
 
@@ -100,12 +112,12 @@ export const AddMenu = () => {
       setSuccessMsg('Menu saved successfully!');
       reset();
     } catch (err: any) {
-      console.error('Error creating menu:', err);
       setErrorMsg(err.message || 'Failed to create menu');
     } finally {
       setLoading(false);
     }
   };
+
 
   const selectedDishIds = fields.map((_, i) => watch(`dishes.${i}.dish_id`));
 
@@ -133,7 +145,7 @@ export const AddMenu = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="p-6 space-y-6">
-        <h1 className="text-2xl font-bold text-gray-800">
+        <h1 className="text-2xl font-bold">
           Add Menu for Selected Date
         </h1>
 
@@ -150,9 +162,24 @@ export const AddMenu = () => {
         )}
 
         <div>
+          <label className="block font-semibold mb-1">Menu Date</label>
+          <input
+            type="date"
+            {...register('date')}
+            className="border rounded px-3 py-2"
+          />
+          
+          {errors.date && (
+            <p className="text-red-600 text-sm">{errors.date.message}</p>
+          )}
+        </div>
+
+
+
+        <div>
           <h2 className="font-semibold text-lg mb-2">Current Menu Preview</h2>
-          <table className="min-w-full border border-gray-200 bg-white shadow-md rounded-lg">
-            <thead className="bg-gray-100">
+          <table className="min-w-full border border-gray-200 shadow-md rounded-lg">
+            <thead className="bg-gray-100 dark:bg-zinc-700">
               <tr>
                 <th></th>
                 <th className="px-3 py-2 text-center align-middle">Dish</th>
@@ -202,8 +229,8 @@ export const AddMenu = () => {
 
         <h2 className="font-semibold text-lg mt-6 mb-2">Available Menu Items</h2>
 
-        <table className="min-w-full border border-gray-200 bg-white shadow-md rounded-lg">
-          <thead className="bg-gray-100">
+        <table className="min-w-full border border-gray-200 shadow-md rounded-lg">
+          <thead className="bg-gray-100 dark:bg-zinc-700">
             <tr>
               <th className="px-3 py-2 text-center align-middle">Dish</th>
               <th className="px-3 py-2 text-center align-middle">Category</th>

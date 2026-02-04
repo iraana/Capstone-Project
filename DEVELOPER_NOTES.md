@@ -12,16 +12,28 @@ important for the client and users.
 
 
 - Analytics
-- AdminHome
-- AboutPage
 - PrivacyPolicyPage
 - ToSPage
 - NotAuthorizedPage
 - Robust testing
-- Remove .env and annihilate it from commit history somehow
+- Annihilate .env from commit history somehow
 - RLS on **all** database tables
 - Mobile responsiveness, ensure there is a good UI/UX on mobile devices
 - Accessibility standards (can navigate with keyboard, alt-text for images, etc.)
+- Dark Mode full integration
+- Account creation email confirmation, possible MFA as well
+
+
+- Full CRUD on dishes and menus
+- Cart
+- Checkout
+- OrderConfirmationPage
+- UserViewOrders
+- AdminViewOrders
+- Reviews
+- ViewReviews
+- UserSettings
+- Favicon 
 
 
 ## Library Choices

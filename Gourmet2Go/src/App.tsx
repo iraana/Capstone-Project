@@ -15,6 +15,9 @@ import { MenuPage } from "./pages/MenuPage";
 import { UnauthorizedPage } from "./pages/UnauthorizedPage";
 import { EditMenuPage } from "./pages/admin/EditMenuPage";
 import { Footer } from "./components/Footer";
+import { ManageUsersPage } from "./pages/admin/ManageUsersPage";
+import { ManageAdminsPage } from "./pages/admin/ManageAdminsPage";
+import { VirtualTourPage } from "./pages/VirtualTourPage";
 
 function App() {
   return (
@@ -32,6 +35,7 @@ function App() {
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/unauthorized" element={<UnauthorizedPage />} />
+            <Route path="/virtualtour" element={<VirtualTourPage />} />
 
             {/* Admin only routes */}
             <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
@@ -40,6 +44,8 @@ function App() {
               <Route path="/admin/add-dish" element={<AddDishPage />} />
               <Route path="/admin/add-menu" element={<AddMenuPage />} />
               <Route path="/admin/edit-menu/:date" element={<EditMenuPage />} />
+              <Route path="/admin/user-manager" element={<ManageUsersPage />} />
+              <Route path="/admin/admin-manager" element={<ManageAdminsPage />} />
             </Route>
 
           </Routes>

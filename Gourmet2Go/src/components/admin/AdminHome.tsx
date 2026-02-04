@@ -11,6 +11,11 @@ const today = new Date().toISOString().split("T")[0];
 
 const adminPages: AdminPage[] = [
   {
+    id: 'admin-manager',
+    title: 'Admin Manager',
+    icon: '👤'
+  },
+  {
     id: 'analytics',
     title: 'Analytics',
     icon: '📈',
@@ -29,6 +34,11 @@ const adminPages: AdminPage[] = [
     id: `edit-menu/${today}`,
     title: 'Edit Menu',
     icon: '🛠️',
+  },
+  {
+    id: 'user-manager',
+    title: 'User Manager',
+    icon: '👤'
   }
 ];
 

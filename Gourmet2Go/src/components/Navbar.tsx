@@ -15,6 +15,7 @@ const getNavLinks = (): NavLinkType[] => [
   { name: "About", path: "/about" },
   { name: "Administration", path: "/admin", roles: ["ADMIN"] },
   { name: "Menu", path: "/" },
+  { name: "Virtual Tour", path: "/virtualtour" }
 ];
 
 export const Navbar = () => {
