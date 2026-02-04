@@ -22,7 +22,7 @@ import { VirtualTourPage } from "./pages/VirtualTourPage";
 function App() {
   return (
     // Outer div to style the whole app, then the Navbar and the main content area
-    <div className="min-h-screen flex flex-col bg-white dark:bg-zinc-900 text-black dark:text-white transition-colors duration-700 pt-20">
+    <div className="min-h-screen flex flex-col font-serif bg-white dark:bg-zinc-900 text-black dark:text-white transition-colors duration-700 pt-20">
       <Navbar />
       <div className="container mx-auto px-4 py-6 grow">
         {/*All the routes are defined here*/}
