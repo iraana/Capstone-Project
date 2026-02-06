@@ -24,7 +24,6 @@ important for the client and users.
 - Accessibility standards (can navigate with keyboard, alt-text for images, etc.)
 
 - Add Menu: 
-  - Remove Edit Item buttons
   - Add "successfully saved" message and possibly reroute
   - Fix issue where very menu saves to Monday
   
