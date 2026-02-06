@@ -23,6 +23,17 @@ important for the client and users.
 - Mobile responsiveness, ensure there is a good UI/UX on mobile devices
 - Accessibility standards (can navigate with keyboard, alt-text for images, etc.)
 
+- Add Menu: 
+  - Remove Edit Item buttons
+  - Add "successfully saved" message and possibly reroute
+  - Fix issue where very menu saves to Monday
+  
+- Edit Menu: 
+  - Fix issue where every item in the "MenuDishes" table appears when editing any menu. (I believe this is because of the way the menus are being fetched, only be the date)
+  - Allow current menu items stock to be changed
+  - Allow adding of dishes
+  - Save menu button
+  - Cancel button
 
 ## Library Choices
 
