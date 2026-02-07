@@ -60,6 +60,12 @@ export const EditMenu = () => {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  
+  const getDayFromDate = (date: string) => {
+    const [year, month, day] = date.split('-').map(Number);
+    const newDate = new Date(year, month - 1, day);
+    return newDate.toLocaleDateString('en-US', { weekday: 'long' }) as MenuFormValues['day'];
+  }
 
   const {
       control,
@@ -69,15 +75,22 @@ export const EditMenu = () => {
       formState: { errors },
       watch,
     } = useForm<MenuFormValues>({
-      resolver: zodResolver(menuSchema)
+      resolver: zodResolver(menuSchema),
+      defaultValues: {
+        date: menuDate,
+        day: getDayFromDate(menuDate),
+        dishes: [],
+      },
     });
 
-    const { fields, append, remove } = useFieldArray({
-        control,
-        name: 'dishes',
-    });
+  
+  
+  const { fields, append, remove } = useFieldArray({
+      control,
+      name: 'dishes',
+  });
 
-    const { data: dishes = [] } = useQuery({
+  const { data: dishes = [] } = useQuery({
     queryKey: ['dishes'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -90,13 +103,13 @@ export const EditMenu = () => {
       return data as Dish[];
     },
     refetchOnWindowFocus: true,
-    });
+  });
 
-    const selectedDishIds = fields.map((_, i) => watch(`dishes.${i}.dish_id`));
+  const selectedDishIds = fields.map((_, i) => watch(`dishes.${i}.dish_id`));
 
-    const availableDishes = dishes.filter(
-      (dish) => !selectedDishIds.includes(dish.dish_id)
-    );
+  const availableDishes = dishes.filter(
+    (dish) => !selectedDishIds.includes(dish.dish_id)
+  );
 
   useEffect(() => {
     const loadMenuItems = async () => {
@@ -114,7 +127,7 @@ export const EditMenu = () => {
             menu_id: md.MenuDays.menu_day_id
           }));
           setMenuItems(itemsForDate);
-          reset({ dishes: itemsForDate, date: menuDate});
+          reset({ dishes: itemsForDate, date: menuDate, day: getDayFromDate(menuDate) });
       } catch (error) {
         console.error("Error loading menu items:", error);
       }
@@ -163,8 +176,7 @@ export const EditMenu = () => {
     
       for (const originalDish of originalDishes) {
         if (!updatedDishes.find(i => i.dish_id === originalDish.dish_id)) {
-          const { error: deleteError } = await supabase
-            .from('MenuDayDishes')
+          const { error: deleteError } = await supabase.from('MenuDayDishes')
             .delete()
             .eq('dish_id', originalDish.dish_id)
             .eq('menu_id', originalDish.menu_id);
@@ -189,9 +201,9 @@ export const EditMenu = () => {
           </div>
         )}
 
-        {errors.dishes?.message && (
+        {errorMsg && (
           <div className="text-red-600 text-sm mt-2">
-            {errors.dishes.message}
+            {errorMsg}
           </div>
         )}
         </div>
@@ -252,6 +264,7 @@ export const EditMenu = () => {
         </table>
       </div>
       <div>
+        <pre>{JSON.stringify(errors, null, 2)}</pre>
         <button
           type="submit"
           className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mt-4"
