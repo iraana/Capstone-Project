@@ -12,16 +12,25 @@ important for the client and users.
 
 
 - Analytics
-- AdminHome
-- AboutPage
 - PrivacyPolicyPage
 - ToSPage
 - NotAuthorizedPage
 - Robust testing
-- Remove .env and annihilate it from commit history somehow
+- Annihilate .env from commit history somehow
 - RLS on **all** database tables
 - Mobile responsiveness, ensure there is a good UI/UX on mobile devices
 - Accessibility standards (can navigate with keyboard, alt-text for images, etc.)
+- Dark Mode full integration
+- Account creation email confirmation, possible MFA as well
+
+
+- Full CRUD on dishes and menus
+- UserViewOrders
+- AdminViewOrders
+- Reviews
+- ViewReviews
+- UserSettings
+- Favicon 
 
 - Add Menu: 
   - Add "successfully saved" message and possibly reroute
@@ -47,9 +56,10 @@ important for the client and users.
 - jsdom is used to create a testing browser which provides a realistic testing environment
 - jest-dom provides custom Jest matchers. This means we have more intuitive assertions.
 - user-event is used to simulate user input with stuff like ```await user.click(submitButton)```
-
 - vite-plugin-pwa to turn the web app into a PWA. Users can install it like a desktop app and can bookmark it on mobile. Allows
 us to optimize some features to work offline.
+- Lucide React to provide nice inline SVGs that are more professional then emojis
+- Framer Motion to add animation to our UI
 
 
 ## Conventions 

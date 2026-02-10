@@ -1,36 +1,84 @@
 import { Link } from "react-router";
 import { useAuth } from "../../context/AuthContext";
+import { UserCog, BarChart3, UtensilsCrossed, FilePlus, FilePenLine, Users, ChevronRight, ClipboardClock } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface AdminPage {
   id: string;
   title: string;
-  icon: string;
+  description: string;
+  icon: React.ElementType;
+  color: string;
 }
 
 const today = new Date().toISOString().split("T")[0];
 
 const adminPages: AdminPage[] = [
   {
+    id: 'admin-manager',
+    title: 'Admin Manager',
+    description: 'Manage admin roles & permissions',
+    icon: UserCog,
+    color: 'from-blue-500 to-cyan-400',
+  },
+  {
     id: 'analytics',
     title: 'Analytics',
-    icon: '📈',
+    description: 'Top buyer, top seller, and more',
+    icon: BarChart3,
+    color: 'from-emerald-500 to-green-400', 
   },
   {
     id: 'add-dish',
     title: 'Add Dish',
-    icon: '🍽️',
+    description: 'Add a new dish for the menu',
+    icon: UtensilsCrossed,
+    color: 'from-orange-500 to-amber-400',
   },
   {
     id: 'add-menu',
-    title: 'Add Menu',
-    icon: '☰',
+    title: 'Create Menu',
+    description: 'Set up a new menu',
+    icon: FilePlus,
+    color: 'from-purple-500 to-pink-400',
   },
   {
     id: `edit-menu/${today}`,
     title: 'Edit Menu',
-    icon: '🛠️',
+    description: 'Make changes to a menu',
+    icon: FilePenLine,
+    color: 'from-rose-500 to-red-400',
+  },
+  {
+    id: 'pending-orders',
+    title: 'Pending Orders',
+    description: 'Manage unfulfilled orders',
+    icon: ClipboardClock,
+    color: 'from-indigo-500 to-blue-400'
+  },
+  {
+    id: 'user-manager',
+    title: 'User Manager',
+    description: 'Manage user roles & permissions',
+    icon: Users,
+    color: 'from-indigo-500 to-violet-400',
   }
 ];
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0 }
+};
 
 export const AdminHome = () => {
   const { user } = useAuth();
@@ -38,37 +86,74 @@ export const AdminHome = () => {
   const displayName =
     user?.user_metadata.first_name ||
     user?.user_metadata.last_name ||
-    user?.email;
+    user?.email ||
+    "Admin";
 
   return (
-    <div className="max-w-8xl mx-auto px-4">
-      <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-8 text-center">Welcome back, {displayName}, what is it you want to do today?</h2>
-      <div className="flex flex-wrap gap-6 justify-center">
-        {adminPages.map((adminPage) => (
-          <div key={adminPage.id} className="relative group w-80">
-            <div className="absolute -inset-1 rounded-[20px] blur-sm opacity-0 transition duration-300 pointer-events-none"></div>
+    <div className="min-h-screen bg-gray-50 dark:bg-zinc-900 transition-colors duration-500 relative overflow-hidden">
+      
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] right-[-5%] w-96 h-96 bg-green-400/20 rounded-full blur-3xl dark:bg-green-900/20" />
+        <div className="absolute bottom-[-10%] left-[-5%] w-96 h-96 bg-blue-400/20 rounded-full blur-3xl dark:bg-blue-900/10" />
+      </div>
 
-            <div className="bg-primary border border-green-500 rounded-[20px] p-5 flex flex-col h-full">
-              
-              <div className="text-center mb-4">
-                <div className="text-6xl mb-2">{adminPage.icon}</div>
-                <h3 className="text-2xl font-bold text-white transition-colors">
-                  {adminPage.title}
-                </h3>
-              </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
+        
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-12 text-center"
+        >
+          <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-4">
+            Welcome back, <span className="text-transparent bg-clip-text bg-linear-to-r from-green-500 to-emerald-700">{displayName}</span>
+          </h2>
+          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+            Access your command centre for all admin operations for Gourmet2Go.
+          </p>
+        </motion.div>
 
-              <div className="mt-6 text-center">
-                <Link
-                  to={`/admin/${adminPage.id}`}
-                  className="inline-block bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors"
-                >
-                  Click Here
-                </Link>
-              </div>
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
+          {adminPages.map((page) => (
+            <motion.div
+              key={page.id}
+              variants={itemVariants}
+              whileHover={{ y: -5 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Link
+                to={`/admin/${page.id}`}
+                className="group relative flex flex-col h-full overflow-hidden rounded-2xl bg-white/70 dark:bg-black/50 backdrop-blur-xl border border-slate-200 dark:border-slate-800 p-6 hover:shadow-2xl hover:shadow-green-900/10 transition-all duration-300"
+              >
+                <div className={`absolute inset-0 opacity-0 group-hover:opacity-5 bg-linear-to-br ${page.color} transition-opacity duration-300`} />
+                
+                <div className="flex items-start justify-between mb-6">
+                  <div className={`p-3 rounded-xl bg-linear-to-br ${page.color} text-white shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                    <page.icon size={24} strokeWidth={2} />
+                  </div>
+                  
+                  <div className="text-slate-300 dark:text-slate-600 group-hover:text-green-500 transition-colors">
+                    <ChevronRight size={24} />
+                  </div>
+                </div>
 
-            </div>
-          </div>
-        ))}
+                <div className="mt-auto">
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">
+                    {page.title}
+                  </h3>
+                  <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors">
+                    {page.description}
+                  </p>
+                </div>
+              </Link>
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
     </div>
   );
