@@ -12,34 +12,48 @@ import { Menupage } from "./pages/Menupage";
 import { Orderspage } from "./pages/Orderspage";
 import { Cartpage } from "./pages/Cartpage";
 import { Loginpage } from "./pages/Loginpage";
+import { CustomerLayout } from "./layouts/CustomerLayout";
+
 function App() {
   return (
-    <div className="min-h-screen bg-white text-black transition-opacity duration-700 pt-20">
-      <div className="container mx-auto px-4 py-6">
-        <Routes>
-          <Route path="/" element={
-            <div className="text-center py-20">
-              <h1 className="text-4xl font-bold mb-4">Gourmet2Go Admin</h1>
-              <p className="text-gray-600 mb-6">Welcome to the admin panel</p>
-              <a 
-                href="/add-item" 
-                className="bg-blue-700 text-white px-6 py-3 rounded-md hover:bg-blue-800 inline-block"
+    <Routes>
+      
+      <Route
+        path="/"
+        element={
+          <div className="min-h-screen bg-white flex items-center justify-center">
+            <div className="text-center px-4">
+              <h1 className="text-5xl font-bold mb-4 text-gray-900">Gourmet2Go</h1>
+              <p className="text-gray-600 mb-8 text-lg">
+                Fresh meals prepared by Sault College culinary students
+              </p>
+              
+                <a href="/about"
+                className="bg-sault-blue text-white px-8 py-3 rounded-md hover:bg-sault-blue-dark inline-block font-medium transition-colors"
               >
-                Go to Add Menu Item
+                Explore Gourmet2Go
               </a>
             </div>
-          } />
-          <Route path="/add-item" element={<AddItempage />} />
-          <Route path="/about" element={<Aboutpage />} />
-          <Route path="/menu" element={<Menupage />} />
-          <Route path="/orders" element={<Orderspage />} />
-          <Route path="/cart" element={<Cartpage />} />
-          <Route path="/login" element={<Loginpage />} />  
-          <Route path="/signup" element={<Loginpage />} />
-        </Routes>
-      </div>
-    </div>
-  )
+          </div>
+        }
+      />
+
+      
+      <Route path="/add-item" element={<AddItempage />} />
+
+      
+      <Route element={<CustomerLayout />}>
+        <Route path="/about" element={<Aboutpage />} />
+        <Route path="/menu" element={<Menupage />} />
+        <Route path="/orders" element={<Orderspage />} />
+        <Route path="/cart" element={<Cartpage />} />
+      </Route>
+
+      
+      <Route path="/login" element={<Loginpage />} />
+      <Route path="/signup" element={<Loginpage />} />
+    </Routes>
+  );
 }
 
 export default App;
