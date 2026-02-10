@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../../../supabase-client";
 import { useState } from "react";
+import { Loader } from "../Loader";
 
 interface User {
   id: string;
@@ -71,7 +72,7 @@ export const ManageUsers = () => {
   });
 
 
-  if (isLoading) return <p className="text-center mt-4">Loading...</p>;
+  if (isLoading) return <Loader fullScreen/>;
   if (error) return <p className="text-center mt-4">Error: {error.message}</p>;
 
   const filteredUsers = users?.filter((user) => {

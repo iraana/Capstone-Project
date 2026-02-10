@@ -25,9 +25,6 @@ important for the client and users.
 
 
 - Full CRUD on dishes and menus
-- Cart
-- Checkout
-- OrderConfirmationPage
 - UserViewOrders
 - AdminViewOrders
 - Reviews
@@ -49,9 +46,10 @@ important for the client and users.
 - jsdom is used to create a testing browser which provides a realistic testing environment
 - jest-dom provides custom Jest matchers. This means we have more intuitive assertions.
 - user-event is used to simulate user input with stuff like ```await user.click(submitButton)```
-
 - vite-plugin-pwa to turn the web app into a PWA. Users can install it like a desktop app and can bookmark it on mobile. Allows
 us to optimize some features to work offline.
+- Lucide React to provide nice inline SVGs that are more professional then emojis
+- Framer Motion to add animation to our UI
 
 
 ## Conventions 

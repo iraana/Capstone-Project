@@ -18,12 +18,17 @@ import { Footer } from "./components/Footer";
 import { ManageUsersPage } from "./pages/admin/ManageUsersPage";
 import { ManageAdminsPage } from "./pages/admin/ManageAdminsPage";
 import { VirtualTourPage } from "./pages/VirtualTourPage";
+import { CartSidebar } from "./components/CartSidebar";
+import { CheckoutPage } from "./pages/CheckoutPage";
+import { SuccessfulOrderPage } from "./pages/SuccessfulOrderPage";
+import { PendingOrdersPage } from "./pages/admin/PendingOrdersPage";
 
 function App() {
   return (
     // Outer div to style the whole app, then the Navbar and the main content area
     <div className="min-h-screen flex flex-col font-serif bg-white dark:bg-zinc-900 text-black dark:text-white transition-colors duration-700 pt-20">
       <Navbar />
+      <CartSidebar />
       <div className="container mx-auto px-4 py-6 grow">
         {/*All the routes are defined here*/}
           <Routes>
@@ -37,6 +42,11 @@ function App() {
             <Route path="/unauthorized" element={<UnauthorizedPage />} />
             <Route path="/virtualtour" element={<VirtualTourPage />} />
 
+            <Route element={<ProtectedRoute allowedRoles={["USER", "ADMIN"]} />}>
+              <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/successful-order" element={<SuccessfulOrderPage />} />
+            </Route>
+
             {/* Admin only routes */}
             <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
               <Route path="/admin" element={<AdminHomePage />} />
@@ -46,6 +56,7 @@ function App() {
               <Route path="/admin/edit-menu/:date" element={<EditMenuPage />} />
               <Route path="/admin/user-manager" element={<ManageUsersPage />} />
               <Route path="/admin/admin-manager" element={<ManageAdminsPage />} />
+              <Route path="/admin/pending-orders" element={<PendingOrdersPage />} />
             </Route>
 
           </Routes>
