@@ -1,8 +1,8 @@
 export const AboutPage = () => {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-zinc-900">
       
-      <div className="relative bg-sault-blue text-white py-20">
+      <div className="relative bg-primary text-white py-20">
         <div
           className="absolute inset-0 bg-cover bg-center opacity-20"
           style={{
@@ -27,10 +27,10 @@ export const AboutPage = () => {
           
           <div className="space-y-8">
             <div>
-              <h2 className="text-3xl font-display font-bold text-gray-900 mb-4">
+              <h2 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-4">
                 What Makes It Special
               </h2>
-              <div className="prose prose-lg text-gray-700 leading-relaxed space-y-4">
+              <div className="prose prose-lg text-gray-700 dark:text-gray-300 leading-relaxed space-y-4">
                 <p>
                   Gourmet2Go offers delicious, freshly prepared meals made by Sault
                   College culinary students. It's your chance to enjoy high-quality, 
@@ -50,11 +50,11 @@ export const AboutPage = () => {
             </div>
 
             
-            <div className="bg-green-50 border-l-4 border-sault-green p-6 rounded-r-lg">
-              <h3 className="font-display font-bold text-lg text-gray-900 mb-3">
+            <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-sault-green p-6 rounded-r-lg">
+              <h3 className="font-display font-bold text-lg text-gray-900 dark:text-white mb-3">
                 How It Works
               </h3>
-              <ol className="space-y-3 text-gray-700">
+              <ol className="space-y-3 text-gray-700 dark:text-gray-300">
                 {[
                   'Browse the weekly menu and select your meals',
                   'Place your order before the cutoff time',
@@ -76,13 +76,13 @@ export const AboutPage = () => {
           <div className="space-y-6">
             
             
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h3 className="font-display font-bold text-xl text-gray-900 mb-4 flex items-center">
+            <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-zinc-700">
+              <h3 className="font-display font-bold text-xl text-gray-900 dark:text-white mb-4 flex items-center">
                 <span className="mr-2">🕐</span>
                 Service Hours
               </h3>
-              <div className="space-y-3 text-gray-700">
-                <div className="flex justify-between py-2 border-b border-gray-100">
+              <div className="space-y-3 text-gray-700 dark:text-gray-300">
+                <div className="flex justify-between py-2 border-b border-gray-100 dark:border-zinc-700">
                   <span className="font-medium">Wednesday</span>
                   <span>12:15 - 12:45 PM</span>
                 </div>
@@ -90,19 +90,19 @@ export const AboutPage = () => {
                   <span className="font-medium">Thursday</span>
                   <span>12:15 - 12:45 PM</span>
                 </div>
-                <p className="text-sm text-gray-500 mt-4">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
                   Service times may vary each semester. Check weekly announcements for updates.
                 </p>
               </div>
             </div>
 
             
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h3 className="font-display font-bold text-xl text-gray-900 mb-4 flex items-center">
+            <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-zinc-700">
+              <h3 className="font-display font-bold text-xl text-gray-900 dark:text-white mb-4 flex items-center">
                 <span className="mr-2">ℹ️</span>
                 Important Rules
               </h3>
-              <ul className="space-y-3 text-gray-700">
+              <ul className="space-y-3 text-gray-700 dark:text-gray-300">
                 {[
                   'One active order per person at a time',
                   'Maximum 5 of the same item per order',
@@ -119,7 +119,7 @@ export const AboutPage = () => {
             </div>
 
             
-            <div className="bg-sault-blue text-white rounded-lg shadow-md p-6">
+            <div className="bg-primary text-white rounded-lg shadow-md p-6">
               <h3 className="font-display font-bold text-xl mb-4 flex items-center">
                 <span className="mr-2">📍</span>
                 Pickup Location
