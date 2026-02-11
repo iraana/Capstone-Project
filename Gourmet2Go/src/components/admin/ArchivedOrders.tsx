@@ -42,13 +42,13 @@ interface Order {
   OrderItems: OrderItemWithDish[]; 
 }
 
-export const PendingOrders = () => {
+export const ArchivedOrders = () => {
   const queryClient = useQueryClient();
   const [selectedMenuId, setSelectedMenuId] = useState<number | "ALL">("ALL");
   const [search, setSearch] = useState("");
 
   const { data: orders, isLoading, error } = useQuery({
-    queryKey: ["pending_orders"],
+    queryKey: ["archived_orders"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("Orders")
@@ -63,7 +63,7 @@ export const PendingOrders = () => {
             Dishes (dish_id, name, price)
           )
         `)
-        .eq("status", "PENDING") 
+        .eq("status", "FULFILLED") 
         .order("timestamp", { ascending: false });
 
       if (error) throw error;
@@ -80,7 +80,7 @@ export const PendingOrders = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["pending_orders"] });
+      queryClient.invalidateQueries({ queryKey: ["archived_orders"] });
     },
   });
 
@@ -177,7 +177,7 @@ export const PendingOrders = () => {
             <div 
                 key={order.order_id} 
                 className={`bg-white rounded-xl shadow-sm border overflow-hidden flex flex-col ${
-                    order.status === 'PENDING' ? 'border-green-200 opacity-75' : 'border-gray-200'
+                    order.status === 'FULFILLED' ? 'border-green-200 opacity-75' : 'border-gray-200'
                 }`}
             >
                 <div className="p-4 bg-gray-50 border-b border-gray-100 flex justify-between items-start">
@@ -186,7 +186,7 @@ export const PendingOrders = () => {
                             <span className="font-bold text-lg text-gray-900">#{order.order_number}</span>
                             <span
                               className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
-                                order.status === "PENDING"
+                                order.status === "FULFILLED"
                                 ? "bg-green-100 text-green-800"
                                 : "bg-gray-200 text-gray-700"
                               }`}
@@ -241,23 +241,23 @@ export const PendingOrders = () => {
                     </div>
                     
                     <div className="grid grid-cols-2 gap-2">
-                        {order.status === 'PENDING' && (
+                        {order.status === 'FULFILLED' && (
                             <button
-                                onClick={() => updateStatusMutation.mutate({ orderId: order.order_id, newStatus: 'FULFILLED' })}
+                                onClick={() => updateStatusMutation.mutate({ orderId: order.order_id, newStatus: 'PENDING' })}
                                 disabled={updateStatusMutation.isPending}
                                 className="col-span-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded-md text-sm font-medium transition disabled:opacity-50"
                             >
-                                Complete
+                                Reopen
                             </button>
                         )}
 
-                        {order.status === 'PENDING' && (
+                        {order.status === 'FULFILLED' && (
                              <button
                                 onClick={() => updateStatusMutation.mutate({ orderId: order.order_id, newStatus: 'INACTIVE' })}
                                 disabled={updateStatusMutation.isPending}
                                 className="col-span-1 bg-white border border-red-200 text-red-600 hover:bg-red-50 py-2 rounded-md text-sm font-medium transition"
                             >
-                                Cancel
+                                Move to Cancelled
                             </button>
                         )}
                     </div>
