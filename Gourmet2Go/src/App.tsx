@@ -22,6 +22,7 @@ import { CartSidebar } from "./components/CartSidebar";
 import { CheckoutPage } from "./pages/CheckoutPage";
 import { SuccessfulOrderPage } from "./pages/SuccessfulOrderPage";
 import { PendingOrdersPage } from "./pages/admin/PendingOrdersPage";
+import { ContactPage } from "./pages/ContactPage";
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/unauthorized" element={<UnauthorizedPage />} />
+            <Route path="/contact" element={<ContactPage />} />
             <Route path="/virtualtour" element={<VirtualTourPage />} />
 
             <Route element={<ProtectedRoute allowedRoles={["USER", "ADMIN"]} />}>
