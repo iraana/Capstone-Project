@@ -22,6 +22,8 @@ import { CartSidebar } from "./components/CartSidebar";
 import { CheckoutPage } from "./pages/CheckoutPage";
 import { SuccessfulOrderPage } from "./pages/SuccessfulOrderPage";
 import { PendingOrdersPage } from "./pages/admin/PendingOrdersPage";
+import { ArchivedOrdersPage } from "./pages/admin/ArchivedOrdersPage";
+import { CancelledOrdersPage } from "./pages/admin/CancelledOrdersPage";
 
 function App() {
   return (
@@ -57,6 +59,8 @@ function App() {
               <Route path="/admin/user-manager" element={<ManageUsersPage />} />
               <Route path="/admin/admin-manager" element={<ManageAdminsPage />} />
               <Route path="/admin/pending-orders" element={<PendingOrdersPage />} />
+              <Route path="/admin/archived-orders" element={<ArchivedOrdersPage />} />
+              <Route path="/admin/cancelled-orders" element={<CancelledOrdersPage />} />
             </Route>
 
           </Routes>
