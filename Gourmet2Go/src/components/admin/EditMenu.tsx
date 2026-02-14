@@ -72,7 +72,7 @@ export const EditMenu = () => {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-8">
       <h1 className="text-2xl font-bold text-gray-800">Edit Menu for {menuDate}</h1>
 
       <table className="bg-white shadow-md rounded-lg p-4 space-y-2">
