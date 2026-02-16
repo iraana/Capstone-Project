@@ -50,7 +50,7 @@ export const AboutPage = () => {
             </div>
 
             
-            <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-sault-green p-6 rounded-r-lg">
+            <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 p-6 rounded-r-lg">
               <h3 className="font-display font-bold text-lg text-gray-900 dark:text-white mb-3">
                 How It Works
               </h3>
@@ -62,7 +62,7 @@ export const AboutPage = () => {
                   'Pick up your meal and pay in person'
                 ].map((step, index) => (
                   <li key={index} className="flex items-start">
-                    <span className="shrink-0 w-8 h-8 bg-sault-green text-white rounded-full flex items-center justify-center font-bold mr-3">
+                    <span className="shrink-0 w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold mr-3">
                       {index + 1}
                     </span>
                     <span>{step}</span>
@@ -111,7 +111,7 @@ export const AboutPage = () => {
                   'Items available on a first-come, first-served basis'
                 ].map((rule, index) => (
                   <li key={index} className="flex items-start">
-                    <span className="text-sault-green mr-2 text-lg shrink-0">✓</span>
+                    <span className="text-green-500 mr-2 text-lg shrink-0">✓</span>
                     <span className="text-sm">{rule}</span>
                   </li>
                 ))}

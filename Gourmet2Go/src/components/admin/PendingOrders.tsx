@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../../../supabase-client";
 import { Loader } from "../Loader";
+import { useNavigate } from "react-router";
 
 interface Dish {
   dish_id: number;
@@ -44,6 +45,7 @@ interface Order {
 
 export const PendingOrders = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [selectedMenuId, setSelectedMenuId] = useState<number | "ALL">("ALL");
   const [search, setSearch] = useState("");
 
@@ -69,24 +71,26 @@ export const PendingOrders = () => {
       if (error) throw error;
       return data as unknown as Order[];
     },
+    refetchInterval: 1000
   });
 
   const updateStatusMutation = useMutation({
     mutationFn: async ({ orderId, newStatus }: { orderId: number; newStatus: string }) => {
       const { error } = await supabase
         .from("Orders")
-        .update({ status: newStatus })
+        .update({ status: newStatus }) // Updates status
         .eq("order_id", orderId);
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["pending_orders"] });
+      queryClient.invalidateQueries({ queryKey: ["pending_orders"] }); // Re-fetch after
     },
   });
 
   const availableMenus = useMemo(() => {
-    if (!orders) return [];
+    if (!orders) return []; // If no orders
     const map = new Map();
+    // Extracts all unique menu days
     orders.forEach((o) => {
       if (o.MenuDays && !map.has(o.MenuDays.menu_day_id)) {
         map.set(o.MenuDays.menu_day_id, o.MenuDays);
@@ -96,16 +100,18 @@ export const PendingOrders = () => {
   }, [orders]);
 
   const filteredOrders = useMemo(() => {
-    if (!orders) return [];
+    if (!orders) return []; // If no orders 
     
     let result = orders;
     
+    // Filter by menu
     if (selectedMenuId !== "ALL") {
       result = result.filter(
         (o) => o.MenuDays?.menu_day_id === selectedMenuId
       );
     }
     
+    // If the text matches the order_number, first_name, last_name, email
     if (search.trim() !== "") {
       result = result.filter((o) =>
         o.order_number
@@ -125,8 +131,6 @@ export const PendingOrders = () => {
     
     return result;
   }, [orders, selectedMenuId, search]);
-
-
 
   if (isLoading) return <Loader fullScreen />;
 
@@ -176,8 +180,9 @@ export const PendingOrders = () => {
             filteredOrders.map((order) => (
             <div 
                 key={order.order_id} 
-                className={`bg-white rounded-xl shadow-sm border overflow-hidden flex flex-col ${
-                    order.status === 'PENDING' ? 'border-green-200 opacity-75' : 'border-gray-200'
+                onClick={() => navigate(`/admin/order/${order.order_number}`)}
+                className={`bg-white rounded-xl shadow-sm border overflow-hidden flex flex-col cursor-pointer hover:shadow-md hover:border-blue-300 transition-all ${
+                    order.status === 'PENDING' ? 'border-gray-200' : 'border-gray-200'
                 }`}
             >
                 <div className="p-4 bg-gray-50 border-b border-gray-100 flex justify-between items-start">
@@ -243,7 +248,10 @@ export const PendingOrders = () => {
                     <div className="grid grid-cols-2 gap-2">
                         {order.status === 'PENDING' && (
                             <button
-                                onClick={() => updateStatusMutation.mutate({ orderId: order.order_id, newStatus: 'FULFILLED' })}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    updateStatusMutation.mutate({ orderId: order.order_id, newStatus: 'FULFILLED' });
+                                }}
                                 disabled={updateStatusMutation.isPending}
                                 className="col-span-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded-md text-sm font-medium transition disabled:opacity-50"
                             >
@@ -253,7 +261,10 @@ export const PendingOrders = () => {
 
                         {order.status === 'PENDING' && (
                              <button
-                                onClick={() => updateStatusMutation.mutate({ orderId: order.order_id, newStatus: 'INACTIVE' })}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    updateStatusMutation.mutate({ orderId: order.order_id, newStatus: 'INACTIVE' });
+                                }}
                                 disabled={updateStatusMutation.isPending}
                                 className="col-span-1 bg-white border border-red-200 text-red-600 hover:bg-red-50 py-2 rounded-md text-sm font-medium transition"
                             >
