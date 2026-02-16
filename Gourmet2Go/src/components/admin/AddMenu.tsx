@@ -144,10 +144,10 @@ export const AddMenu = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="p-6 space-y-6">
-        <h1 className="text-2xl font-bold">
+      <div className="space-y-10">
+        {/* <h1 className="text-2xl font-bold">
           Add Menu for Selected Date
-        </h1>
+        </h1> */}
 
         {successMsg && (
           <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
@@ -178,50 +178,52 @@ export const AddMenu = () => {
 
         <div>
           <h2 className="font-semibold text-lg mb-2">Current Menu Preview</h2>
-          <table className="min-w-full border border-gray-200 shadow-md rounded-lg">
-            <thead className="bg-gray-100 dark:bg-zinc-700">
-              <tr>
-                <th></th>
-                <th className="px-3 py-2 text-center align-middle">Dish</th>
-                <th className="px-3 py-2 text-center align-middle">Category</th>
-                <th className="px-3 py-2 text-center align-middle">Price</th>
-                <th className="px-3 py-2 text-center align-middle">Stock</th>
-              </tr>
-            </thead>
-            <tbody>
-              {selectedDishes.map((item) => (
-                <tr className="border-b border-gray-200" key={item.fieldIndex}>
-                  <td className="px-3 py-2 text-center align-middle flex justify-center">
-                    <button
-                      type="button"
-                      className="px-3 py-1 rounded hover:bg-gray-200"
-                      onClick={() => handleRemoveFromMenu(item.fieldIndex)}
-                    >
-                      ❌
-                    </button>
-                  </td>
-                  <td className="px-3 py-2 text-center align-middle">{item.name}</td>
-                  <td className="px-3 py-2 text-center align-middle">{item.category}</td>
-                  <td className="px-3 py-2 text-center align-middle">{item.price}</td>
-                  <td className="px-3 py-2 text-center align-middle">
-                    <input
-                      type="number"
-                      min={1}
-                      {...register(`dishes.${item.fieldIndex}.stock`, {
-                        valueAsNumber: true,
-                      })}
-                      className="w-16 px-2 py-1 text-sm border rounded text-center"
-                    />
-                    {errors.dishes?.[item.fieldIndex]?.stock && (
-                      <p className="text-red-600 text-xs mt-1">
-                        {errors.dishes[item.fieldIndex]?.stock?.message}
-                      </p>
-                    )}
-                  </td>
+          <div className="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700 shadow-sm">
+            <table className="min-w-full text-sm">
+              <thead className="bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-200">
+                <tr>
+                  <th></th>
+                  <th className="px-3 py-2 text-center align-middle">Dish</th>
+                  <th className="px-3 py-2 text-center align-middle">Category</th>
+                  <th className="px-3 py-2 text-center align-middle">Price</th>
+                  <th className="px-3 py-2 text-center align-middle">Stock</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {selectedDishes.map((item) => (
+                  <tr className="border-b border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition" key={item.fieldIndex}>
+                    <td className="px-3 py-2 text-center align-middle flex justify-center">
+                      <button
+                        type="button"
+                        className="px-3 py-1 rounded hover:bg-gray-200"
+                        onClick={() => handleRemoveFromMenu(item.fieldIndex)}
+                      >
+                        ❌
+                      </button>
+                    </td>
+                    <td className="px-3 py-2 text-center align-middle">{item.name}</td>
+                    <td className="px-3 py-2 text-center align-middle">{item.category}</td>
+                    <td className="px-3 py-2 text-center align-middle">{item.price}</td>
+                    <td className="px-3 py-2 text-center align-middle">
+                      <input
+                        type="number"
+                        min={1}
+                        {...register(`dishes.${item.fieldIndex}.stock`, {
+                          valueAsNumber: true,
+                        })}
+                        className="w-16 px-2 py-1 text-sm border rounded text-center"
+                      />
+                      {errors.dishes?.[item.fieldIndex]?.stock && (
+                        <p className="text-red-600 text-xs mt-1">
+                          {errors.dishes[item.fieldIndex]?.stock?.message}
+                        </p>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
           {errors.dishes?.message && (
             <div className="text-red-600 text-sm mt-2">{errors.dishes.message}</div>
           )}
@@ -229,47 +231,50 @@ export const AddMenu = () => {
 
         <h2 className="font-semibold text-lg mt-6 mb-2">Available Menu Items</h2>
 
-        <table className="min-w-full border border-gray-200 shadow-md rounded-lg">
-          <thead className="bg-gray-100 dark:bg-zinc-700">
-            <tr>
-              <th className="px-3 py-2 text-center align-middle">Dish</th>
-              <th className="px-3 py-2 text-center align-middle">Category</th>
-              <th className="px-3 py-2 text-center align-middle">Price</th>
-              <th className="px-3 py-2 text-center align-middle">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {availableDishes.map((item) => (
-              <tr className="border-b border-gray-200" key={item.dish_id}>
-                <td className="px-3 py-2 text-center align-middle">{item.name}</td>
-                <td className="px-3 py-2 text-center align-middle">{item.category}</td>
-                <td className="px-3 py-2 text-center align-middle">{item.price}</td>
-                <td className="px-3 py-2 text-center align-middle flex justify-center gap-2">
-                  <button
-                    className="bg-[#00659B] text-white px-3 py-1 rounded hover:bg-[#005082]"
-                    type="button"
-                    onClick={() => handleAddToMenu(item)}
-                  >
-                    Add to Menu
-                  </button>
-                  <NavLink
-                    to={`/menu/item/edit/${item.dish_id}`}
-                    className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
-                  >
-                    Edit Item
-                  </NavLink>
-                </td>
+        <div className="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700 shadow-sm">
+          <table className="min-w-full text-sm">
+            <thead className="bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-200">
+              <tr>
+                <th className="px-3 py-2 text-center align-middle">Dish</th>
+                <th className="px-3 py-2 text-center align-middle">Category</th>
+                <th className="px-3 py-2 text-center align-middle">Price</th>
+                <th className="px-3 py-2 text-center align-middle">Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {availableDishes.map((item) => (
+                <tr className="border-b border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition" key={item.dish_id}>
+                  <td className="px-3 py-2 text-center align-middle">{item.name}</td>
+                  <td className="px-3 py-2 text-center align-middle">{item.category}</td>
+                  <td className="px-3 py-2 text-center align-middle">{item.price}</td>
+                  <td className="px-3 py-2 text-center align-middle flex justify-center gap-2">
+                    <button
+                      className="rounded-lg bg-[#00659B] px-4 py-1.5 text-white text-sm font-medium shadow  hover:bg-[#005082] transition"
+                      type="button"
+                      onClick={() => handleAddToMenu(item)}
+                    >
+                      Add to Menu
+                    </button>
+                    <NavLink
+                      to={`/menu/item/edit/${item.dish_id}`}
+                      className="rounded-lg bg-green-600 px-4 py-1.5 text-white text-sm font-medium shadow hover:bg-green-700 transition"
+
+                    >
+                      Edit Item
+                    </NavLink>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
         <div className="flex gap-4 mt-4">
           <button
             type="submit"
             disabled={loading}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-          >
+            className="rounded-xl bg-blue-600 px-6 py-2.5 text-white font-semibold shadow-lg hover:scale-[1.02]  hover:bg-blue-700 transition-transform disabled:opacity-50"
+             >
             {loading ? 'Saving...' : 'Save Menu'}
           </button>
         </div>

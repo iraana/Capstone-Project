@@ -11,7 +11,7 @@ interface AdminPage {
   color: string;
 }
 
-const today = new Date().toISOString().split("T")[0];
+// const today = new Date().toISOString().split("T")[0];
 
 const adminPages: AdminPage[] = [
   {
@@ -57,7 +57,7 @@ const adminPages: AdminPage[] = [
     color: 'from-purple-500 to-pink-400',
   },
   {
-    id: `edit-menu/${today}`,
+    id: `edit-menu/${new Date().toISOString().split("T")[0]}`,
     title: 'Edit Menu',
     description: 'Make changes to a menu',
     icon: FilePenLine,

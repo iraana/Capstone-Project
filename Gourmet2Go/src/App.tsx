@@ -22,6 +22,7 @@ import { CartSidebar } from "./components/CartSidebar";
 import { CheckoutPage } from "./pages/CheckoutPage";
 import { SuccessfulOrderPage } from "./pages/SuccessfulOrderPage";
 import { PendingOrdersPage } from "./pages/admin/PendingOrdersPage";
+import { ContactPage } from "./pages/ContactPage";
 import { ArchivedOrdersPage } from "./pages/admin/ArchivedOrdersPage";
 import { CancelledOrdersPage } from "./pages/admin/CancelledOrdersPage";
 import { ContactPage } from "./pages/ContactPage";
@@ -46,6 +47,7 @@ function App() {
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/unauthorized" element={<UnauthorizedPage />} />
+            <Route path="/contact" element={<ContactPage />} />
             <Route path="/virtualtour" element={<VirtualTourPage />} />
             <Route path="/contact" element={<ContactPage />} />
 
@@ -61,6 +63,7 @@ function App() {
               <Route path="/admin/analytics" element={<AnalyticsPage />} />
               <Route path="/admin/add-dish" element={<AddDishPage />} />
               <Route path="/admin/add-menu" element={<AddMenuPage />} />
+              <Route path="/admin/edit-menu" element={<EditMenuPage />} />
               <Route path="/admin/edit-menu/:date" element={<EditMenuPage />} />
               <Route path="/admin/user-manager" element={<ManageUsersPage />} />
               <Route path="/admin/admin-manager" element={<ManageAdminsPage />} />
