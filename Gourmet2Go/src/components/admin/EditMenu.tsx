@@ -1,10 +1,11 @@
-import { redirect, useParams } from "react-router";
+import { NavLink, useParams } from "react-router";
 import { supabase } from "../../../supabase-client";
 import { useEffect, useState } from "react";
 import * as z from "zod";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from "react-router";
 
 const fetchMenu = async (menuDate : string) => {
   const { data, error } = await supabase.from('MenuDayDishes')
@@ -60,6 +61,7 @@ export const EditMenu = () => {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [hasMenu, setHasMenu] = useState<boolean>(false);
   
   const getDayFromDate = (date: string) => {
     const [year, month, day] = date.split('-').map(Number);
@@ -83,7 +85,7 @@ export const EditMenu = () => {
       },
     });
 
-  
+  const navigate = useNavigate();
   
   const { fields, append, remove } = useFieldArray({
       control,
@@ -111,6 +113,10 @@ export const EditMenu = () => {
     (dish) => !selectedDishIds.includes(dish.dish_id)
   );
 
+  const handleAddToMenu = (dish: Dish) => {
+    append({ dish_id: dish.dish_id, stock: 1 });
+  };
+
   useEffect(() => {
     const loadMenuItems = async () => {
       if (!menuDate) return;
@@ -135,17 +141,32 @@ export const EditMenu = () => {
     loadMenuItems();
   }, [menuDate, reset]);
 
-  
-  const handleAddToMenu = (dish: Dish) => {
-    append({ dish_id: dish.dish_id, stock: 1 });
-  }
-
   const handleRemoveItem = async (fieldIndex: number) => {
     remove(fieldIndex);
   };
 
+  const checkForMenu = async (date: string) => {
+  try {
+    const { data } = await supabase
+      .from('MenuDays')
+      .select('menu_day_id')
+      .eq('date', date)
+      .single();
+    return !!data;
+  } catch {
+    return false;
+  }
+};
+
+const handleDateChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const newDate = e.target.value;
+  setMenuDate(newDate);
+  const exists = await checkForMenu(newDate);
+  setHasMenu(exists);
+  // Optionally reset form state here if needed
+};
+
   const onSubmit = async (formData: MenuFormValues) => {
-    console.log("Form data:", formData);
     const originalDishes = menuItems; 
     const updatedDishes = formData.dishes;
     try {
@@ -206,7 +227,7 @@ export const EditMenu = () => {
             {errorMsg}
           </div>
         )}
-        </div>
+      </div>
       <div className="p-6 space-y-6">
         <div>
             <label className="block font-semibold mb-1">Menu Date</label>
@@ -214,7 +235,7 @@ export const EditMenu = () => {
               type="date"
               {...register('date')}
               className="border rounded px-3 py-2"
-              onChange={(e) => setMenuDate(e.target.value)}
+              onChange={handleDateChange}
               value={menuDate}
             />
             
@@ -222,46 +243,97 @@ export const EditMenu = () => {
               <p className="text-red-600 text-sm">{errors.date.message}</p>
             )}
           </div>
-
-        <table className="bg-white shadow-md rounded-lg p-4 space-y-2">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="px-3 py-2 text-center align-middle">Dish</th>
-              <th className="px-3 py-2 text-center align-middle">Category</th>
-              <th className="px-3 py-2 text-center align-middle">Price</th>
-              <th className="px-3 py-2 text-center align-middle">Stock</th>
-              <th className="px-3 py-2 text-center align-middle">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {fields.map((field, index) => {
-              const dish = dishes.find(d => d.dish_id === field.dish_id);
-              return (
-                <tr key={field.id} className="border-b border-gray-200">
-                  <td className="px-3 py-2 text-center align-middle">{dish?.name}</td>
-                  <td className="px-3 py-2 text-center align-middle">{dish?.category}</td>
-                  <td className="px-3 py-2 text-center align-middle">{dish?.price}</td>
-                  <td className="px-3 py-2 text-center align-middle">
-                    <input
-                      type="number"
-                      {...register(`dishes.${index}.stock`, { valueAsNumber: true })}
-                      className="border rounded px-2 py-1 w-20 text-center"
-                    />
-                  </td>
-                  <td className="px-3 py-2 text-center align-middle">
+          {hasMenu ? (
+        <div className="flex gap-6  ">
+          <div className="w-1/2">
+          <label className="text-2xl block font-semibold mb-6">Current Menu: </label>
+            <table className="min-w-full border border-gray-200 shadow-md rounded-lg">
+              <thead className="bg-gray-100 dark:bg-zinc-700">
+                <tr>
+                  <th className="px-3 py-2 text-center align-middle">Dish</th>
+                  <th className="px-3 py-2 text-center align-middle">Category</th>
+                  <th className="px-3 py-2 text-center align-middle">Price</th>
+                  <th className="px-3 py-2 text-center align-middle">Stock</th>
+                  <th className="px-3 py-2 text-center align-middle">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {fields.map((field, index) => {
+                  const dish = dishes.find(d => d.dish_id === field.dish_id);
+                  return (
+                    <tr key={field.id} className="border-b border-gray-200">
+                      <td className="px-3 py-2 text-center align-middle">{dish?.name}</td>
+                      <td className="px-3 py-2 text-center align-middle">{dish?.category}</td>
+                      <td className="px-3 py-2 text-center align-middle">{dish?.price}</td>
+                      <td className="px-3 py-2 text-center align-middle">
+                        <input
+                          type="number"
+                          {...register(`dishes.${index}.stock`, { valueAsNumber: true })}
+                          className="border rounded px-2 py-1 w-20 text-center"
+                        />
+                      </td>
+                      <td className="px-3 py-2 text-center align-middle">
+                        <button
+                          className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                          type="button"
+                          onClick={() => handleRemoveItem(index)}
+                        >
+                          Remove
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          <div className="w-1/2">
+            <label className="text-2xl block font-semibold mb-6">Available Menu Items: </label>
+            <table className="min-w-full border border-gray-200 shadow-md rounded-lg">
+            <thead className="bg-gray-100 dark:bg-zinc-700">
+              <tr>
+                <th className="px-3 py-2 text-center align-middle">Dish</th>
+                <th className="px-3 py-2 text-center align-middle">Category</th>
+                <th className="px-3 py-2 text-center align-middle">Price</th>
+                <th className="px-3 py-2 text-center align-middle">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {availableDishes.map((item) => (
+                <tr className="border-b border-gray-200" key={item.dish_id}>
+                  <td className="px-3 py-2 text-center align-middle">{item.name}</td>
+                  <td className="px-3 py-2 text-center align-middle">{item.category}</td>
+                  <td className="px-3 py-2 text-center align-middle">{item.price}</td>
+                  <td className="px-3 py-2 text-center align-middle flex justify-center gap-2">
                     <button
-                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                      className="bg-[#00659B] text-white px-3 py-1 rounded hover:bg-[#005082]"
                       type="button"
-                      onClick={() => handleRemoveItem(index)}
+                      onClick={() => handleAddToMenu(item)}
                     >
-                      Remove
+                      Add to Menu
                     </button>
+                    <NavLink
+                      to={`/admin/edit-dish/${item.dish_id}`}
+                      className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
+                    >
+                      Edit Item
+                    </NavLink>
                   </td>
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
+              ))}
+            </tbody>
+          </table>
+          </div>
+        </div>
+        ) : (
+          <button
+            type="button"
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            onClick={() => {navigate('/admin/add-menu');}}
+          >
+            Create Menu
+          </button>
+        )}
       </div>
       <div>
         <pre>{JSON.stringify(errors, null, 2)}</pre>
@@ -274,7 +346,10 @@ export const EditMenu = () => {
         
       </div>
       <div>
-        <button className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 mt-4" >
+        <button type="button" 
+        className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 mt-4" 
+        onClick={() => navigate('/admin')}
+        >
           Cancel
         </button>
       </div>
