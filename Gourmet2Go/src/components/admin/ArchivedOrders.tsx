@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../../../supabase-client";
 import { Loader } from "../Loader";
+import { useNavigate } from "react-router";
 
 interface Dish {
   dish_id: number;
@@ -44,6 +45,7 @@ interface Order {
 
 export const ArchivedOrders = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [selectedMenuId, setSelectedMenuId] = useState<number | "ALL">("ALL");
   const [search, setSearch] = useState("");
 
@@ -126,8 +128,6 @@ export const ArchivedOrders = () => {
     return result;
   }, [orders, selectedMenuId, search]);
 
-
-
   if (isLoading) return <Loader fullScreen />;
 
   if (error) {
@@ -176,7 +176,8 @@ export const ArchivedOrders = () => {
             filteredOrders.map((order) => (
             <div 
                 key={order.order_id} 
-                className={`bg-white rounded-xl shadow-sm border overflow-hidden flex flex-col ${
+                onClick={() => navigate(`/admin/order/${order.order_number}`)}
+                className={`bg-white rounded-xl shadow-sm border overflow-hidden flex flex-col cursor-pointer hover:shadow-md hover:border-green-300 transition-all ${
                     order.status === 'FULFILLED' ? 'border-green-200 opacity-75' : 'border-gray-200'
                 }`}
             >
@@ -243,7 +244,10 @@ export const ArchivedOrders = () => {
                     <div className="grid grid-cols-2 gap-2">
                         {order.status === 'FULFILLED' && (
                             <button
-                                onClick={() => updateStatusMutation.mutate({ orderId: order.order_id, newStatus: 'PENDING' })}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    updateStatusMutation.mutate({ orderId: order.order_id, newStatus: 'PENDING' });
+                                }}
                                 disabled={updateStatusMutation.isPending}
                                 className="col-span-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded-md text-sm font-medium transition disabled:opacity-50"
                             >
@@ -253,7 +257,10 @@ export const ArchivedOrders = () => {
 
                         {order.status === 'FULFILLED' && (
                              <button
-                                onClick={() => updateStatusMutation.mutate({ orderId: order.order_id, newStatus: 'INACTIVE' })}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    updateStatusMutation.mutate({ orderId: order.order_id, newStatus: 'INACTIVE' });
+                                }}
                                 disabled={updateStatusMutation.isPending}
                                 className="col-span-1 bg-white border border-red-200 text-red-600 hover:bg-red-50 py-2 rounded-md text-sm font-medium transition"
                             >

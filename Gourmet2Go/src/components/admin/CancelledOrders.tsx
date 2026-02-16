@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../../../supabase-client";
 import { Loader } from "../Loader";
+import { useNavigate } from "react-router";
 
 interface Dish {
   dish_id: number;
@@ -44,6 +45,7 @@ interface Order {
 
 export const CancelledOrders = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [selectedMenuId, setSelectedMenuId] = useState<number | "ALL">("ALL");
   const [search, setSearch] = useState("");
 
@@ -126,8 +128,6 @@ export const CancelledOrders = () => {
     return result;
   }, [orders, selectedMenuId, search]);
 
-
-
   if (isLoading) return <Loader fullScreen />;
 
   if (error) {
@@ -176,8 +176,9 @@ export const CancelledOrders = () => {
             filteredOrders.map((order) => (
             <div 
                 key={order.order_id} 
-                className={`bg-white rounded-xl shadow-sm border overflow-hidden flex flex-col ${
-                    order.status === 'INACTIVE' ? 'border-green-200 opacity-75' : 'border-gray-200'
+                onClick={() => navigate(`/admin/order/${order.order_number}`)}
+                className={`bg-white rounded-xl shadow-sm border overflow-hidden flex flex-col cursor-pointer hover:shadow-md hover:border-red-300 transition-all ${
+                    order.status === 'INACTIVE' ? 'border-gray-200 opacity-75' : 'border-gray-200'
                 }`}
             >
                 <div className="p-4 bg-gray-50 border-b border-gray-100 flex justify-between items-start">
@@ -187,7 +188,7 @@ export const CancelledOrders = () => {
                             <span
                               className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
                                 order.status === "INACTIVE"
-                                ? "bg-green-100 text-green-800"
+                                ? "bg-red-100 text-red-800"
                                 : "bg-gray-200 text-gray-700"
                               }`}
                             >
@@ -243,7 +244,10 @@ export const CancelledOrders = () => {
                     <div className="grid grid-cols-2 gap-2">
                         {order.status === 'INACTIVE' && (
                             <button
-                                onClick={() => updateStatusMutation.mutate({ orderId: order.order_id, newStatus: 'PENDING' })}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    updateStatusMutation.mutate({ orderId: order.order_id, newStatus: 'PENDING' });
+                                }}
                                 disabled={updateStatusMutation.isPending}
                                 className="col-span-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded-md text-sm font-medium transition disabled:opacity-50"
                             >
@@ -253,7 +257,10 @@ export const CancelledOrders = () => {
 
                         {order.status === 'INACTIVE' && (
                              <button
-                                onClick={() => updateStatusMutation.mutate({ orderId: order.order_id, newStatus: 'FULFILLED' })}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    updateStatusMutation.mutate({ orderId: order.order_id, newStatus: 'FULFILLED' });
+                                }}
                                 disabled={updateStatusMutation.isPending}
                                 className="col-span-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md text-sm font-medium transition disabled:opacity-50"
                             >

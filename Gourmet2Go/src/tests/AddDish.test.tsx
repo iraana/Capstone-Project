@@ -1,15 +1,10 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AddDish } from '../components/admin/AddDish';
 import { supabase } from '../../supabase-client';
 
-const insertMock = vi.fn(() => ({
-  select: vi.fn(async () => ({
-    data: null,
-    error: null,
-  })),
-}));
+const insertMock = vi.fn();
 
 vi.mock('../../supabase-client', () => ({
   supabase: {
@@ -20,13 +15,18 @@ vi.mock('../../supabase-client', () => ({
 }));
 
 describe('AddDish component', () => {
-  it('form submission + success message', async () => {
-    const user = userEvent.setup();
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
+  it('form submission + success message', async () => {
+    insertMock.mockResolvedValueOnce({ error: null });
+
+    const user = userEvent.setup();
     render(<AddDish />);
 
     await user.type(
-      screen.getByPlaceholderText('Dish Name'),
+      screen.getByPlaceholderText('Enter dish name'),
       'Sata Andagi'
     );
 

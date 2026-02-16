@@ -116,18 +116,24 @@ export const Checkout = () => {
           .eq('dish_id', item.dish_id);
       });
 
-      await Promise.all(stockUpdates); // All stock updates happen in unison
-
-      clearCart(); // Cart cleared
-      navigate("/successful-order"); // User sent to SuccessfulOrderPage
-
-    } catch (err: any) {
-      console.error(err);
-      setErrorMsg(err.message || "Failed to place order. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+        await Promise.all(stockUpdates); // All stock updates happen in unison
+  
+        clearCart(); // Cart cleared
+        navigate("/successful-order"); // User sent to SuccessfulOrderPage
+      } catch (err: any) {
+        console.error(err);
+  
+        // Check for Postgres Unique Violation (code 23505)
+        // This handles the rare case where the random order_number collides
+        if (err.code === '23505') {
+          setErrorMsg("Small issue processing your order, please try again.");
+        } else {
+          setErrorMsg(err.message || "Failed to place order. Please try again.");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
 
   if (items.length === 0) return null; // Checkout won't render if cart is empty
 

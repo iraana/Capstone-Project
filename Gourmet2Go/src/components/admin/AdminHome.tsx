@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { useAuth } from "../../context/AuthContext";
-import { UserCog, BarChart3, UtensilsCrossed, FilePlus, FilePenLine, Users, ChevronRight, ClipboardClock, BookMinus, Archive } from "lucide-react";
+import { UserCog, BarChart3, UtensilsCrossed, FilePlus, FilePenLine, Users, ChevronRight, ClipboardClock, BookMinus, Archive, ScanLine } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface AdminPage {
@@ -69,6 +69,13 @@ const adminPages: AdminPage[] = [
     description: 'Manage unfulfilled orders',
     icon: ClipboardClock,
     color: 'from-indigo-500 to-blue-400'
+  },
+  {
+    id: 'scanner',
+    title: 'QR Code Scanner',
+    description: 'Scan QR code for quick pickup',
+    icon: ScanLine,
+    color: 'from-blue-600 to-indigo-500',
   },
   {
     id: 'user-manager',
