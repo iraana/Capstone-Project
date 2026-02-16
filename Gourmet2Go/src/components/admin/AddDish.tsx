@@ -10,7 +10,7 @@ const dishSchema = z.object({
     .number("Price must be a number")
     .positive("Price must be positive")
     .refine((val) => Number((val * 100).toFixed(0)) === val * 100, "Max 2 decimal places"),
-  category: z.enum(['Other', 'Soups', 'Salads', 'Sandwiches', 'Entrees', 'Desserts', 'Bowl']),
+  category: z.enum(['Other', 'Soups', 'Salads', 'Sandwiches', 'Entrees', 'Desserts', 'Bowls']),
 });
 
 type DishFormData = z.infer<typeof dishSchema>;

@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../../../supabase-client";
 import { Loader } from "../Loader";
+import { useNavigate } from "react-router";
 
 interface Dish {
   dish_id: number;
@@ -44,11 +45,12 @@ interface Order {
 
 export const PendingOrders = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [selectedMenuId, setSelectedMenuId] = useState<number | "ALL">("ALL");
   const [search, setSearch] = useState("");
 
   const { data: orders, isLoading, error } = useQuery({
-    queryKey: ["admin_orders"],
+    queryKey: ["pending_orders"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("Orders")
@@ -69,24 +71,26 @@ export const PendingOrders = () => {
       if (error) throw error;
       return data as unknown as Order[];
     },
+    refetchInterval: 1000
   });
 
   const updateStatusMutation = useMutation({
     mutationFn: async ({ orderId, newStatus }: { orderId: number; newStatus: string }) => {
       const { error } = await supabase
         .from("Orders")
-        .update({ status: newStatus })
+        .update({ status: newStatus }) // Updates status
         .eq("order_id", orderId);
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin_orders"] });
+      queryClient.invalidateQueries({ queryKey: ["pending_orders"] }); // Re-fetch after
     },
   });
 
   const availableMenus = useMemo(() => {
-    if (!orders) return [];
+    if (!orders) return []; // If no orders
     const map = new Map();
+    // Extracts all unique menu days
     orders.forEach((o) => {
       if (o.MenuDays && !map.has(o.MenuDays.menu_day_id)) {
         map.set(o.MenuDays.menu_day_id, o.MenuDays);
@@ -96,16 +100,18 @@ export const PendingOrders = () => {
   }, [orders]);
 
   const filteredOrders = useMemo(() => {
-    if (!orders) return [];
+    if (!orders) return []; // If no orders 
     
     let result = orders;
     
+    // Filter by menu
     if (selectedMenuId !== "ALL") {
       result = result.filter(
         (o) => o.MenuDays?.menu_day_id === selectedMenuId
       );
     }
     
+    // If the text matches the order_number, first_name, last_name, email
     if (search.trim() !== "") {
       result = result.filter((o) =>
         o.order_number
@@ -125,8 +131,6 @@ export const PendingOrders = () => {
     
     return result;
   }, [orders, selectedMenuId, search]);
-
-
 
   if (isLoading) return <Loader fullScreen />;
 

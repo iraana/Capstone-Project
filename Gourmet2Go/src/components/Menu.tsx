@@ -10,7 +10,7 @@ import { Loader } from "./Loader";
 export interface Dish {
   dish_id: number;
   name: string;
-  category: 'Soups' | 'Salads' | 'Sandwiches' | 'Other'; 
+  category: 'Other' | 'Soups' | 'Salads' | 'Sandwiches' | 'Entrees' | 'Desserts' | 'Bowls'; 
   price: number;
 }
 

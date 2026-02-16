@@ -23,6 +23,12 @@ import { CheckoutPage } from "./pages/CheckoutPage";
 import { SuccessfulOrderPage } from "./pages/SuccessfulOrderPage";
 import { PendingOrdersPage } from "./pages/admin/PendingOrdersPage";
 import { ContactPage } from "./pages/ContactPage";
+import { ArchivedOrdersPage } from "./pages/admin/ArchivedOrdersPage";
+import { CancelledOrdersPage } from "./pages/admin/CancelledOrdersPage";
+import { ContactPage } from "./pages/ContactPage";
+import { UserOrdersPage } from "./pages/UserOrdersPage";
+import { OrderDetailsPage } from "./pages/admin/OrderDetailsPage";
+import { AdminScannerPage } from "./pages/admin/AdminScannerPage";
 
 function App() {
   return (
@@ -43,10 +49,12 @@ function App() {
             <Route path="/unauthorized" element={<UnauthorizedPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/virtualtour" element={<VirtualTourPage />} />
+            <Route path="/contact" element={<ContactPage />} />
 
             <Route element={<ProtectedRoute allowedRoles={["USER", "ADMIN"]} />}>
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/successful-order" element={<SuccessfulOrderPage />} />
+              <Route path="/my-orders" element={<UserOrdersPage />} />
             </Route>
 
             {/* Admin only routes */}
@@ -60,6 +68,10 @@ function App() {
               <Route path="/admin/user-manager" element={<ManageUsersPage />} />
               <Route path="/admin/admin-manager" element={<ManageAdminsPage />} />
               <Route path="/admin/pending-orders" element={<PendingOrdersPage />} />
+              <Route path="/admin/archived-orders" element={<ArchivedOrdersPage />} />
+              <Route path="/admin/cancelled-orders" element={<CancelledOrdersPage />} />
+              <Route path="/admin/order/:order_number" element={<OrderDetailsPage />} />
+              <Route path="/admin/scanner" element={<AdminScannerPage />} />
             </Route>
 
           </Routes>

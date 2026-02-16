@@ -25,8 +25,6 @@ important for the client and users.
 
 
 - Full CRUD on dishes and menus
-- UserViewOrders
-- AdminViewOrders
 - Reviews
 - ViewReviews
 - UserSettings
@@ -60,6 +58,8 @@ important for the client and users.
 us to optimize some features to work offline.
 - Lucide React to provide nice inline SVGs that are more professional then emojis
 - Framer Motion to add animation to our UI
+- react-qr-code to generate the QR for orders
+- yudiel/react-qr-scanner for the QR code scanner component
 
 
 ## Conventions 

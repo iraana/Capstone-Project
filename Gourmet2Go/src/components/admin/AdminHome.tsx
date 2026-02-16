@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { useAuth } from "../../context/AuthContext";
-import { UserCog, BarChart3, UtensilsCrossed, FilePlus, FilePenLine, Users, ChevronRight, ClipboardClock } from "lucide-react";
+import { UserCog, BarChart3, UtensilsCrossed, FilePlus, FilePenLine, Users, ChevronRight, ClipboardClock, BookMinus, Archive, ScanLine } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface AdminPage {
@@ -15,6 +15,13 @@ interface AdminPage {
 
 const adminPages: AdminPage[] = [
   {
+    id: 'add-dish',
+    title: 'Add Dish',
+    description: 'Add a new dish for the menu',
+    icon: UtensilsCrossed,
+    color: 'from-orange-500 to-amber-400',
+  },
+  {
     id: 'admin-manager',
     title: 'Admin Manager',
     description: 'Manage admin roles & permissions',
@@ -24,16 +31,23 @@ const adminPages: AdminPage[] = [
   {
     id: 'analytics',
     title: 'Analytics',
-    description: 'Top buyer, top seller, and more',
+    description: 'Top buyer, top seller, & more',
     icon: BarChart3,
     color: 'from-emerald-500 to-green-400', 
   },
   {
-    id: 'add-dish',
-    title: 'Add Dish',
-    description: 'Add a new dish for the menu',
-    icon: UtensilsCrossed,
-    color: 'from-orange-500 to-amber-400',
+    id: 'archived-orders',
+    title: 'Archived Orders',
+    description: 'View and manage all fulfilled orders',
+    icon: Archive,
+    color: 'from-slate-500 to-gray-400'
+  },
+  {
+    id: 'cancelled-orders',
+    title: 'Cancelled Orders',
+    description: 'Manage all inactive orders',
+    icon: BookMinus,
+    color: 'from-red-500 to-rose-400'
   },
   {
     id: 'add-menu',
@@ -55,6 +69,13 @@ const adminPages: AdminPage[] = [
     description: 'Manage unfulfilled orders',
     icon: ClipboardClock,
     color: 'from-indigo-500 to-blue-400'
+  },
+  {
+    id: 'scanner',
+    title: 'QR Code Scanner',
+    description: 'Scan QR code for quick pickup',
+    icon: ScanLine,
+    color: 'from-blue-600 to-indigo-500',
   },
   {
     id: 'user-manager',

@@ -15,9 +15,9 @@ interface NavLinkType {
 }
 
 const getNavLinks = (): NavLinkType[] => [
-  { name: "About", path: "/about" },
   { name: "Administration", path: "/admin", roles: ["ADMIN"] },
   { name: "Menu", path: "/" },
+  { name: "My Orders", path: "/my-orders", roles: ["USER", "ADMIN"]},
   { name: "Virtual Tour", path: "/virtualtour" }
 ];
 
