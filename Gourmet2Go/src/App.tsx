@@ -22,7 +22,6 @@ import { CartSidebar } from "./components/CartSidebar";
 import { CheckoutPage } from "./pages/CheckoutPage";
 import { SuccessfulOrderPage } from "./pages/SuccessfulOrderPage";
 import { PendingOrdersPage } from "./pages/admin/PendingOrdersPage";
-import { ContactPage } from "./pages/ContactPage";
 import { ArchivedOrdersPage } from "./pages/admin/ArchivedOrdersPage";
 import { CancelledOrdersPage } from "./pages/admin/CancelledOrdersPage";
 import { ContactPage } from "./pages/ContactPage";
