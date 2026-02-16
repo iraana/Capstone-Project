@@ -1,11 +1,8 @@
-import { useParams } from "react-router";
 import { EditMenu } from "../../components/admin/EditMenu";
-import { SelectMenuToEdit } from "../../components/admin/SelectMenuToEdit";
 import { NavLink } from "react-router";
 import { ArrowLeft } from "lucide-react";
 
 export const EditMenuPage = () => {
-  const { date } = useParams<{ date: string }>();
 
   return (
     <div className="bg-white dark:bg-zinc-900 px-4 sm:px-6 lg:px-8 py-6 transition-colors">
@@ -19,22 +16,9 @@ export const EditMenuPage = () => {
           Back to Dashboard
         </NavLink>
 
-        {!date ? (
-          <>
-            <div className="space-y-1">
-              <h1 className="text-3xl font-bold text-zinc-900 dark:text-white">
-                Edit Existing Menu
-              </h1>
-              <p className="text-zinc-600 dark:text-zinc-400">
-                Select a menu to manage dishes and availability.
-              </p>
-            </div>
-
-            <SelectMenuToEdit />
-          </>
-        ) : (
+        <div className="mt-6">
           <EditMenu />
-        )}
+        </div>
 
       </div>
     </div>

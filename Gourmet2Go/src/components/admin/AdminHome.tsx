@@ -43,7 +43,7 @@ const adminPages: AdminPage[] = [
     color: 'from-purple-500 to-pink-400',
   },
   {
-    id: `edit-menu`,
+    id: `edit-menu/${new Date().toISOString().split("T")[0]}`,
     title: 'Edit Menu',
     description: 'Make changes to a menu',
     icon: FilePenLine,

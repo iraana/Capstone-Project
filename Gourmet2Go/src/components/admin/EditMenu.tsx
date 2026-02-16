@@ -88,12 +88,12 @@ export const EditMenu = () => {
           </p>
         </div>
 
-        <button
+        {/* <button
           onClick={() => navigate("/admin/edit-menu")}
           className="bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-white px-4 py-2 rounded-lg hover:bg-zinc-300 dark:hover:bg-zinc-600 transition"
         >
           ← Back to Menus
-        </button>
+        </button> */}
       </div>
 
       {/* Card */}
