@@ -203,6 +203,7 @@ export const PendingOrders = () => {
           filteredOrders.map((order) => (
             <div
               key={order.order_id}
+              onClick={() => navigate(`/admin/order/${order.order_number}`)}
               className={`rounded-xl shadow-sm border overflow-hidden flex flex-col transition
               bg-white dark:bg-zinc-800
               ${
