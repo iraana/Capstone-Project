@@ -16,7 +16,7 @@ export const AddDishPage = () => {
           Back to Dashboard
         </NavLink>
 
-        <div>
+        <div className="mt-15">
           <AddDish />
         </div>
 
