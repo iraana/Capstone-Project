@@ -67,11 +67,11 @@ export const SelectMenuToEdit = () => {
   }
 
   return (
-    <div className="grid gap-6 sm:grid-cols-2">
+    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {menus.map((menu) => (
         <div
           key={menu.menu_day_id}
-          className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl p-6 shadow-sm hover:shadow-md transition"
+          className="cursor-pointer bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl p-6 shadow-sm hover:shadow-lg hover:-translate-y-1 transition"
         >
           <div className="flex justify-between items-center">
             <div className="space-y-1">
