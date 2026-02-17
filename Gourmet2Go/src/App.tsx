@@ -28,6 +28,7 @@ import { ContactPage } from "./pages/ContactPage";
 import { UserOrdersPage } from "./pages/UserOrdersPage";
 import { OrderDetailsPage } from "./pages/admin/OrderDetailsPage";
 import { AdminScannerPage } from "./pages/admin/AdminScannerPage";
+import { SelectMenuToEditPage } from "./pages/admin/SelectMenuToEditPage";
 
 function App() {
   return (
