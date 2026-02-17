@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { useAuth } from "../../context/AuthContext";
-import { UserCog, BarChart3, UtensilsCrossed, FilePlus, FilePenLine, Users, ChevronRight, ClipboardClock, BookMinus, Archive, ScanLine } from "lucide-react";
+import { UserCog, BarChart3, UtensilsCrossed, FilePlus, FilePenLine, Users, ChevronRight, ClipboardClock, BookMinus, Archive, ScanLine, List } from "lucide-react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "../../../supabase-client";
@@ -62,6 +62,13 @@ const adminPages: AdminPage[] = [
     description: 'Make changes to a menu',
     icon: FilePenLine,
     color: 'from-rose-500 to-red-400',
+  },
+  {
+    id: 'list-dishes',
+    title: 'List Dishes',
+    description: 'View all the currently available dishes',
+    icon: List,
+    color: 'from-emerald-500 to-lime-400'
   },
   {
     id: 'pending-orders',

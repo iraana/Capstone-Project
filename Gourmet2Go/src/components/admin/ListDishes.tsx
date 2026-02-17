@@ -49,7 +49,4 @@ export const ListDishes = () => {
           </tbody>
         </table>
     );
-
-    
-
 }

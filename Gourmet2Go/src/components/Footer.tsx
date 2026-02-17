@@ -15,7 +15,7 @@ const footerLinks: FooterLink[] = [
 export const Footer = () => {
   return (
     <footer className="bg-primary text-white mt-8 shadow-sm border-t border-blue-700">
-      <div className="w-full max-w-screen-xl mx-auto p-4 md:py-8">
+      <div className="w-full max-w-7xl mx-auto p-4 md:py-8">
         <div className="sm:flex sm:items-center sm:justify-between">
           <NavLink to="/" className="flex items-center mb-4 sm:mb-0 space-x-3">
             <span className="text-2xl font-semibold whitespace-nowrap">

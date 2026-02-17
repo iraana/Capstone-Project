@@ -43,7 +43,7 @@ export const EditDish = () => {
         queryFn: async () => {
         const { data, error } = await supabase.from('Dishes')
         .select('*')
-        .eq('dish_id', dishId)
+        .eq('dish_id', Number(dishId))
         .single();
         if (error) throw error;
         return data as Dish;
@@ -68,7 +68,7 @@ export const EditDish = () => {
             category: data.category,
             price: data.price,
         })
-        .eq('dish_id', dishId);
+        .eq('dish_id', Number(dishId));
         if (error) {
             setErrorMsg(error.message || 'Failed to update dish');
             setSuccessMsg(null);

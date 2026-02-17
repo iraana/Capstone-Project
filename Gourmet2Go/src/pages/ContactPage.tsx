@@ -35,7 +35,7 @@ export const ContactPage = () => {
 
         <motion.h1
           variants={itemVariants}
-          className="text-4xl sm:text-5xl font-bold text-center bg-gradient-to-r from-blue-600 to-green-500 bg-clip-text text-transparent"
+          className="text-4xl sm:text-5xl font-bold text-center bg-linear-to-r from-blue-600 to-green-500 bg-clip-text text-transparent"
         >
           Contact Us
         </motion.h1>
@@ -149,7 +149,7 @@ export const ContactPage = () => {
 
             <button
               type="submit"
-              className="w-full rounded-lg bg-gradient-to-r from-blue-600 to-green-500 px-4 py-2 text-white font-semibold shadow-lg hover:scale-[1.02] transition-transform"
+              className="w-full rounded-lg bg-linear-to-r from-blue-600 to-green-500 px-4 py-2 text-white font-semibold shadow-lg hover:scale-[1.02] transition-transform"
             >
               Send Message
             </button>

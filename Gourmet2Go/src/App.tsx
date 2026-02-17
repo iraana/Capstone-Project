@@ -28,7 +28,8 @@ import { ContactPage } from "./pages/ContactPage";
 import { UserOrdersPage } from "./pages/UserOrdersPage";
 import { OrderDetailsPage } from "./pages/admin/OrderDetailsPage";
 import { AdminScannerPage } from "./pages/admin/AdminScannerPage";
-import { SelectMenuToEditPage } from "./pages/admin/SelectMenuToEditPage";
+import { EditDishPage } from "./pages/admin/EditDishPage";
+import { ListDishesPage } from "./pages/admin/ListDishesPage";
 
 function App() {
   return (
@@ -64,7 +65,6 @@ function App() {
               <Route path="/admin/add-dish" element={<AddDishPage />} />
               <Route path="/admin/add-menu" element={<AddMenuPage />} />
               <Route path="/admin/edit-menu" element={<EditMenuPage />} />
-              <Route path="/admin/edit-menu/:date" element={<EditMenuPage />} />
               <Route path="/admin/user-manager" element={<ManageUsersPage />} />
               <Route path="/admin/admin-manager" element={<ManageAdminsPage />} />
               <Route path="/admin/pending-orders" element={<PendingOrdersPage />} />
@@ -72,6 +72,8 @@ function App() {
               <Route path="/admin/cancelled-orders" element={<CancelledOrdersPage />} />
               <Route path="/admin/order/:order_number" element={<OrderDetailsPage />} />
               <Route path="/admin/scanner" element={<AdminScannerPage />} />
+              <Route path="/admin/edit-dish/:dishId" element={<EditDishPage />} />
+              <Route path="/admin/list-dishes" element={<ListDishesPage />} />
             </Route>
 
           </Routes>
