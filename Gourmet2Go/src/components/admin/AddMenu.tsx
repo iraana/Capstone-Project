@@ -5,14 +5,14 @@ import { supabase } from '../../../supabase-client';
 import * as z from 'zod';
 import { useQuery } from '@tanstack/react-query';
 import { NavLink } from 'react-router';
-
+ 
 type Dish = {
   dish_id: number;
   name: string;
   price: number;
   category: string;
 };
-
+ 
 const menuSchema = z.object({
   date: z.string().refine(
     (val) => !isNaN(Date.parse(val)),
@@ -32,20 +32,20 @@ const menuSchema = z.object({
       'Each dish can only be added once'
     ),
 });
-
+ 
 type MenuFormValues = z.infer<typeof menuSchema>;
-
+ 
 const getDayFromDate = (date: string) => {
-  return new Date(date).toLocaleDateString('en-US', {
-    weekday: 'long',
-  }) as MenuFormValues['day'];
+  const [year, month, day] = date.split('-').map(Number);
+  const newDate = new Date(year, month - 1, day);
+  return newDate.toLocaleDateString('en-US', { weekday: 'long' });
 };
-
+ 
 export const AddMenu = () => {
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
+ 
   const {
     control,
     handleSubmit,
@@ -60,12 +60,12 @@ export const AddMenu = () => {
       dishes: [],
     },
   });
-
+ 
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'dishes',
   });
-
+ 
   const { data: dishes = [] } = useQuery({
     queryKey: ['dishes'],
     queryFn: async () => {
@@ -73,17 +73,17 @@ export const AddMenu = () => {
         .from('Dishes')
         .select('dish_id, name, price, category')
         .order('name');
-
+ 
       if (error) throw error;
-
+ 
       return data as Dish[];
     },
     refetchOnWindowFocus: true,
   });
-
+ 
   const onSubmit = async (data: MenuFormValues) => {
     setLoading(true);
-    
+   
     try {
       const day = getDayFromDate(data.date);
       const { data: menuData, error: menuError } = await supabase
@@ -94,21 +94,21 @@ export const AddMenu = () => {
         })
         .select('menu_day_id')
         .single();
-
+ 
       if (menuError) throw menuError;
-
+ 
       const menuDayDishes = data.dishes.map((d) => ({
         menu_id: menuData.menu_day_id,
         dish_id: d.dish_id,
         stock: d.stock,
       }));
-
+ 
       const { error: dishesError } = await supabase
         .from('MenuDayDishes')
         .insert(menuDayDishes);
-
+ 
       if (dishesError) throw dishesError;
-
+ 
       setSuccessMsg('Menu saved successfully!');
       reset();
     } catch (err: any) {
@@ -117,14 +117,14 @@ export const AddMenu = () => {
       setLoading(false);
     }
   };
-
-
+ 
+ 
   const selectedDishIds = fields.map((_, i) => watch(`dishes.${i}.dish_id`));
-
+ 
   const availableDishes = dishes.filter(
     (dish) => !selectedDishIds.includes(dish.dish_id)
   );
-
+ 
   const selectedDishes = fields
     .map((_, index) => {
       const dishId = watch(`dishes.${index}.dish_id`);
@@ -133,34 +133,34 @@ export const AddMenu = () => {
       return dish ? { ...dish, stock, fieldIndex: index } : null;
     })
     .filter((d) => d !== null);
-
+ 
   const handleAddToMenu = (dish: Dish) => {
     append({ dish_id: dish.dish_id, stock: 1 });
   };
-
+ 
   const handleRemoveFromMenu = (fieldIndex: number) => {
     remove(fieldIndex);
   };
-
+ 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="p-6 space-y-6">
         <h1 className="text-2xl font-bold">
           Add Menu for Selected Date
         </h1>
-
+ 
         {successMsg && (
           <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
             {successMsg}
           </div>
         )}
-
+ 
         {errorMsg && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
             {errorMsg}
           </div>
         )}
-
+ 
         <div>
           <label className="block font-semibold mb-1">Menu Date</label>
           <input
@@ -168,14 +168,14 @@ export const AddMenu = () => {
             {...register('date')}
             className="border rounded px-3 py-2"
           />
-          
+         
           {errors.date && (
             <p className="text-red-600 text-sm">{errors.date.message}</p>
           )}
         </div>
-
-
-
+ 
+ 
+ 
         <div>
           <h2 className="font-semibold text-lg mb-2">Current Menu Preview</h2>
           <table className="min-w-full border border-gray-200 shadow-md rounded-lg">
@@ -226,9 +226,9 @@ export const AddMenu = () => {
             <div className="text-red-600 text-sm mt-2">{errors.dishes.message}</div>
           )}
         </div>
-
+ 
         <h2 className="font-semibold text-lg mt-6 mb-2">Available Menu Items</h2>
-
+ 
         <table className="min-w-full border border-gray-200 shadow-md rounded-lg">
           <thead className="bg-gray-100 dark:bg-zinc-700">
             <tr>
@@ -253,7 +253,7 @@ export const AddMenu = () => {
                     Add to Menu
                   </button>
                   <NavLink
-                    to={`/menu/item/edit/${item.dish_id}`}
+                    to={`/admin/edit-dish/${item.dish_id}`}
                     className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
                   >
                     Edit Item
@@ -263,7 +263,7 @@ export const AddMenu = () => {
             ))}
           </tbody>
         </table>
-
+ 
         <div className="flex gap-4 mt-4">
           <button
             type="submit"

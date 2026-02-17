@@ -86,64 +86,76 @@ export const ManageUsers = () => {
 
   return (
     <div className="mt-10 max-w-3xl mx-auto space-y-4">
+
+      {/* Search input */}
       <input
         type="text"
         placeholder="Search users by name or email..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="w-full mb-8 rounded-lg border border-blue-200 px-4 py-2 text-sm focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+        className="w-full mb-6 rounded-lg border border-blue-200 bg-white dark:bg-zinc-800 dark:border-zinc-700 px-4 py-2 text-sm text-zinc-900 dark:text-zinc-200 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
       />
 
+      {/* No results */}
       {filteredUsers?.length === 0 && (
-        <p className="text-center text-sm text-gray-500">
+        <p className="text-center text-sm text-gray-500 dark:text-zinc-400">
           No users found
         </p>
       )}
 
+      {/* Users list */}
       {filteredUsers?.map((user) => (
         <div
           key={user.id}
-          className="flex items-center justify-between rounded-lg border border-blue-100 bg-white p-4 shadow-sm"
+          className="flex flex-col sm:flex-row sm:items-center justify-between rounded-lg border border-blue-100 dark:border-zinc-700 bg-white dark:bg-zinc-800 p-4 shadow-sm hover:shadow-md transition"
         >
-          <div>
-            <p className="font-medium text-blue-900">
+          {/* User info */}
+          <div className="mb-2 sm:mb-0">
+            <p className="font-medium text-blue-900 dark:text-blue-400">
               {user.first_name} {user.last_name}
             </p>
-            <p className="text-sm text-gray-500">{user.email}</p>
+            <p className="text-sm text-gray-500 dark:text-zinc-400">{user.email}</p>
           </div>
 
-          <button
-            onClick={() =>
-              toggleBan.mutate({
-                userId: user.id,
-                isBanned: user.is_banned,
-              })
-            }
-            className={`rounded-md px-3 py-1 text-xs font-semibold transition
-              ${
-                user.is_banned
-                  ? "bg-green-100 text-green-700 hover:bg-green-200"
-                  : "bg-red-100 text-red-700 hover:bg-red-200"
-              }
-            `}
-          >
-            {user.is_banned ? "Unban" : "Ban"}
-          </button>
+          {/* Actions */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2">
 
-          <select
-            value={user.role}
-            onChange={(e) =>
-              changeRole.mutate({
-                userId: user.id,
-                role: e.target.value as User["role"],
-              })
-            }
-            className="rounded-md border border-blue-200 bg-white px-2 py-1 text-xs font-semibold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-100"
-          >
-            <option value="USER">User</option>
-            <option value="ADMIN">Admin</option>
-            <option value="NO_ACCESS">No Access</option>
-          </select>
+            {/* Ban/Unban */}
+            <button
+              onClick={() =>
+                toggleBan.mutate({
+                  userId: user.id,
+                  isBanned: user.is_banned,
+                })
+              }
+              className={`rounded-md px-3 py-1 text-xs font-semibold transition
+                ${
+                  user.is_banned
+                    ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800"
+                    : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800"
+                }
+              `}
+            >
+              {user.is_banned ? "Unban" : "Ban"}
+            </button>
+
+            {/* Role select */}
+            <select
+              value={user.role}
+              onChange={(e) =>
+                changeRole.mutate({
+                  userId: user.id,
+                  role: e.target.value as User["role"],
+                })
+              }
+              className="rounded-md border border-blue-200 dark:border-zinc-600 bg-white dark:bg-zinc-900 px-2 py-1 text-xs font-semibold text-blue-900 dark:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+            >
+              <option value="USER">User</option>
+              <option value="ADMIN">Admin</option>
+              <option value="NO_ACCESS">No Access</option>
+            </select>
+
+          </div>
         </div>
       ))}
     </div>
