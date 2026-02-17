@@ -36,9 +36,9 @@ const menuSchema = z.object({
 type MenuFormValues = z.infer<typeof menuSchema>;
 
 const getDayFromDate = (date: string) => {
-  return new Date(date).toLocaleDateString('en-US', {
-    weekday: 'long',
-  }) as MenuFormValues['day'];
+  const [year, month, day] = date.split('-').map(Number);
+  const newDate = new Date(year, month - 1, day);
+  return newDate.toLocaleDateString('en-US', { weekday: 'long' });
 };
 
 export const AddMenu = () => {
@@ -144,8 +144,8 @@ export const AddMenu = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="space-y-10">
-        {/* <h1 className="text-2xl font-bold">
+      <div className="p-6 space-y-6">
+        <h1 className="text-2xl font-bold">
           Add Menu for Selected Date
         </h1> */}
 
@@ -178,62 +178,8 @@ export const AddMenu = () => {
 
         <div>
           <h2 className="font-semibold text-lg mb-2">Current Menu Preview</h2>
-          <div className="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700 shadow-sm">
-            <table className="min-w-full text-sm">
-              <thead className="bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-200">
-                <tr>
-                  <th></th>
-                  <th className="px-3 py-2 text-center align-middle">Dish</th>
-                  <th className="px-3 py-2 text-center align-middle">Category</th>
-                  <th className="px-3 py-2 text-center align-middle">Price</th>
-                  <th className="px-3 py-2 text-center align-middle">Stock</th>
-                </tr>
-              </thead>
-              <tbody>
-                {selectedDishes.map((item) => (
-                  <tr className="border-b border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition" key={item.fieldIndex}>
-                    <td className="px-3 py-2 text-center align-middle flex justify-center">
-                      <button
-                        type="button"
-                        className="px-3 py-1 rounded hover:bg-gray-200"
-                        onClick={() => handleRemoveFromMenu(item.fieldIndex)}
-                      >
-                        ❌
-                      </button>
-                    </td>
-                    <td className="px-3 py-2 text-center align-middle">{item.name}</td>
-                    <td className="px-3 py-2 text-center align-middle">{item.category}</td>
-                    <td className="px-3 py-2 text-center align-middle">{item.price}</td>
-                    <td className="px-3 py-2 text-center align-middle">
-                      <input
-                        type="number"
-                        min={1}
-                        {...register(`dishes.${item.fieldIndex}.stock`, {
-                          valueAsNumber: true,
-                        })}
-                        className="w-16 px-2 py-1 text-sm border rounded text-center"
-                      />
-                      {errors.dishes?.[item.fieldIndex]?.stock && (
-                        <p className="text-red-600 text-xs mt-1">
-                          {errors.dishes[item.fieldIndex]?.stock?.message}
-                        </p>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          {errors.dishes?.message && (
-            <div className="text-red-600 text-sm mt-2">{errors.dishes.message}</div>
-          )}
-        </div>
-
-        <h2 className="font-semibold text-lg mt-6 mb-2">Available Menu Items</h2>
-
-        <div className="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700 shadow-sm">
-          <table className="min-w-full text-sm">
-            <thead className="bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-200">
+          <table className="min-w-full border border-gray-200 shadow-md rounded-lg">
+            <thead className="bg-gray-100 dark:bg-zinc-700">
               <tr>
                 <th className="px-3 py-2 text-center align-middle">Dish</th>
                 <th className="px-3 py-2 text-center align-middle">Category</th>
@@ -268,6 +214,43 @@ export const AddMenu = () => {
             </tbody>
           </table>
         </div>
+
+        <h2 className="font-semibold text-lg mt-6 mb-2">Available Menu Items</h2>
+
+        <table className="min-w-full border border-gray-200 shadow-md rounded-lg">
+          <thead className="bg-gray-100 dark:bg-zinc-700">
+            <tr>
+              <th className="px-3 py-2 text-center align-middle">Dish</th>
+              <th className="px-3 py-2 text-center align-middle">Category</th>
+              <th className="px-3 py-2 text-center align-middle">Price</th>
+              <th className="px-3 py-2 text-center align-middle">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {availableDishes.map((item) => (
+              <tr className="border-b border-gray-200" key={item.dish_id}>
+                <td className="px-3 py-2 text-center align-middle">{item.name}</td>
+                <td className="px-3 py-2 text-center align-middle">{item.category}</td>
+                <td className="px-3 py-2 text-center align-middle">{item.price}</td>
+                <td className="px-3 py-2 text-center align-middle flex justify-center gap-2">
+                  <button
+                    className="bg-[#00659B] text-white px-3 py-1 rounded hover:bg-[#005082]"
+                    type="button"
+                    onClick={() => handleAddToMenu(item)}
+                  >
+                    Add to Menu
+                  </button>
+                  <NavLink
+                    to={`/menu/item/edit/${item.dish_id}`}
+                    className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
+                  >
+                    Edit Item
+                  </NavLink>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
 
         <div className="flex gap-4 mt-4">
           <button
