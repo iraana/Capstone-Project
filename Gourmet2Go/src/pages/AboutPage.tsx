@@ -1,251 +1,133 @@
 export const AboutPage = () => {
-  
-  const brandBlue = "#0b6fa4";   
-  const pageBg = "#f6f8fb";
-
-  const fontFamily =
-    'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial';
-
-  const textDark = "#111827";
-  const textBody = "#374151";
-  const textMuted = "#6b7280";
-
-  const container = { maxWidth: "1200px", margin: "0 auto" };
-
-  const card = {
-    backgroundColor: "white",
-    borderRadius: "12px",
-    padding: "28px",
-    boxShadow: "0 10px 28px rgba(16,24,40,0.08)",
-    border: "1px solid rgba(17,24,39,0.06)",
-  };
-
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: pageBg, fontFamily }}>
-
+    <div className="min-h-screen bg-gray-50 dark:bg-zinc-900">
       
-     
-
-      
-      
-<div
-  style={{
-    position: "relative",
-    backgroundColor: brandBlue,
-    padding: "80px 20px",
-    textAlign: "center",
-    color: "white",
-    overflow: "hidden",
-  }}
->
-  
-  <div
-    style={{
-      position: "absolute",
-      inset: 0,
-      backgroundImage:
-        "url(https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=1600)",
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-      opacity: 0.35, 
-      transform: "scale(1.02)",
-    }}
-  />
-
-  
-  <div
-    style={{
-      position: "absolute",
-      inset: 0,
-      backgroundColor: brandBlue,
-      opacity: 0.45, 
-    }}
-  />
-
-  
-  <div
-    style={{
-      position: "absolute",
-      inset: 0,
-      background:
-        "linear-gradient(180deg, rgba(0,0,0,0.20) 0%, rgba(0,0,0,0.05) 60%, rgba(0,0,0,0.00) 100%)",
-      opacity: 0.55,
-    }}
-  />
-
-  
-  <div style={{ position: "relative", maxWidth: "900px", margin: "0 auto" }}>
-    <h1
-      style={{
-        fontSize: "56px",
-        fontWeight: 900,
-        marginBottom: "12px",
-        letterSpacing: "-0.03em",
-      }}
-    >
-      Gourmet 2 Go
-    </h1>
-    <p style={{ fontSize: "20px", opacity: 0.95 }}>
-      Fresh meals prepared by Sault College culinary students
-    </p>
-  </div>
-</div>
-
-
-      
-      <div style={{ ...container, padding: "60px 30px" }}>
+      <div className="relative bg-primary text-white py-20">
         <div
+          className="absolute inset-0 bg-cover bg-center opacity-20"
           style={{
-            display: "grid",
-            gridTemplateColumns: "1.1fr 0.9fr",
-            gap: "48px",
+            backgroundImage: 'url(https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=1200)',
           }}
-        >
-         
-          <div>
-            <h2
-              style={{
-                fontSize: "34px",
-                fontWeight: 800,
-                marginBottom: "18px",
-                color: textDark,
-              }}
-            >
-              What Makes It Special
-            </h2>
+        />
+        
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-5xl font-display font-bold mb-4">
+            Gourmet2Go
+          </h1>
+          <p className="text-xl text-blue-100 max-w-2xl mx-auto">
+            Fresh meals prepared by Sault College culinary students
+          </p>
+        </div>
+      </div>
 
-            <div style={{ color: textBody, lineHeight: "1.85", fontSize: "16.5px" }}>
-              <p style={{ marginBottom: "16px" }}>
-                Gourmet2Go offers delicious, freshly prepared meals made by 
-                Sault College culinary students. It’s your chance to enjoy high-quality,
-                chef-style dishes right here on campus!
-              </p>
-
-              <p style={{ marginBottom: "16px" }}>
-                Every week, our culinary team creates exciting new menus featuring soups,
-                entrées, and more. Limited quantities are prepared fresh each service day,
-                so ordering early helps ensure you don’t miss out.
-              </p>
-
-              <p>
-                Pre-ordering through our app is quick and convenient—browse the weekly
-                menu, select your favorites, and pick them up during scheduled hours.
-              </p>
+      
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid md:grid-cols-2 gap-12">
+          
+          
+          <div className="space-y-8">
+            <div>
+              <h2 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-4">
+                What Makes It Special
+              </h2>
+              <div className="prose prose-lg text-gray-700 dark:text-gray-300 leading-relaxed space-y-4">
+                <p>
+                  Gourmet2Go offers delicious, freshly prepared meals made by Sault
+                  College culinary students. It's your chance to enjoy high-quality, 
+                  chef-style dishes right here on campus!
+                </p>
+                <p>
+                  Every week, our culinary team creates exciting new menus featuring 
+                  soups, entrées, and more. Limited quantities are prepared fresh each 
+                  service day, so ordering early ensures you don't miss out.
+                </p>
+                <p>
+                  Pre-ordering through our app is quick and convenient—browse the weekly 
+                  menu, select your favorites, and pick them up during scheduled hours. 
+                  No waiting in long lines!
+                </p>
+              </div>
             </div>
 
-            <div
-              style={{
-                marginTop: "36px",
-                backgroundColor: "#eafaf2",
-                borderLeft: "6px solid #22c55e",
-                padding: "26px",
-                borderRadius: "12px",
-              }}
-            >
-              <h3 style={{ fontSize: "22px", fontWeight: 800, marginBottom: "18px" }}>
+            
+            <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 p-6 rounded-r-lg">
+              <h3 className="font-display font-bold text-lg text-gray-900 dark:text-white mb-3">
                 How It Works
               </h3>
-
-              {[
-                "Browse the weekly menu and select your meals",
-                "Place your order before the cutoff time",
-                "Receive email confirmation with pickup details",
-                "Pick up your meal and pay in person",
-              ].map((step, i) => (
-                <div
-                  key={i}
-                  style={{ display: "flex", gap: "14px", marginBottom: "14px" }}
-                >
-                  <span
-                    style={{
-                      width: "36px",
-                      height: "36px",
-                      backgroundColor: "#22c55e",
-                      color: "white",
-                      borderRadius: "50%",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontWeight: 800,
-                    }}
-                  >
-                    {i + 1}
-                  </span>
-                  <span style={{ paddingTop: "6px" }}>{step}</span>
-                </div>
-              ))}
+              <ol className="space-y-3 text-gray-700 dark:text-gray-300">
+                {[
+                  'Browse the weekly menu and select your meals',
+                  'Place your order before the cutoff time',
+                  'Receive email confirmation with pickup details',
+                  'Pick up your meal and pay in person'
+                ].map((step, index) => (
+                  <li key={index} className="flex items-start">
+                    <span className="shrink-0 w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold mr-3">
+                      {index + 1}
+                    </span>
+                    <span>{step}</span>
+                  </li>
+                ))}
+              </ol>
             </div>
           </div>
 
-          
-          <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+         
+          <div className="space-y-6">
             
-            <div style={card}>
-              <h3 style={{ fontSize: "20px", fontWeight: 800, marginBottom: "16px" }}>
-                🕐 Service Hours
+            
+            <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-zinc-700">
+              <h3 className="font-display font-bold text-xl text-gray-900 dark:text-white mb-4 flex items-center">
+                <span className="mr-2">🕐</span>
+                Service Hours
               </h3>
-
-              {[
-                ["Wednesday", "12:15 - 12:45 PM"],
-                ["Thursday", "12:15 - 12:45 PM"],
-              ].map(([day, time]) => (
-                <div
-                  key={day}
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    padding: "12px 0",
-                    borderBottom: "1px solid #eef2f7",
-                  }}
-                >
-                  <strong>{day}</strong>
-                  <span>{time}</span>
+              <div className="space-y-3 text-gray-700 dark:text-gray-300">
+                <div className="flex justify-between py-2 border-b border-gray-100 dark:border-zinc-700">
+                  <span className="font-medium">Wednesday</span>
+                  <span>12:15 - 12:45 PM</span>
                 </div>
-              ))}
-
-              <p style={{ fontSize: "14px", color: textMuted, marginTop: "12px" }}>
-                Service times may vary each semester.
-              </p>
+                <div className="flex justify-between py-2">
+                  <span className="font-medium">Thursday</span>
+                  <span>12:15 - 12:45 PM</span>
+                </div>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
+                  Service times may vary each semester. Check weekly announcements for updates.
+                </p>
+              </div>
             </div>
 
             
-            <div style={card}>
-              <h3 style={{ fontSize: "20px", fontWeight: 800, marginBottom: "16px" }}>
-                ℹ️ Important Rules
+            <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-zinc-700">
+              <h3 className="font-display font-bold text-xl text-gray-900 dark:text-white mb-4 flex items-center">
+                <span className="mr-2">ℹ️</span>
+                Important Rules
               </h3>
-
-              {[
-                "One active order per person at a time",
-                "Maximum 5 of the same item per order",
-                "Orders must be placed before daily cutoff time",
-                "Payment is made in person at pickup",
-                "Items available on a first-come, first-served basis",
-              ].map((rule, i) => (
-                <div key={i} style={{ display: "flex", gap: "10px", marginBottom: "12px" }}>
-                  <span style={{ color: "#22c55e", fontWeight: 800 }}>✓</span>
-                  <span>{rule}</span>
-                </div>
-              ))}
+              <ul className="space-y-3 text-gray-700 dark:text-gray-300">
+                {[
+                  'One active order per person at a time',
+                  'Maximum 5 of the same item per order',
+                  'Orders must be placed before daily cutoff time',
+                  'Payment by card only at pickup (no cash accepted)',
+                  'Items available on a first-come, first-served basis'
+                ].map((rule, index) => (
+                  <li key={index} className="flex items-start">
+                    <span className="text-green-500 mr-2 text-lg shrink-0">✓</span>
+                    <span className="text-sm">{rule}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
 
-           
-            <div
-              style={{
-                backgroundColor: brandBlue,
-                color: "white",
-                padding: "26px",
-                borderRadius: "12px",
-              }}
-            >
-              <h3 style={{ fontSize: "20px", fontWeight: 800, marginBottom: "14px" }}>
-                📍 Pickup Location
+            
+            <div className="bg-primary text-white rounded-lg shadow-md p-6">
+              <h3 className="font-display font-bold text-xl mb-4 flex items-center">
+                <span className="mr-2">📍</span>
+                Pickup Location
               </h3>
-              <p style={{ fontWeight: 700, marginBottom: "8px" }}>
-                Room L1170 – Culinary Department
-              </p>
-              <p style={{ fontSize: "14.5px", opacity: 0.95 }}>
-                Located in the main building. You’ll receive an email with your pickup time
-                when your order is ready.
+              <p className="text-blue-100 mb-2">Room L1170 - Culinary Department</p>
+              <p className="text-sm text-blue-200">
+                Located in the main building. You'll receive an email with your pickup 
+                time when your order is ready.
               </p>
             </div>
           </div>

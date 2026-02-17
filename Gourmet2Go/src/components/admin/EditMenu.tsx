@@ -7,15 +7,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from "react-router";
 
-const fetchMenu = async (menuDate : string) => {
-  const { data, error } = await supabase.from('MenuDayDishes')
-    .select('*, Dishes ( * ), MenuDays ( * )')
-    .eq('MenuDays.date', menuDate);
-  if (error) {
-    throw error;
-  }
+const fetchMenu = async (menuDate: string) => {
+  const { data, error } = await supabase
+    .from("MenuDayDishes")
+    .select("*, Dishes ( * ), MenuDays ( * )")
+    .eq("MenuDays.date", menuDate);
+
+  if (error) throw error;
   return data;
-}
+};
 
 type MenuItem = {
   dish_id: number;
@@ -24,7 +24,7 @@ type MenuItem = {
   category: string;
   stock?: number;
   menu_id: number;
-}
+};
 
 type Dish = {
   dish_id: number;
@@ -122,22 +122,26 @@ export const EditMenu = () => {
       if (!menuDate) return;
       try {
         const itemData = await fetchMenu(menuDate);
+
         const itemsForDate = itemData
-          .filter(md => md.MenuDays?.date === menuDate && md.Dishes)
-          .map(md => ({
+          .filter((md: any) => md.MenuDays?.date === menuDate && md.Dishes)
+          .map((md: any) => ({
             dish_id: md.dish_id,
             name: md.Dishes.name,
             price: md.Dishes.price,
             category: md.Dishes.category,
             stock: md.stock,
-            menu_id: md.MenuDays.menu_day_id
+            menu_id: md.MenuDays.menu_day_id,
           }));
           setMenuItems(itemsForDate);
           reset({ dishes: itemsForDate, date: menuDate, day: getDayFromDate(menuDate) });
       } catch (error) {
         console.error("Error loading menu items:", error);
+      } finally {
+        setLoading(false);
       }
     };
+
     loadMenuItems();
   }, [menuDate, reset]);
 
