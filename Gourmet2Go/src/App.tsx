@@ -28,6 +28,7 @@ import { ContactPage } from "./pages/ContactPage";
 import { UserOrdersPage } from "./pages/UserOrdersPage";
 import { OrderDetailsPage } from "./pages/admin/OrderDetailsPage";
 import { AdminScannerPage } from "./pages/admin/AdminScannerPage";
+import { SelectMenuToEditPage } from "./pages/admin/SelectMenuToEditPage";
 
 function App() {
   return (
@@ -61,6 +62,7 @@ function App() {
               <Route path="/admin/analytics" element={<AnalyticsPage />} />
               <Route path="/admin/add-dish" element={<AddDishPage />} />
               <Route path="/admin/add-menu" element={<AddMenuPage />} />
+              <Route path="/admin/edit-menu" element={<SelectMenuToEditPage />} />
               <Route path="/admin/edit-menu/:date" element={<EditMenuPage />} />
               <Route path="/admin/user-manager" element={<ManageUsersPage />} />
               <Route path="/admin/admin-manager" element={<ManageAdminsPage />} />
