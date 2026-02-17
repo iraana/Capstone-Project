@@ -12,9 +12,6 @@ important for the client and users.
 
 
 - Analytics
-- PrivacyPolicyPage
-- ToSPage
-- NotAuthorizedPage
 - Robust testing
 - Annihilate .env from commit history somehow
 - RLS on **all** database tables
@@ -27,7 +24,6 @@ important for the client and users.
 - Full CRUD on dishes and menus
 - Reviews
 - ViewReviews
-- UserSettings
 - Favicon 
 
 

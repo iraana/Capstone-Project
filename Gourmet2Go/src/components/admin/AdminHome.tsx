@@ -2,6 +2,8 @@ import { Link } from "react-router";
 import { useAuth } from "../../context/AuthContext";
 import { UserCog, BarChart3, UtensilsCrossed, FilePlus, FilePenLine, Users, ChevronRight, ClipboardClock, BookMinus, Archive, ScanLine } from "lucide-react";
 import { motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "../../../supabase-client";
 
 interface AdminPage {
   id: string;
@@ -10,8 +12,6 @@ interface AdminPage {
   icon: React.ElementType;
   color: string;
 }
-
-const today = new Date().toISOString().split("T")[0];
 
 const adminPages: AdminPage[] = [
   {
@@ -57,7 +57,7 @@ const adminPages: AdminPage[] = [
     color: 'from-purple-500 to-pink-400',
   },
   {
-    id: `edit-menu/${today}`,
+    id: `edit-menu`,
     title: 'Edit Menu',
     description: 'Make changes to a menu',
     icon: FilePenLine,
@@ -104,9 +104,25 @@ const itemVariants = {
 export const AdminHome = () => {
   const { user } = useAuth();
 
+  const { data: profile } = useQuery({
+    queryKey: ["profile", "navbar", user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("first_name, last_name")
+        .eq("id", user.id)
+        .single();
+      
+      if (error) return null;
+      return data;
+    },
+    enabled: !!user,
+  });
+
   const displayName =
-    user?.user_metadata.first_name ||
-    user?.user_metadata.last_name ||
+    profile?.first_name ||
+    profile?.last_name ||
     user?.email ||
     "Admin";
 
