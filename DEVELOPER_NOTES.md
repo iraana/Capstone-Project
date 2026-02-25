@@ -24,6 +24,7 @@ important for the client and users.
 - Full CRUD on dishes and menus
 - Reviews
 - ViewReviews
+- Gallery 
 - Favicon 
 
 - Add Menu: 
@@ -177,29 +178,6 @@ Tuesday.
 - Component behaviour 
 - Authentication 
 - Navigation 
-
-
-## Questions for Stakeholders
-
-
-- Can users order days in advance (make a order for Wednesday menu on a Monday)?
-- Should future menus render on the homepage? 
-- Do they want peak hours on the app? (analytics)
-- In general what analytics do they want other than the already stated top buyer and top dish?
-- How many admins will there be?
-- Do they want more roles (owner, kitchen, etc.)
-- Would they like to have an Admin Chatroom? 
-
-
-## Wednesday demo instructions
-
-
-- Give them the URL to our deployment 
-- Have them create an account
-- Sign in
-- Use it as a user
-- Upgrade them to admin
-- Let them do admin stuff
 
 
 ## Misc

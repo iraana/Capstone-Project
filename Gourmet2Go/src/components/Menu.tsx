@@ -6,6 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import { Plus, ShoppingBasket, UtensilsCrossed, Lock, AlertCircle, Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader } from "./Loader";
+import { Greeter } from "./Greeter";
 
 export interface Dish {
   dish_id: number;
@@ -103,7 +104,7 @@ export const Menu = () => {
     // Find the menu that matches the one in the cart
     const lockedMenu = menuDays.find(d => d.menu_day_id === cartMenuId);
     // Converts date to a more readible format
-    return lockedMenu ? new Date(lockedMenu.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric'}) : "";
+    return lockedMenu ? new Date(lockedMenu.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC'}) : "";
   }, [cartMenuId, menuDays]); // Dependency array
 
   const dishesByCategory = useMemo(() => {
@@ -134,7 +135,8 @@ export const Menu = () => {
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('en-US', {
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
+      timeZone: 'UTC'
     });
   };
 
@@ -179,6 +181,7 @@ export const Menu = () => {
 
   return (
     <div className="max-w-5xl mx-auto pb-20 relative">
+      <Greeter />
       
       <AnimatePresence>
         {isMenuLocked && isAuthorized && (
@@ -209,7 +212,7 @@ export const Menu = () => {
       </AnimatePresence>
 
       <div className="z-20 bg-white/80 dark:bg-zinc-900/90 backdrop-blur-md border-b border-gray-200 dark:border-zinc-800 -mx-4 px-4 md:mx-0 md:px-0 md:rounded-xl md:top-20 md:mb-8">
-        <div className="flex overflow-x-auto no-scrollbar gap-2 py-4 snap-x">
+        <div className="flex overflow-x-auto no-scrollbar gap-2 py-4 snap-x pl-4">
           {menuDays.map((day) => {
             const isSelected = selectedDayId === day.menu_day_id;
             const isCartDate = cartMenuId !== null && day.menu_day_id === cartMenuId;
@@ -233,10 +236,10 @@ export const Menu = () => {
                     <div className="absolute top-2 right-2 w-2 h-2 bg-[#00659B] rounded-full"></div>
                 )}
 
-                <span className={`text-xs uppercase font-bold tracking-wider mb-1 ${isSelected ? 'opacity-80' : 'opacity-60'}`}>
+                <span className={`text-xs uppercase font-bold text-black dark:text-white tracking-wider mb-1 ${isSelected ? 'opacity-80' : 'opacity-60'}`}>
                   {day.day.substring(0, 3)}
                 </span>
-                <span className="text-lg font-bold">
+                <span className="text-lg font-bold text-black dark:text-white">
                   {formatDate(day.date)}
                 </span>
                 
