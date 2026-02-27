@@ -109,7 +109,7 @@ describe('Navbar component', () => {
     expect(screen.queryByRole('link', { name: 'My Orders' })).not.toBeInTheDocument();
   });
 
-  // NEW ROLE-BASED TESTS
+  
   it('shows Administration link for ADMIN users', () => {
     mockAuthState = {
       user: { id: '123', email: 'admin@saultcollege.ca' },
