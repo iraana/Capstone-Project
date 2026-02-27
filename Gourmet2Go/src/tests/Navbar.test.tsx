@@ -36,8 +36,7 @@ vi.mock('@tanstack/react-query', () => ({
 
 describe('Navbar component', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-    // Reset to default (no user)
+    vi.clearAllMocks()
     mockAuthState = {
       user: null,
       role: null,
