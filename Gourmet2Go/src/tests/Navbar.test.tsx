@@ -36,8 +36,7 @@ vi.mock('@tanstack/react-query', () => ({
 
 describe('Navbar component', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-    // Reset to default (no user)
+    vi.clearAllMocks()
     mockAuthState = {
       user: null,
       role: null,
@@ -109,7 +108,7 @@ describe('Navbar component', () => {
     expect(screen.queryByRole('link', { name: 'My Orders' })).not.toBeInTheDocument();
   });
 
-  // NEW ROLE-BASED TESTS
+  
   it('shows Administration link for ADMIN users', () => {
     mockAuthState = {
       user: { id: '123', email: 'admin@saultcollege.ca' },

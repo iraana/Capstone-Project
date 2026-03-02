@@ -1,7 +1,14 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { BrowserRouter } from 'react-router';
+import userEvent from '@testing-library/user-event';
+import { BrowserRouter, useLocation } from 'react-router';
 import { Footer } from '../components/Footer';
+
+
+const LocationDisplay = () => {
+  const location = useLocation();
+  return <div data-testid="location">{location.pathname}</div>;
+};
 
 describe('Footer component', () => {
   it('renders the Footer component', () => {
@@ -71,5 +78,86 @@ describe('Footer component', () => {
     
     expect(screen.getByText(/© 2026/i)).toBeInTheDocument();
     expect(screen.getByText(/All Rights Reserved/i)).toBeInTheDocument();
+  });
+
+
+  it('navigates to About page when About link is clicked', async () => {
+    const user = userEvent.setup();
+    
+    render(
+      <BrowserRouter>
+        <Footer />
+        <LocationDisplay />
+      </BrowserRouter>
+    );
+    
+    const aboutLink = screen.getByRole('link', { name: 'About' });
+    await user.click(aboutLink);
+    
+    expect(screen.getByTestId('location')).toHaveTextContent('/about');
+  });
+
+  it('navigates to Privacy Policy page when clicked', async () => {
+    const user = userEvent.setup();
+    
+    render(
+      <BrowserRouter>
+        <Footer />
+        <LocationDisplay />
+      </BrowserRouter>
+    );
+    
+    const privacyLink = screen.getByRole('link', { name: 'Privacy Policy' });
+    await user.click(privacyLink);
+    
+    expect(screen.getByTestId('location')).toHaveTextContent('/privacy-policy');
+  });
+
+  it('navigates to Terms of Service page when clicked', async () => {
+    const user = userEvent.setup();
+    
+    render(
+      <BrowserRouter>
+        <Footer />
+        <LocationDisplay />
+      </BrowserRouter>
+    );
+    
+    const tosLink = screen.getByRole('link', { name: 'Terms of Service' });
+    await user.click(tosLink);
+    
+    expect(screen.getByTestId('location')).toHaveTextContent('/terms-of-service');
+  });
+
+  it('navigates to Contact page when clicked', async () => {
+    const user = userEvent.setup();
+    
+    render(
+      <BrowserRouter>
+        <Footer />
+        <LocationDisplay />
+      </BrowserRouter>
+    );
+    
+    const contactLink = screen.getByRole('link', { name: 'Contact' });
+    await user.click(contactLink);
+    
+    expect(screen.getByTestId('location')).toHaveTextContent('/contact');
+  });
+
+  it('navigates to home page when Gourmet2Go logo is clicked', async () => {
+    const user = userEvent.setup();
+    
+    render(
+      <BrowserRouter>
+        <Footer />
+        <LocationDisplay />
+      </BrowserRouter>
+    );
+    
+    const logoLink = screen.getAllByRole('link', { name: /Gourmet2Go/i })[0];
+    await user.click(logoLink);
+    
+    expect(screen.getByTestId('location')).toHaveTextContent('/');
   });
 });
