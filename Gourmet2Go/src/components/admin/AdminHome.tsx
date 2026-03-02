@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { useAuth } from "../../context/AuthContext";
-import { UserCog, BarChart3, UtensilsCrossed, FilePlus, FilePenLine, Users, ChevronRight, ClipboardClock, BookMinus, Archive, ScanLine, List } from "lucide-react";
+import { UserCog, BarChart3, UtensilsCrossed, FilePlus, FilePenLine, Users, ChevronRight, ClipboardClock, BookMinus, Archive, ScanLine, List, Mail } from "lucide-react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "../../../supabase-client";
@@ -90,6 +90,13 @@ const adminPages: AdminPage[] = [
     description: 'Manage user roles & permissions',
     icon: Users,
     color: 'from-indigo-500 to-violet-400',
+  },
+  {
+    id: 'inbox',
+    title: 'Inbox',
+    description: 'View and respond to user messages',
+    icon: Mail,
+    color: 'from-cyan-500 to-teal-400',
   }
 ];
 
