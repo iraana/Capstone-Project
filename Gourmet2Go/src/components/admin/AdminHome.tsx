@@ -118,6 +118,28 @@ const itemVariants = {
 export const AdminHome = () => {
   const { user } = useAuth();
 
+  {/* Fetch unread messages count for the Inbox badge */}
+  const { data: unreadCount = 0 } = useQuery({
+    queryKey: ["contact_messages_unread_count"],
+    queryFn: async () => {
+      if (!user) return 0;
+      
+      const { count, error } = await supabase
+        .from("contact_messages")
+        .select("*", { count: 'exact', head: true }) 
+        .eq("status", "unread");
+      
+      if (error) {
+        console.error("Error fetching unread count:", error);
+        return 0;
+      }
+      return count || 0;
+    },
+    enabled: !!user, 
+    refetchInterval: 10000, // Auto-refresh count every 10 seconds
+  });
+  
+
   const { data: profile } = useQuery({
     queryKey: ["profile", "navbar", user?.id],
     queryFn: async () => {
@@ -184,8 +206,17 @@ export const AdminHome = () => {
                 <div className={`absolute inset-0 opacity-0 group-hover:opacity-5 bg-linear-to-br ${page.color} transition-opacity duration-300`} />
                 
                 <div className="flex items-start justify-between mb-6">
-                  <div className={`p-3 rounded-xl bg-linear-to-br ${page.color} text-white shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                  
+                  {/* Correctly positioning badge relative to icon */}
+                  <div className={`relative p-3 rounded-xl text-white shadow-lg group-hover:scale-110 transition-transform duration-300 ${page.color} bg-linear-to-br`}> 
                     <page.icon size={24} strokeWidth={2} />
+                    
+                    {/* Unread count badge */}
+                    {page.id === 'inbox' && unreadCount > 0 && (
+                        <div className="absolute -top-1 -right-1 inline-flex items-center justify-center h-6 w-6 text-xs font-bold text-red-100 bg-red-600 rounded-full shadow-md ring-2 ring-white dark:ring-zinc-900">
+                            {unreadCount > 99 ? '99+' : unreadCount}
+                        </div>
+                    )}
                   </div>
                   
                   <div className="text-slate-300 dark:text-slate-600 group-hover:text-green-500 transition-colors">
