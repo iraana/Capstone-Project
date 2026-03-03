@@ -1,0 +1,4 @@
+Flask==3.0.0
+supabase==2.3.0
+gotrue==2.3.0
+python-dotenv==1.0.0
