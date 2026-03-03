@@ -127,7 +127,7 @@ export const AdminHome = () => {
       const { count, error } = await supabase
         .from("contact_messages")
         .select("*", { count: 'exact', head: true }) 
-        .eq("status", "unread");
+        .eq("is_read", false);
       
       if (error) {
         console.error("Error fetching unread count:", error);

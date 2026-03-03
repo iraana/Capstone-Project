@@ -37,7 +37,7 @@ export const Contact = () => {
         name: data.name, 
         email: data.email, 
         message: data.message,
-        status: 'unread' 
+        is_read: false
       }]);
 
     if (error) {
