@@ -1,6 +1,6 @@
 import { NavLink} from "react-router";
 import { supabase } from "../../../supabase-client";
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from "react";
 
 type Dish = {
@@ -13,6 +13,7 @@ type Dish = {
 export const ListDishes = () => {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
     const { data: dishes = [] } = useQuery({
         queryKey: ['dishes'],
@@ -33,6 +34,9 @@ export const ListDishes = () => {
         } else {
             setSuccessMsg("Dish deleted successfully");
             setErrorMsg(null);
+            queryClient.setQueryData<Dish[]>(['dishes'], (old) =>
+            (old ?? []).filter((dish) => dish.dish_id !== dishId)
+            );
         }
     };
 
