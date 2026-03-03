@@ -3,8 +3,11 @@ import { X, Plus, Minus, Trash2, ShoppingBag, ArrowRight, Utensils } from "lucid
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext"
 import { useNavigate } from "react-router";
+import { supabase } from "../../supabase-client";
+import { useQuery } from "@tanstack/react-query";
 
 const MAX_QTY_PER_ITEM = 5;
+const MAX_TOTAL_ITEMS = 5;
 
 export const CartSidebar = () => {
   const {
@@ -14,13 +17,29 @@ export const CartSidebar = () => {
     updateQuantity,
     removeItem,
     totalPrice,
+    totalItems,
   } = cartStore();
 
   const { user } = useAuth();
 
-  const displayName = user?.user_metadata.first_name || user?.user_metadata.last_name || user?.email?.split('@')[0];
+  const { data: profile } = useQuery({
+    queryKey: ["profile", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("first_name, last_name")
+        .eq("id", user?.id)
+        .single();
+      return data;
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const displayName = profile?.first_name || profile?.last_name || user?.user_metadata.first_name || user?.user_metadata.last_name || user?.email?.split('@')[0]; 
 
   const subtotal = totalPrice();
+  const currentTotalItems = totalItems(); 
+  const isCartFull = currentTotalItems >= MAX_TOTAL_ITEMS; 
 
   const navigate = useNavigate();
 
@@ -64,7 +83,7 @@ export const CartSidebar = () => {
                     {displayName}'s Order
                   </h2>
                   <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                    {items.length} {items.length === 1 ? "item" : "items"}
+                    {currentTotalItems}/{MAX_TOTAL_ITEMS} items {isCartFull && "(Limit Reached)"}
                   </p>
                 </div>
               </div>
@@ -104,7 +123,8 @@ export const CartSidebar = () => {
                       MAX_QTY_PER_ITEM,
                       item.maxStock
                     );
-                    const isMaxed = item.quantity >= effectiveMax;
+                    const isItemMaxed = item.quantity >= effectiveMax;
+                    const cannotAdd = isCartFull || isItemMaxed;
 
                     return (
                       <motion.div
@@ -136,11 +156,6 @@ export const CartSidebar = () => {
                                   updateQuantity(item.dish_id, -1)
                                 }
                                 disabled={item.quantity <= 1}
-                                title={
-                                  item.quantity <= 1
-                                    ? "Minimum quantity is 1"
-                                    : "Remove one"
-                                }
                                 className="w-7 h-7 flex items-center justify-center bg-white dark:bg-zinc-700 rounded-md shadow-sm hover:shadow text-gray-600 dark:text-gray-200 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                               >
                                 <Minus size={14} strokeWidth={2.5} />
@@ -154,9 +169,9 @@ export const CartSidebar = () => {
                                 onClick={() =>
                                   updateQuantity(item.dish_id, 1)
                                 }
-                                disabled={isMaxed}
+                                disabled={cannotAdd}
                                 title={
-                                  isMaxed
+                                  isItemMaxed
                                     ? "Maximum 5 per item"
                                     : "Add one"
                                 }
@@ -164,12 +179,6 @@ export const CartSidebar = () => {
                               >
                                 <Plus size={14} strokeWidth={2.5} />
                               </button>
-
-                              {isMaxed && (
-                                <span className="text-xs text-gray-400 ml-1">
-                                  Max 5
-                                </span>
-                              )}
                             </div>
 
                             <button

@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
 const MAX_QTY_PER_ITEM = 5; // Hard cap on quantity
+const MAX_TOTAL_ITEMS = 5; // Hard cap on items
 
 export interface CartItem {
   dish_id: number;
@@ -22,6 +23,7 @@ interface CartState {
   clearCart: () => void; 
   toggleCart: () => void; 
   totalPrice: () => number; 
+  totalItems: () => number;
 }
 
 export const cartStore = create<CartState>()(
@@ -33,8 +35,16 @@ export const cartStore = create<CartState>()(
       items: [], 
       isOpen: false,
 
+      totalItems: () => {
+        return get().items.reduce((total, item) => total + item.quantity, 0);
+      },
+
       addItem: (newItem) => {
-        const { items } = get(); // Reads current items
+        const { items, totalItems } = get(); // Reads current items
+        const currentTotal = totalItems();
+
+        if (currentTotal >= MAX_TOTAL_ITEMS) return;
+
         // Checks if the item is already in the cart
         const existingItem = items.find(
           (i) => i.dish_id === newItem.dish_id
@@ -81,11 +91,16 @@ export const cartStore = create<CartState>()(
 
       updateQuantity: (dish_id, delta) => {
         // Reads the current items and removeItem action
-        const { items, removeItem } = get();
+        const { items, removeItem, totalItems } = get();
         // Finds the target item
         const item = items.find((i) => i.dish_id === dish_id);
 
         if (!item) return;
+
+        if (delta > 0) {
+          const currentTotal = totalItems();
+          if (currentTotal >= MAX_TOTAL_ITEMS) return;
+        }
 
         // Recalculates the maximum allowed
         const effectiveMax = Math.min(

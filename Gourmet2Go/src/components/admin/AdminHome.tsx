@@ -22,6 +22,13 @@ const adminPages: AdminPage[] = [
     color: 'from-orange-500 to-amber-400',
   },
   {
+    id: 'add-to-gallery',
+    title: 'Add to Gallery',
+    description: 'Add photos to the Gourmet2Go gallery',
+    icon: FilePlus,
+    color: 'from-purple-500 to-pink-400',
+  },
+  {
     id: 'admin-manager',
     title: 'Admin Manager',
     description: 'Manage admin roles & permissions',
