@@ -1,6 +1,7 @@
+const LAST_UPDATED = 'Februrary 17, 2026';
 export const ToSPage = () => {
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-zinc-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-zinc-900 -mt-20">
       
       
       <div className="relative bg-primary text-white py-20">
@@ -19,7 +20,7 @@ export const ToSPage = () => {
             Please read these terms carefully before using Gourmet2Go
           </p>
           <p className="text-sm text-blue-200 mt-4">
-            Last Updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+            Last Updated: {LAST_UPDATED}
           </p>
         </div>
       </div>
@@ -343,29 +344,6 @@ export const ToSPage = () => {
             </div>
           </div>
 
-         
-          <div className="bg-primary text-white rounded-lg shadow-md p-8">
-            <h2 className="text-3xl font-display font-bold mb-4">
-              12. Contact Information
-            </h2>
-            <p className="text-blue-100 mb-6">
-              If you have questions about these Terms of Service, please contact us:
-            </p>
-            <div className="space-y-3 text-blue-100">
-              <p className="flex items-center">
-                <span className="mr-3 text-xl">📧</span>
-                Email: <a href="mailto:support@gourmet2go.com" className="ml-2 hover:underline font-medium">support@gourmet2go.com</a>
-              </p>
-              <p className="flex items-center">
-                <span className="mr-3 text-xl">📍</span>
-                Location: Room L1170, Culinary Department, Sault College
-              </p>
-              <p className="flex items-center">
-                <span className="mr-3 text-xl">🕐</span>
-                Service Hours: Wednesday & Thursday, 12:15 - 12:45 PM
-              </p>
-            </div>
-          </div>
 
         </div>
       </div>

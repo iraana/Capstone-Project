@@ -125,8 +125,8 @@ export const EditMenu = () => {
         const itemData = await fetchMenu(menuDate);
 
         const itemsForDate = itemData
-          .filter(md => md.MenuDays?.date === menuDate && md.Dishes)
-          .map(md => ({
+          .filter((md: any) => md.MenuDays?.date === menuDate && md.Dishes)
+          .map((md: any) => ({
             dish_id: md.dish_id,
             name: md.Dishes.name,
             price: md.Dishes.price,
