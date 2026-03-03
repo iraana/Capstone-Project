@@ -30,6 +30,7 @@ import { OrderDetailsPage } from "./pages/admin/OrderDetailsPage";
 import { AdminScannerPage } from "./pages/admin/AdminScannerPage";
 import { EditDishPage } from "./pages/admin/EditDishPage";
 import { ListDishesPage } from "./pages/admin/ListDishesPage";
+import { AddToGalleryPage } from "./pages/admin/AddToGalleryPage";
 
 function App() {
   return (
@@ -74,6 +75,7 @@ function App() {
               <Route path="/admin/scanner" element={<AdminScannerPage />} />
               <Route path="/admin/edit-dish/:dishId" element={<EditDishPage />} />
               <Route path="/admin/list-dishes" element={<ListDishesPage />} />
+              <Route path="/admin/add-to-gallery" element={<AddToGalleryPage />} />
             </Route>
 
           </Routes>

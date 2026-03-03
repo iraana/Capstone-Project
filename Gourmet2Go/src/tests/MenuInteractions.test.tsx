@@ -24,6 +24,7 @@ vi.mock('../store/cartStore', () => ({
     items: [],
     toggleCart: mockToggleCart,
     clearCart: mockClearCart,
+    totalItems: vi.fn(() => 0),
   }),
 }));
 
