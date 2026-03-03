@@ -6,7 +6,7 @@ interface FooterLink {
 }
 
 const footerLinks: FooterLink[] = [
-  { name: "About", path: "/" },
+  { name: "About", path: "/about" },
   { name: "Privacy Policy", path: "/privacy-policy" },
   { name: "Terms of Service", path: "/terms-of-service" },
   { name: "Contact", path: "/contact" },
