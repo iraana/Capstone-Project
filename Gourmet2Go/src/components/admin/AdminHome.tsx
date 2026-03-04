@@ -71,6 +71,13 @@ const adminPages: AdminPage[] = [
     color: 'from-rose-500 to-red-400',
   },
   {
+    id: 'inbox',
+    title: 'Inbox',
+    description: 'View and respond to user messages',
+    icon: Mail,
+    color: 'from-cyan-500 to-teal-400',
+  },
+  {
     id: 'list-dishes',
     title: 'List Dishes',
     description: 'View all the currently available dishes',
@@ -97,13 +104,6 @@ const adminPages: AdminPage[] = [
     description: 'Manage user roles & permissions',
     icon: Users,
     color: 'from-indigo-500 to-violet-400',
-  },
-  {
-    id: 'inbox',
-    title: 'Inbox',
-    description: 'View and respond to user messages',
-    icon: Mail,
-    color: 'from-cyan-500 to-teal-400',
   }
 ];
 
