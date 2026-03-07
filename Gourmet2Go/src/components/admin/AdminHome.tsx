@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { useAuth } from "../../context/AuthContext";
-import { UserCog, BarChart3, UtensilsCrossed, FilePlus, FilePenLine, Users, ChevronRight, ClipboardClock, BookMinus, Archive, ScanLine, List } from "lucide-react";
+import { UserCog, BarChart3, UtensilsCrossed, FilePlus, FilePenLine, Users, ChevronRight, ClipboardClock, BookMinus, Archive, ScanLine, List, Mail } from "lucide-react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "../../../supabase-client";
@@ -71,6 +71,20 @@ const adminPages: AdminPage[] = [
     color: 'from-rose-500 to-red-400',
   },
   {
+    id: 'gallery-manager',
+    title: 'Gallery Manager',
+    description: 'Edit or remove gallery posts',
+    icon: FilePenLine,
+    color: 'from-lime-500 to-yellow-400',
+  },
+  {
+    id: 'inbox',
+    title: 'Inbox',
+    description: 'View and respond to user messages',
+    icon: Mail,
+    color: 'from-cyan-500 to-teal-400',
+  },
+  {
     id: 'list-dishes',
     title: 'List Dishes',
     description: 'View all the currently available dishes',
@@ -117,6 +131,28 @@ const itemVariants = {
 
 export const AdminHome = () => {
   const { user } = useAuth();
+
+  {/* Fetch unread messages count for the Inbox badge */}
+  const { data: unreadCount = 0 } = useQuery({
+    queryKey: ["contact_messages_unread_count"],
+    queryFn: async () => {
+      if (!user) return 0;
+      
+      const { count, error } = await supabase
+        .from("contact_messages")
+        .select("*", { count: 'exact', head: true }) 
+        .eq("is_read", false);
+      
+      if (error) {
+        console.error("Error fetching unread count:", error);
+        return 0;
+      }
+      return count || 0;
+    },
+    enabled: !!user, 
+    refetchInterval: 10000, // Auto-refresh count every 10 seconds
+  });
+  
 
   const { data: profile } = useQuery({
     queryKey: ["profile", "navbar", user?.id],
@@ -184,8 +220,17 @@ export const AdminHome = () => {
                 <div className={`absolute inset-0 opacity-0 group-hover:opacity-5 bg-linear-to-br ${page.color} transition-opacity duration-300`} />
                 
                 <div className="flex items-start justify-between mb-6">
-                  <div className={`p-3 rounded-xl bg-linear-to-br ${page.color} text-white shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                  
+                  {/* Correctly positioning badge relative to icon */}
+                  <div className={`relative p-3 rounded-xl text-white shadow-lg group-hover:scale-110 transition-transform duration-300 ${page.color} bg-linear-to-br`}> 
                     <page.icon size={24} strokeWidth={2} />
+                    
+                    {/* Unread count badge */}
+                    {page.id === 'inbox' && unreadCount > 0 && (
+                        <div className="absolute -top-1 -right-1 inline-flex items-center justify-center h-6 w-6 text-xs font-bold text-red-100 bg-red-600 rounded-full shadow-md ring-2 ring-white dark:ring-zinc-900">
+                            {unreadCount > 99 ? '99+' : unreadCount}
+                        </div>
+                    )}
                   </div>
                   
                   <div className="text-slate-300 dark:text-slate-600 group-hover:text-green-500 transition-colors">

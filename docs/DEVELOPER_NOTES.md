@@ -50,7 +50,7 @@ us to optimize some features to work offline.
 - vite-plugin-wasm for the Rust wasm, basically teaches Vite how to handle a binary wasm file as if it were a basic js module
 - vite-plugin-top-level-await to import the wasm
 - GoTrue so the Flask backend can communicate with the Supabase Auth server
-- python-dotenv so the Flask backend can read the .env
+- python-dotenv so the Flask backend can read the .env *locally*
 
 
 ## Conventions 
@@ -188,10 +188,9 @@ had no way to delete accounts from the UI until now. My plan for the Flask backe
 
 
 To make it work locally you'll first need Python installed on your machine. Then, run this in the terminal
-```pip install Flask supabase gotrue python-dotenv``` and after run the index.py file in the api folder. Everything else is 
-configured and you can use the delete user and ban user buttons. However, you don't really need to do this if you don't want to 
-use those features. The app works just fine without the Flask backend running. Although, if you do want to try those features 
-then you'll have to have it running.
+```pip install -r requirements.txt``` and after run the index.py file in the api folder. Everything else is configured and you can use the 
+delete user and ban user buttons. However, you don't really need to do this if you don't want to use those features. The app works just 
+fine without the Flask backend running. Although, if you do want to try those features then you'll have to have it running.
 
 
 ## Misc

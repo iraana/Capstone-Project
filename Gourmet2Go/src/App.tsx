@@ -31,6 +31,9 @@ import { AdminScannerPage } from "./pages/admin/AdminScannerPage";
 import { EditDishPage } from "./pages/admin/EditDishPage";
 import { ListDishesPage } from "./pages/admin/ListDishesPage";
 import { AddToGalleryPage } from "./pages/admin/AddToGalleryPage";
+import { GalleryPage } from "./pages/GalleryPage";
+import { AdminInboxPage } from "./pages/admin/AdminInboxPage";
+import { ManageGalleryPage } from "./pages/admin/ManageGalleryPage";
 
 function App() {
   return (
@@ -51,7 +54,9 @@ function App() {
             <Route path="/unauthorized" element={<UnauthorizedPage />} />
             <Route path="/virtualtour" element={<VirtualTourPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/gallery" element={<GalleryPage />} />
 
+            {/* Auth only routes */}
             <Route element={<ProtectedRoute allowedRoles={["USER", "ADMIN"]} />}>
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/successful-order" element={<SuccessfulOrderPage />} />
@@ -75,6 +80,8 @@ function App() {
               <Route path="/admin/edit-dish/:dishId" element={<EditDishPage />} />
               <Route path="/admin/list-dishes" element={<ListDishesPage />} />
               <Route path="/admin/add-to-gallery" element={<AddToGalleryPage />} />
+              <Route path="/admin/inbox" element={<AdminInboxPage />} />
+              <Route path="/admin/gallery-manager" element={<ManageGalleryPage />} />
             </Route>
 
           </Routes>
