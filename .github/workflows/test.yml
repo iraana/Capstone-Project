@@ -28,3 +28,5 @@ jobs:
       - name: Run Vitest
         run: npm run test -- --coverage
         working-directory: ./Gourmet2Go/src
+        env:
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
