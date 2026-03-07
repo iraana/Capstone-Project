@@ -11,11 +11,21 @@
 [![GitHub Forks](https://img.shields.io/github/forks/iraana/Capstone-Project?style=flat&color=0891b2&logo=github&logoColor=white)](https://github.com/iraana/Capstone-Project/network)
 [![GitHub License](https://img.shields.io/badge/license-All%20Rights%20Reserved-22c55e?style=flat)](https://github.com/iraana/Capstone-Project/blob/main/LICENSE)
 [![GitHub Release](https://img.shields.io/github/v/release/iraana/Capstone-Project?style=flat&color=FFD700&logo=github&logoColor=white)](https://github.com/iraana/Capstone-Project/releases)
+[![GitHub release date](https://img.shields.io/github/release-date/iraana/Capstone-Project)](#)
+[![GitHub last commit](https://img.shields.io/github/last-commit/iraana/Capstone-Project)](#)
 ![Visitors](https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2Firaana%2FCapstone-Project&label=visitors&countColor=%230c7ebe&style=flat&labelStyle=none)
 [![Contributors](https://img.shields.io/github/contributors/iraana/Capstone-Project?style=flat&color=FFD700&logo=github)](https://github.com/iraana/Capstone-Project/graphs/contributors)
+[![Tests](https://img.shields.io/badge/tests-80+%20passing-brightgreen)](https://github.com/iraana/Capstone-Project/tree/main/Gourmet2Go/src/tests)
+[![CodeQL](https://github.com/iraana/Capstone-Project/actions/workflows/codeql.yml/badge.svg)](https://github.com/iraana/Capstone-Project/security/code-scanning)
 
 
-**We would appreciate it if you starred this repo**
+**We would appreciate it if you starred this repo and shared it on social media**
+
+
+[![Share](https://img.shields.io/badge/share-000000?logo=x&logoColor=white)](https://x.com/intent/tweet?text=Check%20out%20this%20project%20on%20GitHub:%20https%3A%2F%2Fgithub.com%2Firaana%2FCapstone-Project%20%23GitHub%20%23Project)
+[![Share](https://img.shields.io/badge/share-1877F2?logo=facebook&logoColor=white)](https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fgithub.com%2Firaana%2FCapstone-Project)
+[![Share](https://img.shields.io/badge/share-FF4500?logo=reddit&logoColor=white)](https://www.reddit.com/submit?title=Check%20out%20this%20GitHub%20project&url=https%3A%2F%2Fgithub.com%2Firaana%2FCapstone-Project)
+[![Share](https://img.shields.io/badge/share-0088CC?logo=telegram&logoColor=white)](https://t.me/share/url?url=https%3A%2F%2Fgithub.com%2Firaana%2FCapstone-Project&text=Check%20out%20this%20GitHub%20project)
 
 
 </div>
@@ -78,7 +88,7 @@ We will add like 4 or 5 screenshots of stuff not in the trailer
 ![React Testing Library](https://img.shields.io/badge/React_Testing_Library-E33332?style=flat&logo=testinglibrary&logoColor=white)
 ![JSDOM](https://img.shields.io/badge/JSDOM-F7DF1E?style=flat&logo=javascript&logoColor=black)
 ![Jest DOM](https://img.shields.io/badge/Jest_DOM-C21325?style=flat&logo=jest&logoColor=white)
-![User Event](https://img.shields.io/badge/User_Event-C21325?style=flat&logo=jest&logoColor=white)
+![User Event](https://img.shields.io/badge/User_Event-F7DF1E?style=flat&logo=javascript&logoColor=black)
 ![React QR Code](https://img.shields.io/badge/React_QR_Code-61DAFB?style=flat&logo=react&logoColor=black)
 ![React QR Scanner](https://img.shields.io/badge/React_QR_Scanner-61DAFB?style=flat&logo=react&logoColor=black)
 ![Vite Plugin WASM](https://img.shields.io/badge/Vite_Plugin_WASM-646CFF?style=flat&logo=vite&logoColor=white)

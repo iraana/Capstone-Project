@@ -293,5 +293,6 @@ def delete_self():
 
 # If this file is ran directly it will start the Flask dev server on port 5000 with debug mode on
 if __name__ == '__main__':
-    # Run in debug mode only in development. This will print detailed stack traces to console.
-    app.run(port=5000, debug=True)
+    # Debug mode is set to false for production safety
+    # Locally you can set it to true to get detailed error messages in the console
+    app.run(port=5000, debug=False)
