@@ -103,17 +103,11 @@ export const Checkout = () => {
       if (itemsError) throw itemsError;
 
       const stockUpdates = items.map(async (item) => {
-        // Finds the old stock
-        const originalStock = stockData?.find(d => d.dish_id === item.dish_id)?.stock || 0;
-        // Calculates the new stock
-        const newStock = Math.max(0, originalStock - item.quantity);
-
-        // Updates the stock of the dish
-        return supabase
-          .from('MenuDayDishes')
-          .update({ stock: newStock })
-          .eq('menu_id', menuId)
-          .eq('dish_id', item.dish_id);
+        return supabase.rpc('decrement_stock', { 
+          p_menu_id: menuId, 
+          p_dish_id: item.dish_id, 
+          p_qty: item.quantity 
+        });
       });
 
         await Promise.all(stockUpdates); // All stock updates happen in unison

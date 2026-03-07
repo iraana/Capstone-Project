@@ -14,17 +14,16 @@ important for the client and users.
 - Analytics
 - Robust testing
 - Annihilate .env from commit history somehow
-- RLS on **all** database tables
 - Mobile responsiveness, ensure there is a good UI/UX on mobile devices
 - Accessibility standards (can navigate with keyboard, alt-text for images, etc.)
 - Dark Mode full integration
 - Account creation email confirmation, possible MFA as well
 
 
-- Full CRUD on dishes and menus
+- Delete dishes
+- Delete menus
 - Reviews
 - ViewReviews
-- Gallery 
 - Favicon 
 
 

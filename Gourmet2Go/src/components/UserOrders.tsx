@@ -96,40 +96,16 @@ export const UserOrders = () => {
       setProcessingId(order.order_id);
 
       if (order.status === "PENDING") {
-        // Gets dishIds from order
-        const dishIds = order.OrderItems.map((item) => item.Dishes.dish_id);
-        
-        // Fetch the current stock
-        const { data: currentStockData, error: stockFetchError } = await supabase
-          .from("MenuDayDishes")
-          .select("dish_id, stock")
-          .eq("menu_id", order.menu_id)
-          .in("dish_id", dishIds);
-
-        if (stockFetchError) {
-          console.error("Failed to fetch current stock:", stockFetchError);
-          throw new Error("Could not restore stock. Order deletion aborted.");
-        }
-
         const stockUpdates = order.OrderItems.map(async (item) => {
-          const currentStockRecord = currentStockData?.find(
-            (s) => s.dish_id === item.Dishes.dish_id
-          );
-
-          if (currentStockRecord) {
-            const newStock = currentStockRecord.stock + item.quantity; // Calculates new stock
-            
-            // Updates it in the database
-            const { error: updateError } = await supabase
-              .from("MenuDayDishes")
-              .update({ stock: newStock })
-              .eq("menu_id", order.menu_id)
-              .eq("dish_id", item.Dishes.dish_id);
-
-            if (updateError) throw updateError;
-          }
+          const { error: updateError } = await supabase.rpc('increment_stock', {
+            p_menu_id: order.menu_id,
+            p_dish_id: item.Dishes.dish_id,
+            p_qty: item.quantity
+          });
+          
+          if (updateError) throw updateError;
         });
-
+        
         await Promise.all(stockUpdates);
 
         // Hard delete on order
