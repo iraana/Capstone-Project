@@ -49,7 +49,7 @@ export const UserOrders = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [showHistory, setShowHistory] = useState(false);
-  const [processingId, setProcessingId] = useState<number | null>(null);
+  const[processingId, setProcessingId] = useState<number | null>(null);
   
   const [activeQrId, setActiveQrId] = useState<number | null>(null);
 
@@ -96,29 +96,14 @@ export const UserOrders = () => {
       setProcessingId(order.order_id);
 
       if (order.status === "PENDING") {
-        const stockUpdates = order.OrderItems.map(async (item) => {
-          const { error: updateError } = await supabase.rpc('increment_stock', {
-            p_menu_id: order.menu_id,
-            p_dish_id: item.Dishes.dish_id,
-            p_qty: item.quantity
-          });
-          
-          if (updateError) throw updateError;
+        const { error } = await supabase.rpc('cancel_pending_order', {
+          p_order_id: order.order_id
         });
         
-        await Promise.all(stockUpdates);
-
-        // Hard delete on order
-        const { error } = await supabase
-          .from("Orders")
-          .delete()
-          .eq("order_id", order.order_id)
-          .eq("user_id", user!.id);
-
         if (error) throw error;
 
       } else {
-        // Soft delete
+        // Soft delete for fulfilled/inactive orders 
         const { error } = await supabase
           .from("Orders")
           .update({ is_showing: false })
@@ -128,6 +113,7 @@ export const UserOrders = () => {
         if (error) throw error;
       }
 
+      // Refresh UI
       queryClient.invalidateQueries({ queryKey: ["user_orders"] });
     } catch (err) {
       console.error("Action failed:", err);

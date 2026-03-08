@@ -85,6 +85,13 @@ def is_admin(user_id: str) -> bool:
     return False
 
 def delete_user_data(target_user_id: str):
+    pending_orders = supabase.table('Orders').select('order_id').eq('user_id', target_user_id).eq('status', 'PENDING').execute()
+
+    if pending_orders.data:
+        for po in pending_orders.data:
+            # Safely cancels the order and restores stock in the DB
+            supabase.rpc('cancel_pending_order', {'p_order_id': po['order_id']}).execute()
+    
     # Gets everything related to the user
     orders_response = None
     try:
