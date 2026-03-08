@@ -19,7 +19,8 @@ export const ListDishes = () => {
         queryKey: ['dishes'],
         queryFn: async () => {
         const { data, error } = await supabase.from('Dishes')
-        .select('*');
+        .select('*')
+        .eq('dish_status', 'true');
         if (error) throw error;
         return data as Dish[];
         },
@@ -27,7 +28,7 @@ export const ListDishes = () => {
 
     const handleDelete = async (dishId: number) => {
         if (!confirm("Are you sure you want to delete this dish?")) return;
-        const { error } = await supabase.from('Dishes').delete().eq('dish_id', dishId);
+        const { error } = await supabase.from('Dishes').update({ dish_status: 'false' }).eq('dish_id', dishId);
         if (error) {
             setErrorMsg("Failed to delete dish: " + error.message);
             setSuccessMsg(null);
