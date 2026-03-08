@@ -2,11 +2,15 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import wasm from "vite-plugin-wasm";
+import topLevelAwait from "vite-plugin-top-level-await";
 
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    wasm(),
+    topLevelAwait(),
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
@@ -54,5 +58,16 @@ export default defineConfig({
     }),
   ],
   base: process.env.VITE_BASE_PATH,
-  server: { host: true, port: 5173, strictPort: true },
+  server: { 
+    host: true, 
+    port: 5173, 
+    strictPort: true,
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:5000', 
+        changeOrigin: true,
+        secure: false,
+      }
+    }
+  },
 });

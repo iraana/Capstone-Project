@@ -42,8 +42,10 @@ const itemVariants = {
   visible: { opacity: 1, y: 0 }
 };
 
+const MAX_TOTAL_ITEMS = 5;
+
 export const Menu = () => {
-  const { addItem, items: cartItems, clearCart } = cartStore();
+  const { addItem, items: cartItems, clearCart, totalItems } = cartStore();
   const { user, role } = useAuth(); 
   const [selectedDayId, setSelectedDayId] = useState<number | null>(null);
 
@@ -74,6 +76,9 @@ export const Menu = () => {
       return data as unknown as MenuDay[];
     }
   });
+
+  const currentTotalItems = totalItems();
+  const isCartFull = currentTotalItems >= MAX_TOTAL_ITEMS;
 
   // Sets default day to the first one
   useEffect(() => {
@@ -246,7 +251,7 @@ export const Menu = () => {
                 {isSelected && (
                   <motion.div 
                     layoutId="activeTab"
-                    className="absolute -bottom-1 w-1 h-1 bg-white rounded-full mb-2"
+                    className="absolute -bottom-1 w-1 h-1 bg-white rounded-full"
                   />
                 )}
               </button>
@@ -302,6 +307,10 @@ export const Menu = () => {
                             isDisabled = true;
                         } else if (isSoldOut) {
                             buttonText = "Sold Out";
+                            ButtonIcon = Lock;
+                            isDisabled = true;
+                        } else if (isCartFull) {
+                            buttonText = "Cart Full";
                             ButtonIcon = Lock;
                             isDisabled = true;
                         }

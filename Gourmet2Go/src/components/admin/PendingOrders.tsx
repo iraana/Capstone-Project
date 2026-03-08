@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../../../supabase-client";
 import { Loader } from "../Loader";
@@ -71,8 +71,44 @@ export const PendingOrders = () => {
       if (error) throw error;
       return data as unknown as Order[];
     },
-    refetchInterval: 1000
   });
+
+  // Supabase Realtime Subscriptions for Orders and OrderItems
+  useEffect(() => {
+    const channel = supabase
+    // Realtime channel for orders
+      .channel("orders-realtime")
+      // Listens to changes on Orders
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "Orders",
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["pending_orders"] });
+        }
+      )
+      // Listens to changes on OrderItems
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "OrderItems",
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["pending_orders"] });
+        }
+      )
+      // Subscribes to the channel
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   const updateStatusMutation = useMutation({
     mutationFn: async ({ orderId, newStatus }: { orderId: number; newStatus: string }) => {
