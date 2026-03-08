@@ -4,7 +4,8 @@ import { supabase } from "../../supabase-client";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useParams } from "react-router";
+import { useQuery } from "@tanstack/react-query";
+import type { Dish } from "./Menu";
 
 const reviewSchema = z.object({
     rating: z.number().min(1, "Rating must be at least 1").max(5, "Rating cannot be more than 5"),
@@ -18,11 +19,14 @@ export const Review = () => {
     const { user, role } = useAuth();
     const [rating, setRating] = useState(0);
     const [hoveredRating, setHoveredRating] = useState<number | null>(null);
-    const { dishId } = useParams<{ dishId: string }>();
+    const [selectedDish, setSelectedDish] = useState<string>("");
+    const [successMessage, setSuccessMessage] = useState<string>("");
+    const [errorMessage, setErrorMessage] = useState<string>("");
 
     const {
         handleSubmit,
         register,
+        setValue,
         formState: { errors },
     } = useForm<ReviewFormData>({
         resolver: zodResolver(reviewSchema),
@@ -32,29 +36,71 @@ export const Review = () => {
         },
     });
 
+    const { data: dishes= [] } = useQuery({
+        queryKey: ['dishes'],
+        queryFn: async () => {
+        const { data, error } = await supabase
+            .from('Dishes')
+            .select('dish_id, name')
+            .order('name');
+    
+        if (error) throw error;
+    
+        return data as Dish[];
+        },
+        refetchOnWindowFocus: true,
+    });
+
     const isAuthorized = user && (role === "USER" || role === "ADMIN");
 
     const onSubmit = async (data: ReviewFormData) => {
         try {
             const { error } = await supabase.from("Reviews").insert({
                 user_id: user?.id,
-                dish_id: Number(dishId),
+                dish_id: selectedDish,
                 rating: data.rating,
                 comment: data.comment,
-                createdAt: new Date().toISOString(),
+                timestamp: new Date().toISOString(),
             });
             if (error) throw error;
+            setSuccessMessage("Review submitted successfully!");
+            setErrorMessage("");
             } catch (error) {
                 console.error("Error submitting review:", error);
+                setErrorMessage("Failed to submit review. Please try again.");
+                setSuccessMessage("");
             }
     }
 
     return (
         <form className="p-6 space-y-6 max-w-xl mx-auto" onSubmit={handleSubmit(onSubmit)}>
             <div className="bg-white dark:bg-zinc-800 rounded-2xl shadow-lg border border-gray-200 dark:border-zinc-700 overflow-hidden">
+                {successMessage && (
+                    <div className="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800" role="alert">
+                        {successMessage}
+                    </div>
+                )}
+                {errorMessage && (
+                    <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800" role="alert">
+                        {errorMessage}
+                    </div>
+                )}
+
                 <div className="p-6 border-b border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-900/50">
                     <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Your Review</h1>
                     <p className="text-gray-500 dark:text-gray-400 mt-1">Share your thoughts about this dish</p>
+                    <select
+                        className="w-full border rounded px-3 py-2 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white"
+                        value={selectedDish}
+                        onChange={(e) => setSelectedDish(e.target.value)}
+                    >
+                        <option value="">Select a dish</option>
+                        {dishes?.map((dish) => (
+                            <option key={dish.dish_id} value={dish.dish_id}>
+                                {dish.name}
+                            </option>
+                        ))}
+                    </select>
                 </div>
                 <div className="p-6 space-y-6">
                     {isAuthorized ? (
@@ -66,7 +112,10 @@ export const Review = () => {
                                         <button
                                             key={star}
                                             type="button"
-                                            onClick={() => setRating(star)}
+                                            onClick={() => {
+                                                setRating(star)
+                                                setValue("rating", star)
+                                            }}
                                             onMouseEnter={() => setHoveredRating(star)}
                                             onMouseLeave={() => setHoveredRating(null)}
                                             className="transition-colors"
