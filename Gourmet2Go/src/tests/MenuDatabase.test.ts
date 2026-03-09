@@ -126,7 +126,6 @@ describe('Menu Database Operations', () => {
 
       expect(mockOrder).toHaveBeenCalledWith('date', { ascending: true });
       expect(data).toEqual(mockMenuDays);
-     
       expect(data![0].date).toBe('2026-02-17');
       expect(data![1].date).toBe('2026-02-18');
       expect(data![2].date).toBe('2026-02-19');
@@ -207,80 +206,81 @@ describe('Menu Database Operations', () => {
 
   describe('Menu Data Structure', () => {
     it('returns menu with multiple dishes per day', async () => {
-  const mockMenuDay = {
-    menu_day_id: 1,
-    date: '2026-02-17',
-    day: 'Monday' as const,
-    MenuDayDishes: [
-      {
-        menu_day_dish_id: 1,
-        stock: 14,
-        Dishes: {
-          dish_id: 1,
-          name: 'Caesar Salad',
-          category: 'Salads' as const,
-          price: 8.99,
-        },
-      },
-      {
-        menu_day_dish_id: 2,
-        stock: 10,
-        Dishes: {
-          dish_id: 2,
-          name: 'Chicken Soup',
-          category: 'Soups' as const,
-          price: 6.50,
-        },
-      },
-      {
-        menu_day_dish_id: 3,
-        stock: 12,
-        Dishes: {
-          dish_id: 3,
-          name: 'Burger',
-          category: 'Entrees' as const,
-          price: 12.99,
-        },
-      },
-    ],
-  };
+      const mockMenuDay = {
+        menu_day_id: 1,
+        date: '2026-02-17',
+        day: 'Monday',
+        MenuDayDishes: [
+          {
+            menu_day_dish_id: 1,
+            stock: 14,
+            Dishes: {
+              dish_id: 1,
+              name: 'Caesar Salad',
+              category: 'Salads',
+              price: 8.99,
+            },
+          },
+          {
+            menu_day_dish_id: 2,
+            stock: 10,
+            Dishes: {
+              dish_id: 2,
+              name: 'Chicken Soup',
+              category: 'Soups',
+              price: 6.50,
+            },
+          },
+          {
+            menu_day_dish_id: 3,
+            stock: 12,
+            Dishes: {
+              dish_id: 3,
+              name: 'Burger',
+              category: 'Entrees',
+              price: 12.99,
+            },
+          },
+        ],
+      };
 
-  const mockSelect = vi.fn().mockReturnThis();
-  const mockOrder = vi.fn().mockResolvedValue({
-    data: [mockMenuDay],
-    error: null,
-  });
+      const mockSelect = vi.fn().mockReturnThis();
+      const mockOrder = vi.fn().mockResolvedValue({
+        data: [mockMenuDay],
+        error: null,
+      });
 
-  vi.mocked(supabase.from).mockReturnValue({
-    select: mockSelect,
-    order: mockOrder,
-  } as any);
+      vi.mocked(supabase.from).mockReturnValue({
+        select: mockSelect,
+        order: mockOrder,
+      } as any);
 
-  const { data } = await supabase
-    .from('MenuDays')
-    .select(`
-      menu_day_id,
-      date,
-      day,
-      MenuDayDishes (
-        menu_day_dish_id,
-        stock,
-        Dishes (
-          dish_id,
-          name,
-          category,
-          price
-        )
-      )
-    `)
-    .order('date', { ascending: true });
+      const { data } = await supabase
+        .from('MenuDays')
+        .select(`
+          menu_day_id,
+          date,
+          day,
+          MenuDayDishes (
+            menu_day_dish_id,
+            stock,
+            Dishes (
+              dish_id,
+              name,
+              category,
+              price
+            )
+          )
+        `)
+        .order('date', { ascending: true });
 
-  expect(data).toHaveLength(1);
-  expect(data![0].MenuDayDishes).toHaveLength(3);
-  expect(data![0].MenuDayDishes[0].Dishes.name).toBe('Caesar Salad');
-  expect(data![0].MenuDayDishes[1].Dishes.name).toBe('Chicken Soup');
-  expect(data![0].MenuDayDishes[2].Dishes.name).toBe('Burger');
-});
+      expect(data).toHaveLength(1);
+      expect(data![0].MenuDayDishes).toHaveLength(3);
+      // FIX: Cast to any 
+      expect((data![0].MenuDayDishes[0] as any).Dishes.name).toBe('Caesar Salad');
+      expect((data![0].MenuDayDishes[1] as any).Dishes.name).toBe('Chicken Soup');
+      expect((data![0].MenuDayDishes[2] as any).Dishes.name).toBe('Burger');
+    });
 
     it('returns menu day with no dishes', async () => {
       const mockMenuDay = {
@@ -373,7 +373,8 @@ describe('Menu Database Operations', () => {
         `)
         .order('date', { ascending: true });
 
-      const dish = data![0].MenuDayDishes[0].Dishes;
+      // FIX: Cast to any 
+      const dish = (data![0].MenuDayDishes[0] as any).Dishes;
       expect(dish).toHaveProperty('dish_id');
       expect(dish).toHaveProperty('name');
       expect(dish).toHaveProperty('category');
