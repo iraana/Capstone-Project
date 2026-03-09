@@ -49,7 +49,7 @@ export const UserOrders = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [showHistory, setShowHistory] = useState(false);
-  const [processingId, setProcessingId] = useState<number | null>(null);
+  const[processingId, setProcessingId] = useState<number | null>(null);
   
   const [activeQrId, setActiveQrId] = useState<number | null>(null);
 
@@ -96,53 +96,14 @@ export const UserOrders = () => {
       setProcessingId(order.order_id);
 
       if (order.status === "PENDING") {
-        // Gets dishIds from order
-        const dishIds = order.OrderItems.map((item) => item.Dishes.dish_id);
-        
-        // Fetch the current stock
-        const { data: currentStockData, error: stockFetchError } = await supabase
-          .from("MenuDayDishes")
-          .select("dish_id, stock")
-          .eq("menu_id", order.menu_id)
-          .in("dish_id", dishIds);
-
-        if (stockFetchError) {
-          console.error("Failed to fetch current stock:", stockFetchError);
-          throw new Error("Could not restore stock. Order deletion aborted.");
-        }
-
-        const stockUpdates = order.OrderItems.map(async (item) => {
-          const currentStockRecord = currentStockData?.find(
-            (s) => s.dish_id === item.Dishes.dish_id
-          );
-
-          if (currentStockRecord) {
-            const newStock = currentStockRecord.stock + item.quantity; // Calculates new stock
-            
-            // Updates it in the database
-            const { error: updateError } = await supabase
-              .from("MenuDayDishes")
-              .update({ stock: newStock })
-              .eq("menu_id", order.menu_id)
-              .eq("dish_id", item.Dishes.dish_id);
-
-            if (updateError) throw updateError;
-          }
+        const { error } = await supabase.rpc('cancel_pending_order', {
+          p_order_id: order.order_id
         });
-
-        await Promise.all(stockUpdates);
-
-        // Hard delete on order
-        const { error } = await supabase
-          .from("Orders")
-          .delete()
-          .eq("order_id", order.order_id)
-          .eq("user_id", user!.id);
-
+        
         if (error) throw error;
 
       } else {
-        // Soft delete
+        // Soft delete for fulfilled/inactive orders 
         const { error } = await supabase
           .from("Orders")
           .update({ is_showing: false })
@@ -152,6 +113,7 @@ export const UserOrders = () => {
         if (error) throw error;
       }
 
+      // Refresh UI
       queryClient.invalidateQueries({ queryKey: ["user_orders"] });
     } catch (err) {
       console.error("Action failed:", err);

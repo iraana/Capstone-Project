@@ -25,6 +25,8 @@ const addToGallery = async (post: GalleryInput, imageFile: File) => {
     .from("gallery-images")
     .upload(filePath, imageFile, {
       contentType: "image/webp",
+      cacheControl: "31536000",
+      upsert: false,
     });
 
   // If the upload fails, throw an error

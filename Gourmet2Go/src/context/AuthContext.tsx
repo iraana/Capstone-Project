@@ -2,6 +2,7 @@ import type { User } from "@supabase/supabase-js";
 import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "../../supabase-client"; // Import the configured Supabase client
 import { useQuery } from "@tanstack/react-query";
+import { cartStore } from "../store/cartStore";
 
 // Defines the shape of the authentication context, nothing else is allowed in or out
 interface AuthContextType {
@@ -118,6 +119,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signOut = async () => {
     supabase.auth.signOut(); // Supabase sign out
     setUser(null); // Clear user state
+    cartStore.getState().clearCart(); // Clear cart on sign out
   };
 
 
