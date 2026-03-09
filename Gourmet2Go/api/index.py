@@ -3,10 +3,6 @@ from supabase import create_client, Client
 import os
 from dotenv import load_dotenv
 import logging
-from typing import Optional
-import httpx
-import jwt
-import logging
 import requests
 
 load_dotenv()
@@ -89,6 +85,13 @@ def is_admin(user_id: str) -> bool:
     return False
 
 def delete_user_data(target_user_id: str):
+    pending_orders = supabase.table('Orders').select('order_id').eq('user_id', target_user_id).eq('status', 'PENDING').execute()
+
+    if pending_orders.data:
+        for po in pending_orders.data:
+            # Safely cancels the order and restores stock in the DB
+            supabase.rpc('cancel_pending_order', {'p_order_id': po['order_id']}).execute()
+    
     # Gets everything related to the user
     orders_response = None
     try:
@@ -297,5 +300,6 @@ def delete_self():
 
 # If this file is ran directly it will start the Flask dev server on port 5000 with debug mode on
 if __name__ == '__main__':
-    # Run in debug mode only in development. This will print detailed stack traces to console.
-    app.run(port=5000, debug=True)
+    # Debug mode is set to false for production safety
+    # Locally you can set it to true to get detailed error messages in the console
+    app.run(port=5000, debug=False)

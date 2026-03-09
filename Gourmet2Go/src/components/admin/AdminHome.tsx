@@ -71,6 +71,13 @@ const adminPages: AdminPage[] = [
     color: 'from-rose-500 to-red-400',
   },
   {
+    id: 'gallery-manager',
+    title: 'Gallery Manager',
+    description: 'Edit or remove gallery posts',
+    icon: FilePenLine,
+    color: 'from-lime-500 to-yellow-400',
+  },
+  {
     id: 'inbox',
     title: 'Inbox',
     description: 'View and respond to user messages',
