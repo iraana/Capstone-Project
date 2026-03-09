@@ -121,7 +121,6 @@ export const ToSPage = () => {
               <ul className="space-y-2">
                 {[
                   'Payment is required at pickup by card only (no cash accepted)',
-                  'Prices are subject to 13% HST (Harmonized Sales Tax)',
                   'Prices may change without notice',
                   'All sales are final - no refunds except for quality issues',
                   'Unclaimed orders will not be refunded'
