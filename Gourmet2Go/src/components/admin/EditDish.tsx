@@ -19,7 +19,7 @@ const dishSchema = z.object({
     .number("Price must be a number")
     .positive("Price must be positive")
     .refine((val) => Number((val * 100).toFixed(0)) === val * 100, "Max 2 decimal places"),
-  category: z.enum(['Other', 'Soups', 'Salads', 'Sandwiches']),
+  category: z.enum(['Other', 'Soups', 'Salads', 'Sandwiches', 'Entrees', 'Desserts', 'Bowls']),
 });
 
 type DishFormData = z.infer<typeof dishSchema>;
@@ -78,71 +78,103 @@ export const EditDish = () => {
         }
     };
 
-        return (
-            <div className="max-w-3xl mx-auto p-6">
-                <div className="bg-white dark:bg-zinc-800 rounded-2xl shadow-lg border border-gray-200 dark:border-zinc-700 overflow-hidden">
-                    <div className="p-6 border-b border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-900/50">
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Edit Dish</h1>
-                        <p className="text-gray-500 dark:text-gray-400 mt-1">Update dish details below</p>
-                    </div>
-                    <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
-                        {successMsg && (
-                            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-2">
-                                {successMsg}
-                            </div>
-                        )}
-                        {errorMsg && (
-                            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-2">
-                                {errorMsg}
-                            </div>
-                        )}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                                <label className="block text-blue-600 dark:text-blue-400 font-bold text-xs uppercase mb-1">Name</label>
-                                <input
-                                    type="text"
-                                    placeholder="Dish Name"
-                                    className="border rounded px-3 py-2 w-full font-semibold text-gray-900 dark:text-white bg-white dark:bg-zinc-800"
-                                    {...register("name")}
-                                />
-                                {errors.name && <p className="text-red-600 text-sm mt-1">{errors.name.message}</p>}
-                            </div>
-                            <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                                <label className="block text-blue-600 dark:text-blue-400 font-bold text-xs uppercase mb-1">Price</label>
-                                <input
-                                    type="number"
-                                    step="0.01"
-                                    placeholder="0.00"
-                                    className="border rounded px-3 py-2 w-full font-semibold text-gray-900 dark:text-white bg-white dark:bg-zinc-800"
-                                    {...register("price", { valueAsNumber: true })}
-                                />
-                                {errors.price && <p className="text-red-600 text-sm mt-1">{errors.price.message}</p>}
-                            </div>
-                        </div>
-                        <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                            <label className="block text-blue-600 dark:text-blue-400 font-bold text-xs uppercase mb-1">Category</label>
-                            <select
-                                {...register("category")}
-                                className="border rounded px-3 py-2 w-full font-semibold text-gray-900 dark:text-white bg-white dark:bg-zinc-800"
-                            >
-                                <option value="Other">Other</option>
-                                <option value="Soups">Soups</option>
-                                <option value="Salads">Salads</option>
-                                <option value="Sandwiches">Sandwiches</option>
-                            </select>
-                            {errors.category && <p className="text-red-600 text-sm mt-1">{errors.category.message}</p>}
-                        </div>
-                        <div className="pt-4 border-t border-gray-100 dark:border-zinc-700 flex flex-col sm:flex-row gap-3 mt-6">
-                            <button
-                                type="submit"
-                                disabled={isSubmitting}
-                                className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-xl font-bold shadow-lg shadow-green-900/20 transition-all active:scale-95 disabled:opacity-50"
-                            >
-                                {isSubmitting ? "Submitting..." : "Save Changes"}
-                            </button>
-                        </div>
-                    </form>
+      return (
+        <div className="px-4">
+        <div
+            className="w-full max-w-2xl mx-auto 
+            bg-white dark:bg-zinc-800 
+            shadow-lg rounded-2xl 
+            border border-zinc-200 dark:border-zinc-700 
+            p-8 space-y-6"
+        >
+            <div className="text-center space-y-2">
+            <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-white">
+                Edit Dish
+            </h1>
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                Update dish details below.
+            </p>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {/* Name */}
+            <div className="space-y-1">
+                <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                Dish Name
+                </label>
+                <input
+                type="text"
+                placeholder="Enter dish name"
+                className="w-full rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                {...register("name")}
+                />
+                {errors.name && (
+                <p className="text-sm text-red-500">{errors.name.message}</p>
+                )}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                {/* Price */}
+                <div className="space-y-1">
+                <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                    Price
+                </label>
+                <input
+                    type="number"
+                    step="0.01"
+                    placeholder="0.00"
+                    className="w-full rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                    {...register("price", { valueAsNumber: true })}
+                />
+                {errors.price && (
+                    <p className="text-sm text-red-500">{errors.price.message}</p>
+                )}
+                </div>
+
+                {/* Category */}
+                <div className="space-y-1">
+                <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                    Category
+                </label>
+                <select
+                    {...register("category")}
+                    className="w-full rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                >
+                    <option value="Other">Other</option>
+                    <option value="Soups">Soups</option>
+                    <option value="Salads">Salads</option>
+                    <option value="Sandwiches">Sandwiches</option>
+                    <option value="Entrees">Entrees</option>
+                    <option value="Desserts">Desserts</option>
+                    <option value="Bowls">Bowls</option>
+                </select>
+                {errors.category && (
+                    <p className="text-sm text-red-500">{errors.category.message}</p>
+                )}
                 </div>
             </div>
-        );
+
+            <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full rounded-lg bg-linear-to-r from-blue-600 to-green-500 px-4 py-2.5 text-white font-semibold shadow-md hover:scale-[1.02] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+                {isSubmitting ? "Submitting..." : "Save Changes"}
+            </button>
+            </form>
+
+            {successMsg && (
+            <div className="text-sm text-green-600 bg-green-100 dark:bg-green-900/30 dark:text-green-400 px-4 py-2 rounded-lg">
+                {successMsg}
+            </div>
+            )}
+            {errorMsg && (
+            <div className="text-sm text-red-600 bg-red-100 dark:bg-red-900/30 dark:text-red-400 px-4 py-2 rounded-lg">
+                {errorMsg}
+            </div>
+            )}
+        </div>
+        </div>
+    );     
 }

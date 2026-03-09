@@ -21,25 +21,34 @@ export const ListDishes = () => {
     });
 
     return (
-        <table className="min-w-full border border-gray-200 shadow-md rounded-lg">
-          <thead className="bg-gray-100 dark:bg-zinc-700">
+      <div className="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700 shadow-sm">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-700">
+          <thead className="bg-gray-50 dark:bg-zinc-700">
             <tr>
-              <th className="px-3 py-2 text-center align-middle">Dish</th>
-              <th className="px-3 py-2 text-center align-middle">Category</th>
-              <th className="px-3 py-2 text-center align-middle">Price</th>
-              <th className="px-3 py-2 text-center align-middle">Action</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+                Dish
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+                Category
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+                Price
+              </th>
+              <th className="px-4 py-3 text-center text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+                Action
+              </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="bg-white dark:bg-zinc-800 divide-y divide-gray-200 dark:divide-zinc-700">
             {dishes.map((item) => (
-              <tr className="border-b border-gray-200" key={item.dish_id}>
-                <td className="px-3 py-2 text-center align-middle">{item.name}</td>
-                <td className="px-3 py-2 text-center align-middle">{item.category}</td>
-                <td className="px-3 py-2 text-center align-middle">{item.price}</td>
-                <td className="px-3 py-2 text-center align-middle flex justify-center gap-2">
+              <tr key={item.dish_id}>
+                <td className="px-4 py-2 text-sm text-zinc-900 dark:text-white">{item.name}</td>
+                <td className="px-4 py-2 text-sm text-zinc-900 dark:text-white">{item.category}</td>
+                <td className="px-4 py-2 text-sm text-zinc-900 dark:text-white">${item.price.toFixed(2)}</td>
+                <td className="px-4 py-2 text-center">
                   <NavLink
                     to={`/admin/edit-dish/${item.dish_id}`}
-                    className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
+                    className="inline-block bg-green-600 text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-green-700 transition"
                   >
                     Edit Item
                   </NavLink>
@@ -48,5 +57,6 @@ export const ListDishes = () => {
             ))}
           </tbody>
         </table>
+      </div>
     );
 }
