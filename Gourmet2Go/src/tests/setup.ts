@@ -23,31 +23,3 @@ Object.defineProperty(window, 'matchMedia', {
     dispatchEvent: vi.fn(),
   })),
 });
-
-vi.mock('../supabase-client', () => ({
-  supabase: {
-    from: vi.fn(() => ({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          single: vi.fn(() => ({
-            data: null,
-            error: null,
-          })),
-        })),
-        order: vi.fn(() => ({
-          data: null,
-          error: null,
-        })),
-      })),
-    })),
-    auth: {
-      signOut: vi.fn(),
-      getSession: vi.fn(() => ({
-        data: { session: null },
-      })),
-      onAuthStateChange: vi.fn(() => ({
-        data: { subscription: { unsubscribe: vi.fn() } },
-      })),
-    },
-  },
-}));
