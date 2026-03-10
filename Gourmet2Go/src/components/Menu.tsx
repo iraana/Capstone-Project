@@ -44,7 +44,7 @@ const itemVariants = {
 };
 
 const getMenuWindow = () => {
-  const estNow = DateTime.now().setZone("America/New_York");
+  const estNow = DateTime.now().setZone("America/Toronto");
 
   let start = estNow;
 
