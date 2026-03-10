@@ -57,7 +57,8 @@ export const Review = () => {
             const { data, error } = await supabase
                 .from('Orders')
                 .select('order_id, user_id, OrderItems(dish_id)')
-                .eq('user_id', user?.id);
+                .eq('user_id', user?.id)
+                .eq('status', 'FULFILLED');
             if (error) throw error;
             return data;
         },
