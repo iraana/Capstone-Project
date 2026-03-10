@@ -30,6 +30,7 @@ import { OrderDetailsPage } from "./pages/admin/OrderDetailsPage";
 import { AdminScannerPage } from "./pages/admin/AdminScannerPage";
 import { EditDishPage } from "./pages/admin/EditDishPage";
 import { ListDishesPage } from "./pages/admin/ListDishesPage";
+import { AdminInboxPage } from "./pages/admin/AdminInboxPage";
 import { AddToGalleryPage } from "./pages/admin/AddToGalleryPage";
 import { GalleryPage } from "./pages/GalleryPage";
 import { AdminInboxPage } from "./pages/admin/AdminInboxPage";
@@ -52,6 +53,7 @@ function App() {
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/unauthorized" element={<UnauthorizedPage />} />
+            <Route path="/contact" element={<ContactPage />} />
             <Route path="/virtualtour" element={<VirtualTourPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/gallery" element={<GalleryPage />} />
@@ -79,6 +81,7 @@ function App() {
               <Route path="/admin/scanner" element={<AdminScannerPage />} />
               <Route path="/admin/edit-dish/:dishId" element={<EditDishPage />} />
               <Route path="/admin/list-dishes" element={<ListDishesPage />} />
+              <Route path="/admin/inbox" element={<AdminInboxPage />} />
               <Route path="/admin/add-to-gallery" element={<AddToGalleryPage />} />
               <Route path="/admin/inbox" element={<AdminInboxPage />} />
               <Route path="/admin/gallery-manager" element={<ManageGalleryPage />} />
