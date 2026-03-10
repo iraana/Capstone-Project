@@ -62,6 +62,7 @@ export const EditMenu = () => {
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [hasMenu, setHasMenu] = useState<boolean>(false);
+  const [_isLoading, setLoading] = useState<boolean>(false);
   
   const getDayFromDate = (date: string) => {
     const [year, month, day] = date.split('-').map(Number);

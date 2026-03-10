@@ -12,22 +12,18 @@ important for the client and users.
 
 
 - Analytics
-- PrivacyPolicyPage
-- ToSPage
-- NotAuthorizedPage
 - Robust testing
 - Annihilate .env from commit history somehow
-- RLS on **all** database tables
 - Mobile responsiveness, ensure there is a good UI/UX on mobile devices
 - Accessibility standards (can navigate with keyboard, alt-text for images, etc.)
 - Dark Mode full integration
 - Account creation email confirmation, possible MFA as well
 
 
-- Full CRUD on dishes and menus
+- Delete dishes
+- Delete menus
 - Reviews
 - ViewReviews
-- UserSettings
 - Favicon 
 
 - Add Menu: 
@@ -60,6 +56,10 @@ us to optimize some features to work offline.
 - Framer Motion to add animation to our UI
 - react-qr-code to generate the QR for orders
 - yudiel/react-qr-scanner for the QR code scanner component
+- vite-plugin-wasm for the Rust wasm, basically teaches Vite how to handle a binary wasm file as if it were a basic js module
+- vite-plugin-top-level-await to import the wasm
+- GoTrue so the Flask backend can communicate with the Supabase Auth server
+- python-dotenv so the Flask backend can read the .env *locally*
 
 
 ## Conventions 
@@ -183,12 +183,24 @@ Tuesday.
 - Navigation 
 
 
-## Questions for Stakeholders
+## Flask Backend
 
 
-- Can users order days in advance (make a order for Wednesday menu on a Monday)?
-- Do they want peak hours on the app? (analytics)
-- Would they like to have an Admin Chatroom? (trying to sneak in some Supabase Realtime)
+I said we wouldn't add a backend and just use Supabase because it is a BaaS. However, I created a small one because the delete
+user and ban user buttons you can find in auth.users on Supabase cannot be used client side. That's why I created the Flask
+backend, simply to add that functionality. Previously we just added a is_banned boolean field in the profiles table and if true it
+instantly logged the user out. While clever, it isn't ideal compared to the actual ban user function Supabase has and besides we
+had no way to delete accounts from the UI until now. My plan for the Flask backend is to host it with Vercel Serverless.
+
+
+### How do I make it work locally?
+
+
+To make it work locally you'll first need Python installed on your machine. Then, run this in the terminal
+```pip install -r requirements.txt``` and after run the index.py file in the api folder. Everything else is 
+configured and you can use the delete user and ban user buttons. However, you don't really need to do this if you don't want to 
+use those features. The app works just fine without the Flask backend running. Although, if you do want to try those features 
+then you'll have to have it running.
 
 
 ## Misc

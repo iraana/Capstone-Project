@@ -135,7 +135,7 @@ export const AddDish = () => {
             type="submit"
             disabled={isSubmitting}
             className="w-full rounded-lg 
-            bg-gradient-to-r from-blue-600 to-green-500 
+            bg-linear-to-r from-blue-600 to-green-500 
             px-4 py-2.5 text-white font-semibold 
             shadow-md hover:scale-[1.02] transition-transform 
             disabled:opacity-50 disabled:cursor-not-allowed"

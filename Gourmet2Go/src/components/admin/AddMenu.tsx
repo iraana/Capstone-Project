@@ -5,14 +5,14 @@ import { supabase } from '../../../supabase-client';
 import * as z from 'zod';
 import { useQuery } from '@tanstack/react-query';
 import { NavLink } from 'react-router';
-
+ 
 type Dish = {
   dish_id: number;
   name: string;
   price: number;
   category: string;
 };
-
+ 
 const menuSchema = z.object({
   date: z.string().refine(
     (val) => !isNaN(Date.parse(val)),
@@ -32,20 +32,20 @@ const menuSchema = z.object({
       'Each dish can only be added once'
     ),
 });
-
+ 
 type MenuFormValues = z.infer<typeof menuSchema>;
-
+ 
 const getDayFromDate = (date: string) => {
   const [year, month, day] = date.split('-').map(Number);
   const newDate = new Date(year, month - 1, day);
   return newDate.toLocaleDateString('en-US', { weekday: 'long' });
 };
-
+ 
 export const AddMenu = () => {
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
+ 
   const {
     control,
     handleSubmit,
@@ -60,12 +60,12 @@ export const AddMenu = () => {
       dishes: [],
     },
   });
-
+ 
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'dishes',
   });
-
+ 
   const { data: dishes = [] } = useQuery({
     queryKey: ['dishes'],
     queryFn: async () => {
@@ -73,17 +73,17 @@ export const AddMenu = () => {
         .from('Dishes')
         .select('dish_id, name, price, category')
         .order('name');
-
+ 
       if (error) throw error;
-
+ 
       return data as Dish[];
     },
     refetchOnWindowFocus: true,
   });
-
+ 
   const onSubmit = async (data: MenuFormValues) => {
     setLoading(true);
-    
+   
     try {
       const day = getDayFromDate(data.date);
       const { data: menuData, error: menuError } = await supabase
@@ -94,21 +94,21 @@ export const AddMenu = () => {
         })
         .select('menu_day_id')
         .single();
-
+ 
       if (menuError) throw menuError;
-
+ 
       const menuDayDishes = data.dishes.map((d) => ({
         menu_id: menuData.menu_day_id,
         dish_id: d.dish_id,
         stock: d.stock,
       }));
-
+ 
       const { error: dishesError } = await supabase
         .from('MenuDayDishes')
         .insert(menuDayDishes);
-
+ 
       if (dishesError) throw dishesError;
-
+ 
       setSuccessMsg('Menu saved successfully!');
       reset();
     } catch (err: any) {
@@ -117,14 +117,14 @@ export const AddMenu = () => {
       setLoading(false);
     }
   };
-
-
+ 
+ 
   const selectedDishIds = fields.map((_, i) => watch(`dishes.${i}.dish_id`));
-
+ 
   const availableDishes = dishes.filter(
     (dish) => !selectedDishIds.includes(dish.dish_id)
   );
-
+ 
   const selectedDishes = fields
     .map((_, index) => {
       const dishId = watch(`dishes.${index}.dish_id`);
@@ -133,78 +133,127 @@ export const AddMenu = () => {
       return dish ? { ...dish, stock, fieldIndex: index } : null;
     })
     .filter((d) => d !== null);
-
+ 
   const handleAddToMenu = (dish: Dish) => {
     append({ dish_id: dish.dish_id, stock: 1 });
   };
-
+ 
   const handleRemoveFromMenu = (fieldIndex: number) => {
     remove(fieldIndex);
   };
-
+ 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="p-6 space-y-6">
-        <h1 className="text-2xl font-bold">
-          Add Menu for Selected Date
-        </h1> */}
+      <div className="space-y-6">
+        <div className="text-center space-y-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900 dark:text-white">
+            Add Menu for Selected Date
+          </h1>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+            Pick dishes and assign stock for the day.
+          </p>
+        </div>
 
         {successMsg && (
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+          <div className="text-sm text-green-600 bg-green-100 dark:bg-green-900/30 dark:text-green-400 px-4 py-2 rounded-lg">
             {successMsg}
           </div>
         )}
-
         {errorMsg && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          <div className="text-sm text-red-600 bg-red-100 dark:bg-red-900/30 dark:text-red-400 px-4 py-2 rounded-lg">
             {errorMsg}
           </div>
         )}
 
-        <div>
-          <label className="block font-semibold mb-1">Menu Date</label>
+        {/* Date Picker */}
+        <div className="space-y-1">
+          <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            Menu Date
+          </label>
           <input
             type="date"
-            {...register('date')}
-            className="border rounded px-3 py-2"
+            {...register("date")}
+            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
           />
-          
-          {errors.date && (
-            <p className="text-red-600 text-sm">{errors.date.message}</p>
-          )}
+          {errors.date && <p className="text-red-500 text-sm">{errors.date.message}</p>}
         </div>
 
-
-
+        {/* Preview Table */}
         <div>
           <h2 className="font-semibold text-lg mb-2">Current Menu Preview</h2>
-          <table className="min-w-full border border-gray-200 shadow-md rounded-lg">
+          <table className="min-w-full border border-gray-200 shadow-sm rounded-lg">
             <thead className="bg-gray-100 dark:bg-zinc-700">
               <tr>
-                <th className="px-3 py-2 text-center align-middle">Dish</th>
-                <th className="px-3 py-2 text-center align-middle">Category</th>
-                <th className="px-3 py-2 text-center align-middle">Price</th>
-                <th className="px-3 py-2 text-center align-middle">Action</th>
+                <th></th>
+                <th className="px-3 py-2 text-center">Dish</th>
+                <th className="px-3 py-2 text-center">Category</th>
+                <th className="px-3 py-2 text-center">Price</th>
+                <th className="px-3 py-2 text-center">Stock</th>
               </tr>
             </thead>
             <tbody>
-              {availableDishes.map((item) => (
-                <tr className="border-b border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition" key={item.dish_id}>
-                  <td className="px-3 py-2 text-center align-middle">{item.name}</td>
-                  <td className="px-3 py-2 text-center align-middle">{item.category}</td>
-                  <td className="px-3 py-2 text-center align-middle">{item.price}</td>
-                  <td className="px-3 py-2 text-center align-middle flex justify-center gap-2">
+              {selectedDishes.map((item) => (
+                <tr key={item.fieldIndex} className="border-b border-gray-200">
+                  <td className="px-3 py-2 text-center">
                     <button
-                      className="rounded-lg bg-[#00659B] px-4 py-1.5 text-white text-sm font-medium shadow  hover:bg-[#005082] transition"
                       type="button"
-                      onClick={() => handleAddToMenu(item)}
+                      onClick={() => handleRemoveFromMenu(item.fieldIndex)}
+                      className="px-3 py-1 rounded hover:bg-gray-200"
+                    >
+                      ❌
+                    </button>
+                  </td>
+                  <td className="px-3 py-2 text-center">{item.name}</td>
+                  <td className="px-3 py-2 text-center">{item.category}</td>
+                  <td className="px-3 py-2 text-center">{item.price}</td>
+                  <td className="px-3 py-2 text-center">
+                    <input
+                      type="number"
+                      min={1}
+                      {...register(`dishes.${item.fieldIndex}.stock`, { valueAsNumber: true })}
+                      className="w-16 px-2 py-1 text-sm border rounded text-center"
+                    />
+                    {errors.dishes?.[item.fieldIndex]?.stock && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.dishes[item.fieldIndex]?.stock?.message}
+                      </p>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Dishes Table */}
+        <div>
+          <h2 className="font-semibold text-lg mt-6 mb-2">Available Menu Items</h2>
+          <table className="min-w-full border border-gray-200 shadow-sm rounded-lg">
+            <thead className="bg-gray-100 dark:bg-zinc-700">
+              <tr>
+                <th className="px-3 py-2 text-center">Dish</th>
+                <th className="px-3 py-2 text-center">Category</th>
+                <th className="px-3 py-2 text-center">Price</th>
+                <th className="px-3 py-2 text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {availableDishes.map((dish) => (
+                <tr key={dish.dish_id} className="border-b border-gray-200">
+                  <td className="px-3 py-2 text-center">{dish.name}</td>
+                  <td className="px-3 py-2 text-center">{dish.category}</td>
+                  <td className="px-3 py-2 text-center">{dish.price}</td>
+                  <td className="px-3 py-2 text-center flex justify-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleAddToMenu(dish)}
+                      className="bg-[#00659B] text-white px-3 py-1 rounded hover:bg-[#005082]"
                     >
                       Add to Menu
                     </button>
                     <NavLink
-                      to={`/menu/item/edit/${item.dish_id}`}
-                      className="rounded-lg bg-green-600 px-4 py-1.5 text-white text-sm font-medium shadow hover:bg-green-700 transition"
-
+                      to={`/admin/edit-dish/${dish.dish_id}`}
+                      className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
                     >
                       Edit Item
                     </NavLink>
@@ -215,52 +264,16 @@ export const AddMenu = () => {
           </table>
         </div>
 
-        <h2 className="font-semibold text-lg mt-6 mb-2">Available Menu Items</h2>
-
-        <table className="min-w-full border border-gray-200 shadow-md rounded-lg">
-          <thead className="bg-gray-100 dark:bg-zinc-700">
-            <tr>
-              <th className="px-3 py-2 text-center align-middle">Dish</th>
-              <th className="px-3 py-2 text-center align-middle">Category</th>
-              <th className="px-3 py-2 text-center align-middle">Price</th>
-              <th className="px-3 py-2 text-center align-middle">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {availableDishes.map((item) => (
-              <tr className="border-b border-gray-200" key={item.dish_id}>
-                <td className="px-3 py-2 text-center align-middle">{item.name}</td>
-                <td className="px-3 py-2 text-center align-middle">{item.category}</td>
-                <td className="px-3 py-2 text-center align-middle">{item.price}</td>
-                <td className="px-3 py-2 text-center align-middle flex justify-center gap-2">
-                  <button
-                    className="bg-[#00659B] text-white px-3 py-1 rounded hover:bg-[#005082]"
-                    type="button"
-                    onClick={() => handleAddToMenu(item)}
-                  >
-                    Add to Menu
-                  </button>
-                  <NavLink
-                    to={`/menu/item/edit/${item.dish_id}`}
-                    className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
-                  >
-                    Edit Item
-                  </NavLink>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        <div className="flex gap-4 mt-4">
+        <div className="flex justify-end mt-4">
           <button
             type="submit"
             disabled={loading}
-            className="rounded-xl bg-blue-600 px-6 py-2.5 text-white font-semibold shadow-lg hover:scale-[1.02]  hover:bg-blue-700 transition-transform disabled:opacity-50"
-             >
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          >
             {loading ? 'Saving...' : 'Save Menu'}
           </button>
         </div>
+
       </div>
     </form>
   );

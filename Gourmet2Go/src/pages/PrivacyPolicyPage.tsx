@@ -1,6 +1,7 @@
+const LAST_UPDATED = 'February 17, 2026';
 export const PrivacyPolicyPage = () => {
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-zinc-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-zinc-900 -mt-20">
       
      
       <div className="relative bg-primary text-white py-20">
@@ -19,7 +20,7 @@ export const PrivacyPolicyPage = () => {
             Your privacy is important to us. Learn how we collect, use, and protect your information.
           </p>
           <p className="text-sm text-blue-200 mt-4">
-            Last Updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+            Last Updated: {LAST_UPDATED}
           </p>
         </div>
       </div>
@@ -66,9 +67,7 @@ export const PrivacyPolicyPage = () => {
                   {[
                     'Full name (first and last name)',
                     'Email address',
-                    'Student ID number',
-                    'Phone number (optional)',
-                    'Dietary preferences and restrictions'
+                    'Student ID number'
                   ].map((item, index) => (
                     <li key={index} className="flex items-start">
                       <span className="text-green-500 mr-2 text-lg shrink-0">✓</span>
@@ -106,7 +105,7 @@ export const PrivacyPolicyPage = () => {
                   2.3 Payment Information
                 </h3>
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                  Payment is processed at pickup using card terminals. We do not store your full 
+                  Payment is required at pickup by card only (no cash accepted). We do not store your 
                   credit card information on our servers. Payment processing is handled securely 
                   through our payment provider in compliance with PCI DSS standards.
                 </p>
@@ -123,9 +122,7 @@ export const PrivacyPolicyPage = () => {
                   {[
                     'IP address and device information',
                     'Browser type and version',
-                    'Operating system',
-                    'Pages visited and time spent on our platform',
-                    'Referring website addresses'
+                    'Operating system'
                   ].map((item, index) => (
                     <li key={index} className="flex items-start">
                       <span className="text-green-500 mr-2 text-lg shrink-0">✓</span>
@@ -168,48 +165,33 @@ export const PrivacyPolicyPage = () => {
           </div>
 
         
-          <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-zinc-700">
-            <h2 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-4">
-              4. How We Share Your Information
-            </h2>
-            <div className="prose prose-lg text-gray-700 dark:text-gray-300 leading-relaxed space-y-4">
-              <p>
-                We do not sell, trade, or rent your personal information to third parties. 
-                We may share your information only in the following circumstances:
-              </p>
-              
-              <div className="space-y-4 mt-4">
-                <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-primary p-4 rounded-r-lg">
-                  <h4 className="font-bold text-gray-900 dark:text-white mb-2">Service Providers</h4>
-                  <p className="text-sm text-gray-700 dark:text-gray-300">
-                    With trusted third-party vendors who assist in operating our platform 
-                    (e.g., payment processors, email service providers)
-                  </p>
-                </div>
+      <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-zinc-700">
+  <h2 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-4">
+    4. How We Share Your Information
+  </h2>
+  <div className="prose prose-lg text-gray-700 dark:text-gray-300 leading-relaxed space-y-4">
+    <p>
+      We do not sell, trade, or rent your personal information to third parties. 
+      We may share your information only in the following circumstances:
+    </p>
+    
+    <div className="space-y-4 mt-4">
+      <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-primary p-4 rounded-r-lg">
+        <h4 className="font-bold text-gray-900 dark:text-white mb-2">College Administration</h4>
+        <p className="text-sm text-gray-700 dark:text-gray-300">
+          When required for institutional reporting or compliance purposes
+        </p>
+      </div>
 
-                <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-primary p-4 rounded-r-lg">
-                  <h4 className="font-bold text-gray-900 dark:text-white mb-2">University Administration</h4>
-                  <p className="text-sm text-gray-700 dark:text-gray-300">
-                    When required for institutional reporting or compliance purposes
-                  </p>
-                </div>
-
-                <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-primary p-4 rounded-r-lg">
-                  <h4 className="font-bold text-gray-900 dark:text-white mb-2">Legal Obligations</h4>
-                  <p className="text-sm text-gray-700 dark:text-gray-300">
-                    When required by law, court order, or government regulation
-                  </p>
-                </div>
-
-                <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-primary p-4 rounded-r-lg">
-                  <h4 className="font-bold text-gray-900 dark:text-white mb-2">Emergency Situations</h4>
-                  <p className="text-sm text-gray-700 dark:text-gray-300">
-                    To protect health and safety in cases involving food allergies or medical emergencies
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+      <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-primary p-4 rounded-r-lg">
+        <h4 className="font-bold text-gray-900 dark:text-white mb-2">Emergency Situations</h4>
+        <p className="text-sm text-gray-700 dark:text-gray-300">
+          To protect health and safety in cases involving food allergies or medical emergencies
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
 
           <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-zinc-700">
             <h2 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-4">
@@ -270,60 +252,10 @@ export const PrivacyPolicyPage = () => {
             </div>
           </div>
 
-          
+         
           <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-zinc-700">
             <h2 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-4">
-              7. Cookies and Tracking Technologies
-            </h2>
-            <div className="prose prose-lg text-gray-700 dark:text-gray-300 leading-relaxed space-y-4">
-              <p>
-                We use cookies and similar tracking technologies to enhance your experience on our 
-                platform. Cookies are small data files stored on your device.
-              </p>
-              
-              <div className="space-y-3 mt-4">
-                <div className="flex items-start">
-                  <span className="mr-3 text-2xl shrink-0">🍪</span>
-                  <div>
-                    <h4 className="font-bold text-gray-900 dark:text-white mb-1">Essential Cookies</h4>
-                    <p className="text-sm text-gray-700 dark:text-gray-300">
-                      Required for basic site functionality (login, cart management)
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start">
-                  <span className="mr-3 text-2xl shrink-0">⚙️</span>
-                  <div>
-                    <h4 className="font-bold text-gray-900 dark:text-white mb-1">Preference Cookies</h4>
-                    <p className="text-sm text-gray-700 dark:text-gray-300">
-                      Remember your settings and preferences
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start">
-                  <span className="mr-3 text-2xl shrink-0">📊</span>
-                  <div>
-                    <h4 className="font-bold text-gray-900 dark:text-white mb-1">Analytics Cookies</h4>
-                    <p className="text-sm text-gray-700 dark:text-gray-300">
-                      Help us understand how you use our platform
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <p className="mt-4">
-                You can control cookie settings through your browser preferences, though disabling 
-                certain cookies may affect site functionality.
-              </p>
-            </div>
-          </div>
-
-          
-          <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-zinc-700">
-            <h2 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-4">
-              8. Your Privacy Rights
+              7. Your Privacy Rights
             </h2>
             <div className="prose prose-lg text-gray-700 dark:text-gray-300 leading-relaxed space-y-4">
               <p>
@@ -365,41 +297,7 @@ export const PrivacyPolicyPage = () => {
           
           <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-zinc-700">
             <h2 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-4">
-              9. Third-Party Links
-            </h2>
-            <div className="prose prose-lg text-gray-700 dark:text-gray-300 leading-relaxed space-y-4">
-              <p>
-                Our platform may contain links to third-party websites or services that are not 
-                operated by us. If you click on a third-party link, you will be directed to that 
-                third party's site.
-              </p>
-              <p>
-                We strongly advise you to review the Privacy Policy of every site you visit. We 
-                have no control over and assume no responsibility for the content, privacy policies, 
-                or practices of any third-party sites or services.
-              </p>
-            </div>
-          </div>
-
-          
-          <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-zinc-700">
-            <h2 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-4">
-              10. Children's Privacy
-            </h2>
-            <div className="prose prose-lg text-gray-700 dark:text-gray-300 leading-relaxed space-y-4">
-              <p>
-                Our service is intended for use by college students and staff members. We do not 
-                knowingly collect personally identifiable information from children under 13. If 
-                you are a parent or guardian and you are aware that your child has provided us with 
-                personal information, please contact us.
-              </p>
-            </div>
-          </div>
-
-         
-          <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-zinc-700">
-            <h2 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-4">
-              11. Changes to This Privacy Policy
+              8. Changes to This Privacy Policy
             </h2>
             <div className="prose prose-lg text-gray-700 dark:text-gray-300 leading-relaxed space-y-4">
               <p>
@@ -414,29 +312,6 @@ export const PrivacyPolicyPage = () => {
             </div>
           </div>
 
-          
-          <div className="bg-primary text-white rounded-lg shadow-md p-8">
-            <h2 className="text-3xl font-display font-bold mb-4">
-              12. Contact Us
-            </h2>
-            <p className="text-blue-100 mb-6">
-              If you have any questions about this Privacy Policy, please contact us:
-            </p>
-            <div className="space-y-3 text-blue-100">
-              <p className="flex items-center">
-                <span className="mr-3 text-xl">📧</span>
-                Email: <a href="mailto:privacy@gourmet2go.com" className="ml-2 hover:underline font-medium">privacy@gourmet2go.com</a>
-              </p>
-              <p className="flex items-center">
-                <span className="mr-3 text-xl">📍</span>
-                Location: Room L1170, Culinary Department, Sault College
-              </p>
-              <p className="flex items-center">
-                <span className="mr-3 text-xl">🕐</span>
-                Service Hours: Wednesday & Thursday, 12:15 - 12:45 PM
-              </p>
-            </div>
-          </div>
 
         </div>
       </div>

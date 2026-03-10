@@ -98,7 +98,4 @@ export const ListDishes = () => {
         </div>
       </div>
     );
-
-    
-
 }

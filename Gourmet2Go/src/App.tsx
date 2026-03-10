@@ -28,6 +28,13 @@ import { ContactPage } from "./pages/ContactPage";
 import { UserOrdersPage } from "./pages/UserOrdersPage";
 import { OrderDetailsPage } from "./pages/admin/OrderDetailsPage";
 import { AdminScannerPage } from "./pages/admin/AdminScannerPage";
+import { EditDishPage } from "./pages/admin/EditDishPage";
+import { ListDishesPage } from "./pages/admin/ListDishesPage";
+import { AdminInboxPage } from "./pages/admin/AdminInboxPage";
+import { AddToGalleryPage } from "./pages/admin/AddToGalleryPage";
+import { GalleryPage } from "./pages/GalleryPage";
+import { ManageGalleryPage } from "./pages/admin/ManageGalleryPage";
+import { AdminReviewsPage } from "./pages/admin/AdminReviewsPage";
 
 function App() {
   return (
@@ -49,7 +56,9 @@ function App() {
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/virtualtour" element={<VirtualTourPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/gallery" element={<GalleryPage />} />
 
+            {/* Auth only routes */}
             <Route element={<ProtectedRoute allowedRoles={["USER", "ADMIN"]} />}>
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/successful-order" element={<SuccessfulOrderPage />} />
@@ -63,7 +72,6 @@ function App() {
               <Route path="/admin/add-dish" element={<AddDishPage />} />
               <Route path="/admin/add-menu" element={<AddMenuPage />} />
               <Route path="/admin/edit-menu" element={<EditMenuPage />} />
-              <Route path="/admin/edit-menu/:date" element={<EditMenuPage />} />
               <Route path="/admin/user-manager" element={<ManageUsersPage />} />
               <Route path="/admin/admin-manager" element={<ManageAdminsPage />} />
               <Route path="/admin/pending-orders" element={<PendingOrdersPage />} />
@@ -71,6 +79,13 @@ function App() {
               <Route path="/admin/cancelled-orders" element={<CancelledOrdersPage />} />
               <Route path="/admin/order/:order_number" element={<OrderDetailsPage />} />
               <Route path="/admin/scanner" element={<AdminScannerPage />} />
+              <Route path="/admin/edit-dish/:dishId" element={<EditDishPage />} />
+              <Route path="/admin/list-dishes" element={<ListDishesPage />} />
+              <Route path="/admin/inbox" element={<AdminInboxPage />} />
+              <Route path="/admin/add-to-gallery" element={<AddToGalleryPage />} />
+              <Route path="/admin/inbox" element={<AdminInboxPage />} />
+              <Route path="/admin/gallery-manager" element={<ManageGalleryPage />} />
+              <Route path="/admin/reviews" element={<AdminReviewsPage />} /> 
             </Route>
 
           </Routes>
