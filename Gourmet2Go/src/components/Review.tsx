@@ -51,6 +51,21 @@ export const Review = () => {
         refetchOnWindowFocus: true,
     });
 
+    const { data: orders } = useQuery({
+        queryKey: ['orders', user?.id],
+        queryFn: async () => {
+            const { data, error } = await supabase
+                .from('Orders')
+                .select('order_id, user_id, OrderItems(dish_id)')
+                .eq('user_id', user?.id);
+            if (error) throw error;
+            return data;
+        },
+        enabled: !!user,
+    });
+
+    const reviewableDishes = dishes.filter(dish => orders?.some(order => order.OrderItems?.some(item => item.dish_id === dish.dish_id)));
+
     const isAuthorized = user && (role === "USER" || role === "ADMIN");
 
     const onSubmit = async (data: ReviewFormData) => {
@@ -88,14 +103,15 @@ export const Review = () => {
 
                 <div className="p-6 border-b border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-900/50">
                     <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Your Review</h1>
-                    <p className="text-gray-500 dark:text-gray-400 mt-1">Share your thoughts about this dish</p>
+                    <h2 className="text-sm text-gray-500 dark:text-gray-400">(Disclaimer: Only one review can be submitted per dish, and all reviews are final)</h2>
+                    <p className="text-gray-500 dark:text-gray-400 mt-1">Share your thoughts about this dish:</p>
                     <select
                         className="w-full border rounded px-3 py-2 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white"
                         value={selectedDish}
                         onChange={(e) => setSelectedDish(e.target.value)}
                     >
                         <option value="">Select a dish</option>
-                        {dishes?.map((dish) => (
+                        {reviewableDishes?.map((dish) => (
                             <option key={dish.dish_id} value={dish.dish_id}>
                                 {dish.name}
                             </option>
@@ -153,7 +169,7 @@ export const Review = () => {
                             <div className="flex gap-4 mt-4">
                                 <button
                                     type="submit"
-                                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl font-bold shadow-lg shadow-green-900/20 transition-all active:scale-95"
+                                    className="bg-green-600 hover:bg-green-700 text-white cursor-pointer px-4 py-2 rounded-xl font-bold shadow-lg shadow-green-900/20 transition-all active:scale-95"
                                 >
                                     Submit Review
                                 </button>

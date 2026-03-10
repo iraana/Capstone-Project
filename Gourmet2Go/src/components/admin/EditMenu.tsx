@@ -171,6 +171,40 @@ const handleDateChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
   // Optionally reset form state here if needed
 };
 
+const {data: associatedOrders} = useQuery({
+  queryKey: ['associatedOrders', menuDate],
+  queryFn: async () => {
+    const { data, error } = await supabase
+      .from('Orders')
+      .select('order_id, MenuDays(date)')
+      .eq('MenuDays.date', menuDate);
+    if (error) throw error;
+    return data;
+  },
+  enabled: !!menuDate,
+  });
+
+const handleDeleteMenu = async () => {
+  const confirmed = window.confirm("Are you sure you want to delete this menu? This action cannot be undone.");
+  if (!confirmed) return;
+  try {
+    if (associatedOrders && associatedOrders.length > 0) {
+      alert("Cannot delete menu with existing orders.");
+      return;
+    } else {
+      const { error: deleteMenuError } = await supabase
+        .from('MenuDays')
+        .delete()
+        .eq('date', menuDate);  
+      if (deleteMenuError) {
+        console.error("Error deleting menu:", deleteMenuError);
+      }
+    }
+  }catch (error) {
+    console.error("Error deleting menu:", error);
+  }
+}
+
   const onSubmit = async (formData: MenuFormValues) => {
     const originalDishes = menuItems; 
     const updatedDishes = formData.dishes;
@@ -299,7 +333,7 @@ const handleDateChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
                               </td>
                               <td className="p-3 text-center">
                                 <button
-                                  className="bg-red-600 hover:bg-red-700 text-white py-1 px-3 rounded-xl font-semibold transition-all active:scale-95"
+                                  className="bg-red-600 hover:bg-red-700 text-white cursor-pointer py-1 px-3 rounded-xl font-semibold transition-all active:scale-95"
                                   type="button"
                                   onClick={() => handleRemoveItem(index)}
                                 >
@@ -333,7 +367,7 @@ const handleDateChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
                             <td className="p-3 text-gray-900 dark:text-white">{item.price}</td>
                             <td className="p-3 text-center flex justify-center gap-2">
                               <button
-                                className="bg-[#00659B] hover:bg-[#005082] text-white py-1 px-3 rounded-xl font-semibold transition-all active:scale-95"
+                                className="bg-[#00659B] hover:bg-[#005082] text-white cursor-pointer py-1 px-3 rounded-xl font-semibold transition-all active:scale-95"
                                 type="button"
                                 onClick={() => handleAddToMenu(item)}
                               >
@@ -357,7 +391,7 @@ const handleDateChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
               <div className="flex justify-center">
                 <button
                   type="button"
-                  className="bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-xl font-bold shadow-lg shadow-blue-900/20 transition-all active:scale-95"
+                  className="bg-blue-600 hover:bg-blue-700 text-white cursor-pointer py-3 px-6 rounded-xl font-bold shadow-lg shadow-blue-900/20 transition-all active:scale-95"
                   onClick={() => {navigate('/admin/add-menu');}}
                 >
                   Create Menu
@@ -368,13 +402,20 @@ const handleDateChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
             <div className="pt-4 border-t border-gray-100 dark:border-zinc-700 flex flex-col sm:flex-row gap-3 mt-6">
               <button
                 type="submit"
-                className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-xl font-bold shadow-lg shadow-green-900/20 transition-all active:scale-95"
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white cursor-pointer py-3 px-4 rounded-xl font-bold shadow-lg shadow-green-900/20 transition-all active:scale-95"
               >
                 Save Changes
               </button>
               <button
                 type="button"
-                className="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-3 px-4 rounded-xl font-semibold transition-all active:scale-95"
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white cursor-pointer py-3 px-4 rounded-xl font-bold shadow-lg shadow-red-900/20 transition-all active:scale-95"
+                onClick={handleDeleteMenu}
+              >
+                Delete Menu
+              </button>
+              <button
+                type="button"
+                className="flex-1 bg-gray-600 hover:bg-gray-700 text-white cursor-pointer py-3 px-4 rounded-xl font-semibold transition-all active:scale-95"
                 onClick={() => navigate('/admin')}
               >
                 Cancel
