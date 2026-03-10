@@ -37,7 +37,7 @@ export const AdminReviews = () => {
 
   
   const { data: reviews = [], isLoading } = useQuery<Review[]>({
-    queryKey: ['admin_reviews', filter, search, startDate, endDate],
+    queryKey: ['admin_reviews', startDate, endDate],
     queryFn: async () => {
       let query = supabase
         .from('Reviews') 
