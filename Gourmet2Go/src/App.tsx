@@ -33,8 +33,8 @@ import { ListDishesPage } from "./pages/admin/ListDishesPage";
 import { AdminInboxPage } from "./pages/admin/AdminInboxPage";
 import { AddToGalleryPage } from "./pages/admin/AddToGalleryPage";
 import { GalleryPage } from "./pages/GalleryPage";
-import { AdminInboxPage } from "./pages/admin/AdminInboxPage";
 import { ManageGalleryPage } from "./pages/admin/ManageGalleryPage";
+import { AdminReviewsPage } from "./pages/admin/AdminReviewsPage";
 
 function App() {
   return (
@@ -85,6 +85,7 @@ function App() {
               <Route path="/admin/add-to-gallery" element={<AddToGalleryPage />} />
               <Route path="/admin/inbox" element={<AdminInboxPage />} />
               <Route path="/admin/gallery-manager" element={<ManageGalleryPage />} />
+              <Route path="/admin/reviews" element={<AdminReviewsPage />} /> 
             </Route>
 
           </Routes>
