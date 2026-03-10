@@ -15,8 +15,9 @@
 [![GitHub last commit](https://img.shields.io/github/last-commit/iraana/Capstone-Project)](#)
 ![Visitors](https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2Firaana%2FCapstone-Project&label=visitors&countColor=%230c7ebe&style=flat&labelStyle=none)
 [![Contributors](https://img.shields.io/github/contributors/iraana/Capstone-Project?style=flat&color=FFD700&logo=github)](https://github.com/iraana/Capstone-Project/graphs/contributors)
-[![Tests](https://img.shields.io/badge/tests-80+%20passing-brightgreen)](https://github.com/iraana/Capstone-Project/tree/main/Gourmet2Go/src/tests)
+[![Tests](https://img.shields.io/badge/tests-90+%20passing-brightgreen)](https://github.com/iraana/Capstone-Project/tree/main/Gourmet2Go/src/tests)
 [![CodeQL](https://github.com/iraana/Capstone-Project/actions/workflows/codeql.yml/badge.svg)](https://github.com/iraana/Capstone-Project/security/code-scanning)
+[![Live Deployment](https://img.shields.io/badge/Live-Deployment-brightgreen?style=flat)](https://gourmet2go.vercel.app/)
 
 
 **We would appreciate it if you starred this repo and shared it on social media**

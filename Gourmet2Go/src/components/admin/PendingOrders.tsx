@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../../../supabase-client";
 import { Loader } from "../Loader";
 import { useNavigate } from "react-router";
+import { formatOrderDateTime } from "../../utils/formatOrderDateTime";
 
 interface Dish {
   dish_id: number;
@@ -48,6 +49,7 @@ export const PendingOrders = () => {
   const navigate = useNavigate();
   const [selectedMenuId, setSelectedMenuId] = useState<number | "ALL">("ALL");
   const [search, setSearch] = useState("");
+  const [ processingId, setProcessingId ] = useState<number | null>(null);
 
   const { data: orders, isLoading, error } = useQuery({
     queryKey: ["pending_orders"],
@@ -122,6 +124,25 @@ export const PendingOrders = () => {
       queryClient.invalidateQueries({ queryKey: ["pending_orders"] }); // Re-fetch after
     },
   });
+
+  const handleDelete = async (order: Order) => {
+    setProcessingId(order.order_id);
+
+    try {
+      const { error } = await supabase.rpc("cancel_pending_order", {
+        p_order_id: order.order_id,
+      });
+
+      if (error) throw error;
+
+      queryClient.invalidateQueries({ queryKey: ["pending_orders"] });
+    } catch (err) {
+      console.error("Failed to delete order:", err);
+      alert("Failed to delete order. Please try again.");
+    } finally {
+      setProcessingId(null);
+    }
+  };
 
   const availableMenus = useMemo(() => {
     if (!orders) return []; // If no orders
@@ -286,16 +307,11 @@ export const PendingOrders = () => {
                 <div className="text-right text-xs text-gray-400 dark:text-zinc-400">
                   <div>
                     {order.MenuDays
-                      ? new Date(order.MenuDays.date).toLocaleDateString()
+                      ? "Menu day: " + new Date(order.MenuDays.date).toLocaleDateString()
                       : "No Date"}
                   </div>
                   <div>
-                    {new Date(
-                      `${order.MenuDays.date}T${order.timestamp}`
-                    ).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
+                    {formatOrderDateTime(order.timestamp)}
                   </div>
                 </div>
               </div>
@@ -351,12 +367,13 @@ export const PendingOrders = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {order.status !== "FULFILLED" && (
                     <button
-                      onClick={() =>
+                      onClick={(e) => {
+                        e.stopPropagation();
                         updateStatusMutation.mutate({
                           orderId: order.order_id,
                           newStatus: "FULFILLED",
-                        })
-                      }
+                        });
+                      }}
                       disabled={updateStatusMutation.isPending}
                       className="bg-green-600 hover:bg-green-700 text-white py-2 rounded-md text-sm font-medium transition disabled:opacity-50"
                     >
@@ -384,12 +401,13 @@ export const PendingOrders = () => {
 
                   {order.status !== "FULFILLED" && (
                     <button
-                      onClick={() =>
+                      onClick={(e) => {
+                        e.stopPropagation();
                         updateStatusMutation.mutate({
                           orderId: order.order_id,
                           newStatus: "INACTIVE",
-                        })
-                      }
+                        });
+                      }}
                       disabled={updateStatusMutation.isPending}
                       className="bg-white dark:bg-zinc-800 
                       border border-red-200 dark:border-red-700 
@@ -398,6 +416,24 @@ export const PendingOrders = () => {
                       py-2 rounded-md text-sm font-medium transition"
                     >
                       Cancel
+                    </button>
+                  )}
+
+                  {order.status !== "FULFILLED" && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation(); 
+                        handleDelete(order);
+                      }}
+
+                      disabled={processingId === order.order_id}
+                      className="bg-white dark:bg-zinc-800 
+                      border border-red-200 dark:border-red-700 
+                      text-red-600 dark:text-red-400 
+                      hover:bg-red-50 dark:hover:bg-red-900/30 
+                      py-2 rounded-md text-sm font-medium transition"
+                    >
+                      {processingId === order.order_id ? "Cancelling..." : "Delete"}
                     </button>
                   )}
                 </div>
