@@ -22,6 +22,7 @@ const getNavLinks = (): NavLinkType[] => [
   { name: "Gallery", path: "/gallery" },
   { name: "Menu", path: "/" },
   { name: "My Orders", path: "/my-orders", roles: ["USER", "ADMIN"]},
+  { name: "Review", path: "/review", roles: ["USER", "ADMIN"]},
   { name: "Virtual Tour", path: "/virtualtour" }
 ];
 

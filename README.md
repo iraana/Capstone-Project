@@ -95,6 +95,7 @@ We will add like 4 or 5 screenshots of stuff not in the trailer
 ![Vite Plugin WASM](https://img.shields.io/badge/Vite_Plugin_WASM-646CFF?style=flat&logo=vite&logoColor=white)
 ![Vite Plugin Top Level Await](https://img.shields.io/badge/Vite_Plugin_Top_Level_Await-646CFF?style=flat&logo=vite&logoColor=white)
 ![GoTrue](https://img.shields.io/badge/GoTrue-3ECF8E?style=flat&logo=supabase&logoColor=white)
+![Luxon](https://img.shields.io/badge/Luxon-F7DF1E?style=flat&logo=javascript&logoColor=black)
 
 
 **Databases & DevOps**
