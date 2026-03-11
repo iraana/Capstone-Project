@@ -1,6 +1,6 @@
 export const AboutPage = () => {
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-zinc-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-zinc-900 -mt-20">
       
       <div className="relative bg-primary text-white py-20">
         <div
