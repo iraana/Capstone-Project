@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { useAuth } from "../../context/AuthContext";
-import { UserCog, BarChart3, UtensilsCrossed, FilePlus, FilePenLine, Users, ChevronRight, ClipboardClock, BookMinus, Archive, ScanLine, List, Mail } from "lucide-react";
+import { UserCog, BarChart3, UtensilsCrossed, FilePlus, FilePenLine, Users, ChevronRight, ClipboardClock, BookMinus, Archive, ScanLine, List, Mail, MessageSquare } from "lucide-react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "../../../supabase-client";
@@ -111,6 +111,13 @@ const adminPages: AdminPage[] = [
     description: 'Manage user roles & permissions',
     icon: Users,
     color: 'from-indigo-500 to-violet-400',
+  },
+  {
+    id: 'reviews', 
+    title: 'View Reviews',
+    description: 'See all user ratings and comments',
+    icon: MessageSquare, 
+    color: 'from-amber-500 to-orange-400',
   }
 ];
 

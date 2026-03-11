@@ -5,17 +5,30 @@ import { z } from "zod";
 import { useState } from "react";
 
 // Validator using zod, remember these from CSD213?
-const signUpSchema = z.object({
-  email: z.email("Invalid email address"), // Built-in email validator from zod
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(/[0-9]/, "Password must contain at least one number")
-    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-    .regex(/[^a-zA-Z0-9]/, "Password must contain at least one special character"),
-  first_name: z.string().min(1, "First name is required"),
-  last_name: z.string().min(1, "Last name is required"),
+const signUpSchema = z
+  .object({
+    email: z.email("Invalid email address"),
+
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(/[0-9]/, "Password must contain at least one number")
+      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+      .regex(/[^a-zA-Z0-9]/, "Password must contain at least one special character"),
+
+    confirm_password: z.string(),
+
+    first_name: z.string().min(1, "First name is required"),
+    last_name: z.string().min(1, "Last name is required"),
+
+    accept_terms: z.literal(true, {
+      message: "You must accept the Terms of Service and Privacy Policy",
+    }),
+  })
+  .refine((data) => data.password === data.confirm_password, {
+    message: "Passwords do not match",
+    path: ["confirm_password"],
 });
 
 // Infer the form data type from the schema
@@ -48,148 +61,103 @@ export const SignUp = () => {
       if (error) {
           setErrorMsg('Error signing up');
       } else {
-          setSuccessMsg('Sign-up successful!');
+          setSuccessMsg('Sign-up successful! Check your email for the confirmation link.');
       }
   };
 
+  const inputClasses = (error: any) => `
+    w-full px-4 py-3 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 
+    placeholder-zinc-400 dark:placeholder-zinc-500 border transition-all
+    ${error ? "border-red-500 ring-1 ring-red-500" : "border-zinc-300 dark:border-zinc-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"}
+  `;
+
+  const labelClasses = "block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5";
+
   return (
-    <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <div>
-          <label
-            htmlFor="email"
-            className="block text-sm font-medium text-black mb-2"
-          >
-            Email
-          </label>
-          <input
-            id="email"
-            type="email"
-            {...register("email")}
-            className={`w-full px-4 py-3 rounded-lg bg-black text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-              errors.email ? "border-red-500 border" : "border-transparent"
-            }`}
-            placeholder="40404040@saultcollege.ca"
-          />
-          {errors.email && (
-            <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
-          )}
+    <div className="bg-white dark:bg-zinc-900 px-8 py-10 shadow-xl border border-zinc-200 dark:border-zinc-800 rounded-2xl transition-all">
+      <h3 className="text-xl font-semibold text-center text-zinc-800 dark:text-zinc-200 mb-8">
+        Create Your Account
+      </h3>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <div className="flex gap-4">
+            <div className="flex-1">
+                <label className={labelClasses}>First Name</label>
+                <input {...register("first_name")} className={inputClasses(errors.first_name)} placeholder="John" />
+            </div>
+            <div className="flex-1">
+                <label className={labelClasses}>Last Name</label>
+                <input {...register("last_name")} className={inputClasses(errors.last_name)} placeholder="Doe" />
+            </div>
         </div>
 
         <div>
-          <label
-            htmlFor="password"
-            className="block text-sm font-medium text-black mb-2"
-          >
-            Password
-          </label>
-          <input
-            id="password"
-            type="password"
-            {...register("password")}
-            className={`w-full px-4 py-3 rounded-lg bg-black text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-              errors.password ? "border-red-500 border" : "border-transparent"
-            }`}
-            placeholder="Enter your password"
-          />
-          {errors.password && (
-            <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
-          )}
+          <label className={labelClasses}>Email Address</label>
+          <input type="email" {...register("email")} className={inputClasses(errors.email)} placeholder="40404040@saultcollege.ca" />
+          {errors.email && <p className="text-red-500 text-xs mt-1.5 ml-1">{errors.email.message}</p>}
         </div>
 
         <div>
-          <label
-            htmlFor="first_name"
-            className="block text-sm font-medium text-black mb-2"
-          >
-            First Name
-          </label>
-          <input
-            id="first_name"
-            type="text"
-            {...register("first_name")}
-            className={`w-full px-4 py-3 rounded-lg bg-black text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-              errors.first_name ? "border-red-500 border" : "border-transparent"
-            }`}
-            placeholder="John"
-          />
-          {errors.first_name && (
-            <p className="text-red-500 text-sm mt-1">{errors.first_name.message}</p>
-          )}
+          <label className={labelClasses}>Password</label>
+          <input type="password" {...register("password")} className={inputClasses(errors.password)} placeholder="••••••••" />
+          {errors.password && <p className="text-red-500 text-xs mt-1.5 ml-1">{errors.password.message}</p>}
         </div>
 
         <div>
-          <label
-            htmlFor="last_name"
-            className="block text-sm font-medium text-black mb-2"
-          >
-            Last Name
-          </label>
-          <input
-            id="last_name"
-            type="text"
-            {...register("last_name")}
-            className={`w-full px-4 py-3 rounded-lg bg-black text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-              errors.last_name ? "border-red-500 border" : "border-transparent"
-            }`}
-            placeholder="Doe"
-          />
-          {errors.last_name && (
-            <p className="text-red-500 text-sm mt-1">{errors.last_name.message}</p>
+          <label className={labelClasses}>Confirm Password</label>
+          <input type="password" {...register("confirm_password")} className={inputClasses(errors.confirm_password)} placeholder="••••••••" />
+          {errors.confirm_password && (
+            <p className="text-red-500 text-xs mt-1.5 ml-1">
+              {errors.confirm_password.message}
+            </p>
           )}
         </div>
+
+        <div className="flex items-start gap-2">
+          <input type="checkbox" {...register("accept_terms")} className="mt-1 h-4 w-4 rounded border-zinc-300 text-blue-600 focus:ring-blue-500" />
+
+          <label className="text-sm text-zinc-600 dark:text-zinc-400">
+            I agree to the{" "}
+            <a
+              href="/terms-of-service"
+              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+            >
+              Terms of Service
+            </a>{" "}
+            and{" "}
+            <a
+              href="/privacy-policy"
+              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+            >
+              Privacy Policy
+            </a>
+          </label>
+        </div>
+
+        {errors.accept_terms && (
+          <p className="text-red-500 text-xs ml-1">{errors.accept_terms.message}</p>
+        )}
 
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-linear-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white font-semibold py-3 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-linear-to-r from-blue-600 to-emerald-500 hover:from-blue-700 hover:to-emerald-600 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all active:scale-[0.98] disabled:opacity-70"
         >
-          {isSubmitting ? "Signing up..." : "Sign Up"}
+          {isSubmitting ? "Creating Account..." : "Sign Up"}
         </button>
       </form>
 
-      {errorMsg && (
-        <div className="text-red-500 text-center mb-4">
-          {errorMsg}
-        </div>
-      )}
-      
-      {successMsg && (
-        <div className="text-green-500 text-center mb-4">
-          {successMsg}
-          </div>
-      )}
+      {errorMsg && <div className="mt-4 text-red-500 text-center text-sm">{errorMsg}</div>}
+      {successMsg && <div className="mt-4 text-emerald-500 text-center text-sm font-medium">{successMsg}</div>}
 
-      <p className="text-center text-gray-800 mt-6">
-        By signing up, you agree to our{" "}
-        <a
-          href="/terms-of-service"
-          className="text-blue-400 hover:text-blue-500 font-medium transition-colors duration-200"
-        >
-          Terms of Service
-        </a>
-      </p>
-
-      <p className="text-center text-gray-800 mt-6">
-        You also agree to our{" "}
-        <a
-          href="/privacy-policy"
-          className="text-blue-400 hover:text-blue-500 font-medium transition-colors duration-200"
-        >
-          Privacy Policy
-        </a>
-      </p>
-
-      <p className="text-center text-gray-800 mt-6">
-        Already have an account?{" "}
-        <a
-          href="/sign-in"
-          className="text-blue-400 hover:text-blue-500 font-medium transition-colors duration-200"
-        >
-          Sign In
-        </a>
-      </p>
-
+      <div className="mt-8 pt-6 border-t border-zinc-100 dark:border-zinc-800 text-center">
+        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+          Already have an account?{" "}
+          <a href="/sign-in" className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
+            Sign In
+          </a>
+        </p>
+      </div>
     </div>
   );
 };
