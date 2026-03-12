@@ -40,7 +40,7 @@ describe('SignUp Component', () => {
       expect(screen.getByPlaceholderText('John')).toBeInTheDocument();
       expect(screen.getByPlaceholderText('Doe')).toBeInTheDocument();
       expect(screen.getByPlaceholderText('40404040@saultcollege.ca')).toBeInTheDocument();
-      expect(screen.getByPlaceholderText('••••••••')).toBeInTheDocument();
+      expect(screen.getAllByPlaceholderText('••••••••')[0]).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /sign up/i })).toBeInTheDocument();
       expect(screen.getByText(/already have an account\?/i)).toBeInTheDocument();
       expect(screen.getByRole('link', { name: /sign in/i })).toBeInTheDocument();
@@ -84,7 +84,7 @@ describe('SignUp Component', () => {
       const user = userEvent.setup();
       renderSignUp();
 
-      const passwordInput = screen.getByPlaceholderText('••••••••');
+      const passwordInput = screen.getAllByPlaceholderText('••••••••')[0];
       const submitButton = screen.getByRole('button', { name: /sign up/i });
 
       await user.type(screen.getByPlaceholderText('John'), 'John');
@@ -103,7 +103,7 @@ describe('SignUp Component', () => {
       const user = userEvent.setup();
       renderSignUp();
 
-      const passwordInput = screen.getByPlaceholderText('••••••••');
+      const passwordInput = screen.getAllByPlaceholderText('••••••••')[0];
       const submitButton = screen.getByRole('button', { name: /sign up/i });
 
       await user.type(screen.getByPlaceholderText('John'), 'John');
@@ -122,7 +122,7 @@ describe('SignUp Component', () => {
       const user = userEvent.setup();
       renderSignUp();
 
-      const passwordInput = screen.getByPlaceholderText('••••••••');
+      const passwordInput = screen.getAllByPlaceholderText('••••••••')[0];
       const submitButton = screen.getByRole('button', { name: /sign up/i });
 
       await user.type(screen.getByPlaceholderText('John'), 'John');
@@ -141,14 +141,14 @@ describe('SignUp Component', () => {
       const user = userEvent.setup();
       renderSignUp();
 
-      const passwordInput = screen.getByPlaceholderText('••••••••');
+      const passwordInput = screen.getAllByPlaceholderText('••••••••')[0];
       const submitButton = screen.getByRole('button', { name: /sign up/i });
 
       await user.type(screen.getByPlaceholderText('John'), 'John');
       await user.type(screen.getByPlaceholderText('Doe'), 'Doe');
       await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
       await user.type(passwordInput, 'password123!');
-      await user.type(screen.getAllByPlaceholderText('••••••••')[1], 'PASSWORD123!');
+      await user.type(screen.getAllByPlaceholderText('••••••••')[1], 'password123!');
       await user.click(submitButton);
 
       await waitFor(() => {
@@ -160,14 +160,14 @@ describe('SignUp Component', () => {
       const user = userEvent.setup();
       renderSignUp();
 
-      const passwordInput = screen.getByPlaceholderText('••••••••');
+      const passwordInput = screen.getAllByPlaceholderText('••••••••')[0];
       const submitButton = screen.getByRole('button', { name: /sign up/i });
 
       await user.type(screen.getByPlaceholderText('John'), 'John');
       await user.type(screen.getByPlaceholderText('Doe'), 'Doe');
       await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
       await user.type(passwordInput, 'Password123');
-      await user.type(screen.getAllByPlaceholderText('••••••••')[1], 'PASSWORD123!');
+      await user.type(screen.getAllByPlaceholderText('••••••••')[1], 'Password123');
       await user.click(submitButton);
 
       await waitFor(() => {
@@ -186,7 +186,7 @@ describe('SignUp Component', () => {
 
       await user.type(screen.getByPlaceholderText('Doe'), 'Doe');
       await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
-      await user.type(screen.getByPlaceholderText('••••••••'), 'Password123!');
+      await user.type(screen.getAllByPlaceholderText('••••••••')[0], 'Password123!');
       await user.type(screen.getAllByPlaceholderText('••••••••')[1], 'Password123!');
       await user.click(submitButton);
 
@@ -204,7 +204,7 @@ describe('SignUp Component', () => {
 
       await user.type(screen.getByPlaceholderText('John'), 'John');
       await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
-      await user.type(screen.getByPlaceholderText('••••••••'), 'Password123!');
+      await user.type(screen.getAllByPlaceholderText('••••••••')[0], 'Password123!');
       await user.type(screen.getAllByPlaceholderText('••••••••')[1], 'Password123!');
       await user.click(submitButton);
 
@@ -224,7 +224,7 @@ describe('SignUp Component', () => {
       await user.type(screen.getByPlaceholderText('John'), 'John');
       await user.type(screen.getByPlaceholderText('Doe'), 'Doe');
       await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
-      await user.type(screen.getByPlaceholderText('••••••••'), 'Password123!');
+      await user.type(screen.getAllByPlaceholderText('••••••••')[0], 'Password123!');
       await user.type(screen.getAllByPlaceholderText('••••••••')[1], 'Password123!');
       await user.click(screen.getByRole('button', { name: /sign up/i }));
 
@@ -251,7 +251,7 @@ describe('SignUp Component', () => {
       await user.type(screen.getByPlaceholderText('John'), 'John');
       await user.type(screen.getByPlaceholderText('Doe'), 'Doe');
       await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
-      await user.type(screen.getByPlaceholderText('••••••••'), 'Password123!');
+      await user.type(screen.getAllByPlaceholderText('••••••••')[0], 'Password123!');
       await user.type(screen.getAllByPlaceholderText('••••••••')[1], 'Password123!');
       await user.click(screen.getByRole('button', { name: /sign up/i }));
 
@@ -269,7 +269,7 @@ describe('SignUp Component', () => {
       await user.type(screen.getByPlaceholderText('John'), 'John');
       await user.type(screen.getByPlaceholderText('Doe'), 'Doe');
       await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
-      await user.type(screen.getByPlaceholderText('••••••••'), 'Password123!');
+      await user.type(screen.getAllByPlaceholderText('••••••••')[0], 'Password123!');
       await user.type(screen.getAllByPlaceholderText('••••••••')[1], 'Password123!');
       await user.click(screen.getByRole('button', { name: /sign up/i }));
 
@@ -279,25 +279,25 @@ describe('SignUp Component', () => {
     });
 
     it('disables submit button while submitting', async () => {
-  const user = userEvent.setup();
-  mockSignUpWithEmail.mockImplementation(() => 
-    new Promise(resolve => setTimeout(() => resolve({ data: null, error: null }), 100))
-  );
+      const user = userEvent.setup();
+      mockSignUpWithEmail.mockImplementation(() => 
+        new Promise(resolve => setTimeout(() => resolve({ data: null, error: null }), 100))
+      );
 
-  renderSignUp();
+      renderSignUp();
 
-  await user.type(screen.getByPlaceholderText('John'), 'John');
-  await user.type(screen.getByPlaceholderText('Doe'), 'Doe');
-  await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
-  await user.type(screen.getByPlaceholderText('••••••••'), 'Password123!');
-  await user.type(screen.getAllByPlaceholderText('••••••••')[1], 'Password123!');
-  
-  const submitButton = screen.getByRole('button', { name: /sign up/i });
-  await user.click(submitButton);
+      await user.type(screen.getByPlaceholderText('John'), 'John');
+      await user.type(screen.getByPlaceholderText('Doe'), 'Doe');
+      await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
+      await user.type(screen.getAllByPlaceholderText('••••••••')[0], 'Password123!');
+      await user.type(screen.getAllByPlaceholderText('••••••••')[1], 'Password123!');
+      
+      const submitButton = screen.getByRole('button', { name: /sign up/i });
+      await user.click(submitButton);
 
-  expect(submitButton).toBeDisabled();
-  expect(screen.getByText('Creating Account...')).toBeInTheDocument();
-});
+      expect(submitButton).toBeDisabled();
+      expect(screen.getByText('Creating Account...')).toBeInTheDocument();
+    });
 
     it('does not call signUpWithEmail when form is invalid', async () => {
       const user = userEvent.setup();
@@ -315,12 +315,10 @@ describe('SignUp Component', () => {
   });
 
   describe('User Interaction', () => {
-
-  
     it('password input has type="password"', () => {
       renderSignUp();
 
-      const passwordInput = screen.getByPlaceholderText('••••••••');
+      const passwordInput = screen.getAllByPlaceholderText('••••••••')[0];
       expect(passwordInput).toHaveAttribute('type', 'password');
     });
   });
