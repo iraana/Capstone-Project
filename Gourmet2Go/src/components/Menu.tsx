@@ -207,7 +207,7 @@ export const Menu = () => {
   }
 
   return (
-    <div className="max-w-5xl mx-auto pb-20 relative">
+    <main className="max-w-5xl mx-auto pb-20 relative">
       <Greeter />
       
       <AnimatePresence>
@@ -400,6 +400,6 @@ export const Menu = () => {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </main>
   );
 };
