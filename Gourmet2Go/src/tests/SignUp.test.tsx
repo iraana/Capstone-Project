@@ -226,6 +226,7 @@ describe('SignUp Component', () => {
       await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
       await user.type(screen.getAllByPlaceholderText('••••••••')[0], 'Password123!');
       await user.type(screen.getAllByPlaceholderText('••••••••')[1], 'Password123!');
+      await user.click(screen.getByRole('checkbox'));
       await user.click(screen.getByRole('button', { name: /sign up/i }));
 
       await waitFor(() => {
@@ -253,10 +254,11 @@ describe('SignUp Component', () => {
       await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
       await user.type(screen.getAllByPlaceholderText('••••••••')[0], 'Password123!');
       await user.type(screen.getAllByPlaceholderText('••••••••')[1], 'Password123!');
+      await user.click(screen.getByRole('checkbox'));
       await user.click(screen.getByRole('button', { name: /sign up/i }));
 
       await waitFor(() => {
-        expect(screen.getByText('Sign-up successful!')).toBeInTheDocument();
+        expect(screen.getByText(/sign-up successful/i)).toBeInTheDocument();
       });
     });
 
@@ -271,6 +273,7 @@ describe('SignUp Component', () => {
       await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
       await user.type(screen.getAllByPlaceholderText('••••••••')[0], 'Password123!');
       await user.type(screen.getAllByPlaceholderText('••••••••')[1], 'Password123!');
+      await user.click(screen.getByRole('checkbox'));
       await user.click(screen.getByRole('button', { name: /sign up/i }));
 
       await waitFor(() => {
@@ -291,6 +294,7 @@ describe('SignUp Component', () => {
       await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
       await user.type(screen.getAllByPlaceholderText('••••••••')[0], 'Password123!');
       await user.type(screen.getAllByPlaceholderText('••••••••')[1], 'Password123!');
+      await user.click(screen.getByRole('checkbox'));
       
       const submitButton = screen.getByRole('button', { name: /sign up/i });
       await user.click(submitButton);
