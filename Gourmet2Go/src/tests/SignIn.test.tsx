@@ -56,7 +56,7 @@ describe('SignIn Component', () => {
     it('has correct placeholder text', () => {
       renderSignIn();
 
-      const emailInput = screen.getByPlaceholderText('24242424@saultcollege.ca');
+      const emailInput = screen.getByPlaceholderText('40404040@saultcollege.ca');
       const passwordInput = screen.getByPlaceholderText('••••••••');
 
       expect(emailInput).toBeInTheDocument();

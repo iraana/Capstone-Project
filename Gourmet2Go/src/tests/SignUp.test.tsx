@@ -39,7 +39,7 @@ describe('SignUp Component', () => {
       expect(screen.getByText('Create Your Account')).toBeInTheDocument();
       expect(screen.getByPlaceholderText('John')).toBeInTheDocument();
       expect(screen.getByPlaceholderText('Doe')).toBeInTheDocument();
-      expect(screen.getByPlaceholderText('24242424@saultcollege.ca')).toBeInTheDocument();
+      expect(screen.getByPlaceholderText('40404040@saultcollege.ca')).toBeInTheDocument();
       expect(screen.getByPlaceholderText('••••••••')).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /sign up/i })).toBeInTheDocument();
       expect(screen.getByText(/already have an account\?/i)).toBeInTheDocument();
@@ -68,7 +68,7 @@ describe('SignUp Component', () => {
       const user = userEvent.setup();
       renderSignUp();
 
-      const emailInput = screen.getByPlaceholderText('24242424@saultcollege.ca');
+      const emailInput = screen.getByPlaceholderText('40404040@saultcollege.ca');
       const submitButton = screen.getByRole('button', { name: /sign up/i });
 
       await user.type(emailInput, 'invalid-email');
@@ -89,7 +89,7 @@ describe('SignUp Component', () => {
 
       await user.type(screen.getByPlaceholderText('John'), 'John');
       await user.type(screen.getByPlaceholderText('Doe'), 'Doe');
-      await user.type(screen.getByPlaceholderText('24242424@saultcollege.ca'), 'test@saultcollege.ca');
+      await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
       await user.type(passwordInput, 'Short1!');
       await user.click(submitButton);
 
@@ -107,7 +107,7 @@ describe('SignUp Component', () => {
 
       await user.type(screen.getByPlaceholderText('John'), 'John');
       await user.type(screen.getByPlaceholderText('Doe'), 'Doe');
-      await user.type(screen.getByPlaceholderText('24242424@saultcollege.ca'), 'test@saultcollege.ca');
+      await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
       await user.type(passwordInput, 'Password!');
       await user.click(submitButton);
 
@@ -125,7 +125,7 @@ describe('SignUp Component', () => {
 
       await user.type(screen.getByPlaceholderText('John'), 'John');
       await user.type(screen.getByPlaceholderText('Doe'), 'Doe');
-      await user.type(screen.getByPlaceholderText('24242424@saultcollege.ca'), 'test@saultcollege.ca');
+      await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
       await user.type(passwordInput, 'PASSWORD123!');
       await user.click(submitButton);
 
@@ -143,7 +143,7 @@ describe('SignUp Component', () => {
 
       await user.type(screen.getByPlaceholderText('John'), 'John');
       await user.type(screen.getByPlaceholderText('Doe'), 'Doe');
-      await user.type(screen.getByPlaceholderText('24242424@saultcollege.ca'), 'test@saultcollege.ca');
+      await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
       await user.type(passwordInput, 'password123!');
       await user.click(submitButton);
 
@@ -161,7 +161,7 @@ describe('SignUp Component', () => {
 
       await user.type(screen.getByPlaceholderText('John'), 'John');
       await user.type(screen.getByPlaceholderText('Doe'), 'Doe');
-      await user.type(screen.getByPlaceholderText('24242424@saultcollege.ca'), 'test@saultcollege.ca');
+      await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
       await user.type(passwordInput, 'Password123');
       await user.click(submitButton);
 
@@ -180,7 +180,7 @@ describe('SignUp Component', () => {
       const firstNameInput = screen.getByPlaceholderText('John');
 
       await user.type(screen.getByPlaceholderText('Doe'), 'Doe');
-      await user.type(screen.getByPlaceholderText('24242424@saultcollege.ca'), 'test@saultcollege.ca');
+      await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
       await user.type(screen.getByPlaceholderText('••••••••'), 'Password123!');
       await user.click(submitButton);
 
@@ -197,7 +197,7 @@ describe('SignUp Component', () => {
       const lastNameInput = screen.getByPlaceholderText('Doe');
 
       await user.type(screen.getByPlaceholderText('John'), 'John');
-      await user.type(screen.getByPlaceholderText('24242424@saultcollege.ca'), 'test@saultcollege.ca');
+      await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
       await user.type(screen.getByPlaceholderText('••••••••'), 'Password123!');
       await user.click(submitButton);
 
@@ -216,7 +216,7 @@ describe('SignUp Component', () => {
 
       await user.type(screen.getByPlaceholderText('John'), 'John');
       await user.type(screen.getByPlaceholderText('Doe'), 'Doe');
-      await user.type(screen.getByPlaceholderText('24242424@saultcollege.ca'), 'test@saultcollege.ca');
+      await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
       await user.type(screen.getByPlaceholderText('••••••••'), 'Password123!');
       await user.click(screen.getByRole('button', { name: /sign up/i }));
 
@@ -242,7 +242,7 @@ describe('SignUp Component', () => {
 
       await user.type(screen.getByPlaceholderText('John'), 'John');
       await user.type(screen.getByPlaceholderText('Doe'), 'Doe');
-      await user.type(screen.getByPlaceholderText('24242424@saultcollege.ca'), 'test@saultcollege.ca');
+      await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
       await user.type(screen.getByPlaceholderText('••••••••'), 'Password123!');
       await user.click(screen.getByRole('button', { name: /sign up/i }));
 
@@ -259,7 +259,7 @@ describe('SignUp Component', () => {
 
       await user.type(screen.getByPlaceholderText('John'), 'John');
       await user.type(screen.getByPlaceholderText('Doe'), 'Doe');
-      await user.type(screen.getByPlaceholderText('24242424@saultcollege.ca'), 'test@saultcollege.ca');
+      await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
       await user.type(screen.getByPlaceholderText('••••••••'), 'Password123!');
       await user.click(screen.getByRole('button', { name: /sign up/i }));
 
@@ -278,7 +278,7 @@ describe('SignUp Component', () => {
 
   await user.type(screen.getByPlaceholderText('John'), 'John');
   await user.type(screen.getByPlaceholderText('Doe'), 'Doe');
-  await user.type(screen.getByPlaceholderText('24242424@saultcollege.ca'), 'test@saultcollege.ca');
+  await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
   await user.type(screen.getByPlaceholderText('••••••••'), 'Password123!');
   
   const submitButton = screen.getByRole('button', { name: /sign up/i });
