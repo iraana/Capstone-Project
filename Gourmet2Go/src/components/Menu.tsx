@@ -7,6 +7,7 @@ import { Plus, ShoppingBasket, UtensilsCrossed, Lock, AlertCircle, Trash2 } from
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader } from "./Loader";
 import { Greeter } from "./Greeter";
+import { DateTime } from "luxon";
 
 export interface Dish {
   dish_id: number;
@@ -42,12 +43,31 @@ const itemVariants = {
   visible: { opacity: 1, y: 0 }
 };
 
+const getMenuWindow = () => {
+  const estNow = DateTime.now().setZone("America/Toronto");
+
+  let start = estNow;
+
+  if (estNow.hour >= 12) {
+    start = start.plus({ days: 1 });
+  }
+
+  const end = start.plus({ days: 14 });
+
+  return {
+    start: start.toISO(),
+    end: end.toISO(),
+    estNow: estNow.toISO(),
+  };
+};
+
 const MAX_TOTAL_ITEMS = 5;
 
 export const Menu = () => {
   const { addItem, items: cartItems, clearCart, totalItems } = cartStore();
   const { user, role } = useAuth(); 
   const [selectedDayId, setSelectedDayId] = useState<number | null>(null);
+  const { start, end } = getMenuWindow();
 
   // Selects from MenuDays and then the related MenuDayDishes and the related Dishes 
   const { data: menuDays, isLoading, error } = useQuery({
@@ -70,6 +90,8 @@ export const Menu = () => {
             )
           )
         `)
+        .gte('date', start)
+        .lte('date', end)
         .order('date', { ascending: true });
 
       if (error) throw error;

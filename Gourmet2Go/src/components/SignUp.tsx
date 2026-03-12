@@ -5,17 +5,30 @@ import { z } from "zod";
 import { useState } from "react";
 
 // Validator using zod, remember these from CSD213?
-const signUpSchema = z.object({
-  email: z.email("Invalid email address"), // Built-in email validator from zod
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(/[0-9]/, "Password must contain at least one number")
-    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-    .regex(/[^a-zA-Z0-9]/, "Password must contain at least one special character"),
-  first_name: z.string().min(1, "First name is required"),
-  last_name: z.string().min(1, "Last name is required"),
+const signUpSchema = z
+  .object({
+    email: z.email("Invalid email address"),
+
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(/[0-9]/, "Password must contain at least one number")
+      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+      .regex(/[^a-zA-Z0-9]/, "Password must contain at least one special character"),
+
+    confirm_password: z.string(),
+
+    first_name: z.string().min(1, "First name is required"),
+    last_name: z.string().min(1, "Last name is required"),
+
+    accept_terms: z.literal(true, {
+      message: "You must accept the Terms of Service and Privacy Policy",
+    }),
+  })
+  .refine((data) => data.password === data.confirm_password, {
+    message: "Passwords do not match",
+    path: ["confirm_password"],
 });
 
 // Infer the form data type from the schema
@@ -48,7 +61,7 @@ export const SignUp = () => {
       if (error) {
           setErrorMsg('Error signing up');
       } else {
-          setSuccessMsg('Sign-up successful!');
+          setSuccessMsg('Sign-up successful! Check your email for the confirmation link.');
       }
   };
 
@@ -80,7 +93,7 @@ export const SignUp = () => {
 
         <div>
           <label className={labelClasses}>Email Address</label>
-          <input type="email" {...register("email")} className={inputClasses(errors.email)} placeholder="24242424@saultcollege.ca" />
+          <input type="email" {...register("email")} className={inputClasses(errors.email)} placeholder="40404040@saultcollege.ca" />
           {errors.email && <p className="text-red-500 text-xs mt-1.5 ml-1">{errors.email.message}</p>}
         </div>
 
@@ -90,10 +103,45 @@ export const SignUp = () => {
           {errors.password && <p className="text-red-500 text-xs mt-1.5 ml-1">{errors.password.message}</p>}
         </div>
 
+        <div>
+          <label className={labelClasses}>Confirm Password</label>
+          <input type="password" {...register("confirm_password")} className={inputClasses(errors.confirm_password)} placeholder="••••••••" />
+          {errors.confirm_password && (
+            <p className="text-red-500 text-xs mt-1.5 ml-1">
+              {errors.confirm_password.message}
+            </p>
+          )}
+        </div>
+
+        <div className="flex items-start gap-2">
+          <input type="checkbox" {...register("accept_terms")} className="mt-1 h-4 w-4 rounded border-zinc-300 text-blue-600 focus:ring-blue-500" />
+
+          <label className="text-sm text-zinc-600 dark:text-zinc-400">
+            I agree to the{" "}
+            <a
+              href="/terms-of-service"
+              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+            >
+              Terms of Service
+            </a>{" "}
+            and{" "}
+            <a
+              href="/privacy-policy"
+              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+            >
+              Privacy Policy
+            </a>
+          </label>
+        </div>
+
+        {errors.accept_terms && (
+          <p className="text-red-500 text-xs ml-1">{errors.accept_terms.message}</p>
+        )}
+
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-gradient-to-r from-blue-600 to-emerald-500 hover:from-blue-700 hover:to-emerald-600 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all active:scale-[0.98] disabled:opacity-70"
+          className="w-full bg-linear-to-r from-blue-600 to-emerald-500 hover:from-blue-700 hover:to-emerald-600 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all active:scale-[0.98] disabled:opacity-70"
         >
           {isSubmitting ? "Creating Account..." : "Sign Up"}
         </button>
