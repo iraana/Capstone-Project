@@ -1,4 +1,4 @@
-const LAST_UPDATED = 'Februrary 17, 2026';
+const LAST_UPDATED = 'February 17, 2026';
 export const ToSPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-zinc-900 -mt-20">
@@ -88,7 +88,7 @@ export const ToSPage = () => {
                 <h4 className="font-bold text-gray-900 dark:text-white mb-2">Order Limits</h4>
                 <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
                   <li>• One active order per person at a time</li>
-                  <li>• Maximum 5 of the same item per order</li>
+                  <li>• Maximum 5 items total per order</li>
                   <li>• Orders subject to item availability</li>
                 </ul>
               </div>
@@ -96,9 +96,10 @@ export const ToSPage = () => {
               <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-primary p-4 rounded-r-lg">
                 <h4 className="font-bold text-gray-900 dark:text-white mb-2">Order Deadlines</h4>
                 <p className="text-sm text-gray-700 dark:text-gray-300">
-                  Orders must be placed before the daily cutoff time. Late orders will not be 
-                  accepted. Cutoff times are displayed on the menu page and may vary by service day.
-                </p>
+                  Orders must be placed by 12:00 PM (15 minutes before service begins). Late orders 
+                  will not be accepted. This ensures our culinary team has adequate time to prepare 
+                  your meal.
+              </p>
               </div>
 
               <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-primary p-4 rounded-r-lg">
@@ -187,8 +188,8 @@ export const ToSPage = () => {
             <div className="prose prose-lg text-gray-700 dark:text-gray-300 leading-relaxed space-y-4">
               <p>
                 Orders can be modified or cancelled through your account dashboard before the 
-                daily cutoff time (typically 2:30 PM). After the cutoff, orders cannot be 
-                cancelled or modified as meal preparation has begun.
+                daily cutoff time of 12:00 PM. After the cutoff, orders cannot be cancelled or 
+                modified as meal preparation has begun.
               </p>
               <div className="bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-400 p-4 rounded-r-lg mt-4">
                 <div className="flex items-start">

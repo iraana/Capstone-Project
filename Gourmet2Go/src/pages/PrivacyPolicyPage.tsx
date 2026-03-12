@@ -285,16 +285,12 @@ export const PrivacyPolicyPage = () => {
 
               <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 p-6 rounded-r-lg mt-6">
                 <p className="text-gray-700 dark:text-gray-300">
-                  <strong>To exercise any of these rights,</strong> please contact us at{' '}
-                  <a href="mailto:privacy@gourmet2go.com" className="text-primary hover:underline font-medium">
-                    privacy@gourmet2go.com
-                  </a>
+                  <strong>To exercise any of these rights,</strong> please visit the Culinary Department staff in Room L1170.
                 </p>
+                </div>
+                </div>
               </div>
-            </div>
-          </div>
 
-          
           <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-zinc-700">
             <h2 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-4">
               8. Changes to This Privacy Policy
@@ -311,8 +307,6 @@ export const PrivacyPolicyPage = () => {
               </p>
             </div>
           </div>
-
-
         </div>
       </div>
     </div>
