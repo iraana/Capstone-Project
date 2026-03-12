@@ -91,6 +91,7 @@ describe('SignUp Component', () => {
       await user.type(screen.getByPlaceholderText('Doe'), 'Doe');
       await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
       await user.type(passwordInput, 'Short1!');
+      await user.type(screen.getAllByPlaceholderText('••••••••')[1], 'Short1!');
       await user.click(submitButton);
 
       await waitFor(() => {
@@ -109,6 +110,7 @@ describe('SignUp Component', () => {
       await user.type(screen.getByPlaceholderText('Doe'), 'Doe');
       await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
       await user.type(passwordInput, 'Password!');
+      await user.type(screen.getAllByPlaceholderText('••••••••')[1], 'Password!');
       await user.click(submitButton);
 
       await waitFor(() => {
@@ -127,6 +129,7 @@ describe('SignUp Component', () => {
       await user.type(screen.getByPlaceholderText('Doe'), 'Doe');
       await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
       await user.type(passwordInput, 'PASSWORD123!');
+      await user.type(screen.getAllByPlaceholderText('••••••••')[1], 'PASSWORD123!');
       await user.click(submitButton);
 
       await waitFor(() => {
@@ -145,6 +148,7 @@ describe('SignUp Component', () => {
       await user.type(screen.getByPlaceholderText('Doe'), 'Doe');
       await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
       await user.type(passwordInput, 'password123!');
+      await user.type(screen.getAllByPlaceholderText('••••••••')[1], 'PASSWORD123!');
       await user.click(submitButton);
 
       await waitFor(() => {
@@ -163,6 +167,7 @@ describe('SignUp Component', () => {
       await user.type(screen.getByPlaceholderText('Doe'), 'Doe');
       await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
       await user.type(passwordInput, 'Password123');
+      await user.type(screen.getAllByPlaceholderText('••••••••')[1], 'PASSWORD123!');
       await user.click(submitButton);
 
       await waitFor(() => {
@@ -182,6 +187,7 @@ describe('SignUp Component', () => {
       await user.type(screen.getByPlaceholderText('Doe'), 'Doe');
       await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
       await user.type(screen.getByPlaceholderText('••••••••'), 'Password123!');
+      await user.type(screen.getAllByPlaceholderText('••••••••')[1], 'Password123!');
       await user.click(submitButton);
 
       await waitFor(() => {
@@ -199,6 +205,7 @@ describe('SignUp Component', () => {
       await user.type(screen.getByPlaceholderText('John'), 'John');
       await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
       await user.type(screen.getByPlaceholderText('••••••••'), 'Password123!');
+      await user.type(screen.getAllByPlaceholderText('••••••••')[1], 'Password123!');
       await user.click(submitButton);
 
       await waitFor(() => {
@@ -218,6 +225,7 @@ describe('SignUp Component', () => {
       await user.type(screen.getByPlaceholderText('Doe'), 'Doe');
       await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
       await user.type(screen.getByPlaceholderText('••••••••'), 'Password123!');
+      await user.type(screen.getAllByPlaceholderText('••••••••')[1], 'Password123!');
       await user.click(screen.getByRole('button', { name: /sign up/i }));
 
       await waitFor(() => {
@@ -244,6 +252,7 @@ describe('SignUp Component', () => {
       await user.type(screen.getByPlaceholderText('Doe'), 'Doe');
       await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
       await user.type(screen.getByPlaceholderText('••••••••'), 'Password123!');
+      await user.type(screen.getAllByPlaceholderText('••••••••')[1], 'Password123!');
       await user.click(screen.getByRole('button', { name: /sign up/i }));
 
       await waitFor(() => {
@@ -261,6 +270,7 @@ describe('SignUp Component', () => {
       await user.type(screen.getByPlaceholderText('Doe'), 'Doe');
       await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
       await user.type(screen.getByPlaceholderText('••••••••'), 'Password123!');
+      await user.type(screen.getAllByPlaceholderText('••••••••')[1], 'Password123!');
       await user.click(screen.getByRole('button', { name: /sign up/i }));
 
       await waitFor(() => {
@@ -280,6 +290,7 @@ describe('SignUp Component', () => {
   await user.type(screen.getByPlaceholderText('Doe'), 'Doe');
   await user.type(screen.getByPlaceholderText('40404040@saultcollege.ca'), 'test@saultcollege.ca');
   await user.type(screen.getByPlaceholderText('••••••••'), 'Password123!');
+  await user.type(screen.getAllByPlaceholderText('••••••••')[1], 'Password123!');
   
   const submitButton = screen.getByRole('button', { name: /sign up/i });
   await user.click(submitButton);
