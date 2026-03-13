@@ -105,8 +105,8 @@ export const AboutPage = () => {
               <ul className="space-y-3 text-gray-700 dark:text-gray-300">
                 {[
                   'One active order per person at a time',
-                  'Maximum 5 of the same item per order',
-                  'Orders must be placed before daily cutoff time',
+                  'Maximum 5 items total per order',
+                  'Orders must be placed by 12:00 PM (15 minutes before service)',
                   'Payment by card only at pickup (no cash accepted)',
                   'Items available on a first-come, first-served basis'
                 ].map((rule, index) => (
