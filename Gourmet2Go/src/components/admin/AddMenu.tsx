@@ -267,10 +267,8 @@ export const AddMenu = () => {
         </div>
       </div>
 
-        <div className="space-y-4">
-          <h2 className="font-semibold text-lg mt-6 mb-2">Available Menu Items</h2>
-          
-          
+      <div className="space-y-4">
+        <h2 className="font-semibold text-lg mt-6 mb-2">Available Menu Items</h2>
           <table className="min-w-full border border-gray-200 shadow-md rounded-lg">
             <thead className="bg-gray-100 dark:bg-zinc-700">
               <tr>
@@ -281,7 +279,14 @@ export const AddMenu = () => {
               </tr>
             </thead>
             <tbody>
-              {paginatedDishes.map((dish) => ( 
+              {paginatedDishes.length === 0 ? (
+                <tr>
+                    <td colSpan={4} className="px-4 py-8 text-center text-zinc-500">
+                        No dishes found matching your search.
+                    </td>
+                </tr>
+              ) : (
+              paginatedDishes.map((dish) => ( 
                 <tr key={dish.dish_id} className="border-b border-gray-200">
                   <td className="px-3 py-2 text-center">{dish.name}</td>
                   <td className="px-3 py-2 text-center">{dish.category}</td>
@@ -302,7 +307,8 @@ export const AddMenu = () => {
                     </NavLink>
                   </td>
                 </tr>
-              ))}
+              ))
+              )}
             </tbody>
           </table>
 

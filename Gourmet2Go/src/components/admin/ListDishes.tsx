@@ -1,6 +1,7 @@
-import { NavLink} from "react-router";
+import { NavLink } from "react-router";
 import { supabase } from "../../../supabase-client";
 import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 
 type Dish = {
     dish_id: number;
@@ -10,53 +11,143 @@ type Dish = {
 };
 
 export const ListDishes = () => {
-    const { data: dishes = [] } = useQuery({
+    const [search, setSearch] = useState('');
+    const[currentPage, setCurrentPage] = useState(1);
+    const PAGE_SIZE = 20;
+
+    const { data: dishes = [], isLoading } = useQuery({
         queryKey: ['dishes'],
         queryFn: async () => {
-        const { data, error } = await supabase.from('Dishes')
-        .select('*');
-        if (error) throw error;
-        return data as Dish[];
+            const { data, error } = await supabase
+                .from('Dishes')
+                .select('*')
+                .order('name'); 
+            if (error) throw error;
+            return data as Dish[];
         },
     });
 
+    const filteredDishes = dishes.filter((dish) => {
+        if (!search) return true;
+        const searchLower = search.toLowerCase();
+        const nameMatch = dish.name.toLowerCase().includes(searchLower);
+        const categoryMatch = dish.category.toLowerCase().includes(searchLower);
+        return nameMatch || categoryMatch;
+    });
+
+    const totalPages = Math.ceil(filteredDishes.length / PAGE_SIZE) || 1;
+    const isFirstPage = currentPage === 1;
+    const isLastPage = currentPage === totalPages;
+
+    const paginatedDishes = filteredDishes.slice(
+        (currentPage - 1) * PAGE_SIZE,
+        currentPage * PAGE_SIZE
+    );
+
+    if (isLoading) {
+        return <div className="p-12 text-center text-zinc-500">Loading dishes...</div>;
+    }
+
     return (
-      <div className="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700 shadow-sm">
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-700">
-          <thead className="bg-gray-50 dark:bg-zinc-700">
-            <tr>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                Dish
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                Category
-              </th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                Price
-              </th>
-              <th className="px-4 py-3 text-center text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                Action
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white dark:bg-zinc-800 divide-y divide-gray-200 dark:divide-zinc-700">
-            {dishes.map((item) => (
-              <tr key={item.dish_id}>
-                <td className="px-4 py-2 text-sm text-zinc-900 dark:text-white">{item.name}</td>
-                <td className="px-4 py-2 text-sm text-zinc-900 dark:text-white">{item.category}</td>
-                <td className="px-4 py-2 text-sm text-zinc-900 dark:text-white">${item.price.toFixed(2)}</td>
-                <td className="px-4 py-2 text-center">
-                  <NavLink
-                    to={`/admin/edit-dish/${item.dish_id}`}
-                    className="inline-block bg-green-600 text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-green-700 transition"
-                  >
-                    Edit Item
-                  </NavLink>
-                </td>
+      <div className="space-y-4">
+        
+        <div className='space-y-3'>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 flex-shrink-0">
+                Search Dishes:
+            </label>
+            <input
+                type="text"
+                placeholder="Search dish by name or category..."
+                value={search}
+                onChange={(e) => {
+                    setSearch(e.target.value);
+                    setCurrentPage(1); // Reset page on search change
+                }}
+                className="flex-grow rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+            />
+        </div>
+      </div>
+
+        <div className="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700 shadow-sm">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-700">
+            <thead className="bg-gray-50 dark:bg-zinc-800">
+              <tr>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+                  Dish
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+                  Category
+                </th>
+                <th className="px-4 py-3 text-left text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+                  Price
+                </th>
+                <th className="px-4 py-3 text-center text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+                  Action
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="bg-white dark:bg-zinc-900 divide-y divide-gray-200 dark:divide-zinc-800">
+              {paginatedDishes.length === 0 ? (
+                <tr>
+                    <td colSpan={4} className="px-4 py-8 text-center text-zinc-500">
+                        No dishes found matching your search.
+                    </td>
+                </tr>
+              ) : (
+                paginatedDishes.map((item) => (
+                  <tr key={item.dish_id} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
+                    <td className="px-4 py-3 text-sm font-medium text-zinc-900 dark:text-white">{item.name}</td>
+                    <td className="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">{item.category}</td>
+                    <td className="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">${item.price.toFixed(2)}</td>
+                    <td className="px-4 py-3 text-center">
+                      <NavLink
+                        to={`/admin/edit-dish/${item.dish_id}`}
+                        className="inline-block bg-green-600 text-white px-4 py-1.5 rounded-lg text-sm font-semibold hover:bg-green-700 shadow-sm transition-all active:scale-95"
+                      >
+                        Edit Item
+                      </NavLink>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {filteredDishes.length > 0 && (
+            <div className="flex justify-center items-center pt-2">
+                <div className="flex items-center gap-4 border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 rounded-xl p-1.5 shadow-sm">
+                    <button
+                        type="button"
+                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                        disabled={isFirstPage} 
+                        className="p-2 px-3 rounded-lg text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 disabled:opacity-30 transition-all"
+                    >
+                        &lt;&lt;
+                    </button>
+                    
+                    <div className='text-center min-w-[70px]'> 
+                        <span className='text-sm font-bold text-zinc-700 dark:text-zinc-300 block leading-tight'>
+                            Page {currentPage}
+                        </span>
+                        <span className='text-xs text-zinc-500 dark:text-zinc-500 block leading-tight'>
+                            of {totalPages}
+                        </span>
+                    </div>
+                    
+                    <button
+                        type="button"
+                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev - -1))}
+                        disabled={isLastPage} 
+                        className="p-2 px-3 rounded-lg text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 disabled:opacity-30 transition-all"
+                    >
+                        &gt;&gt;
+                    </button>
+                </div>
+            </div>
+        )}
+
       </div>
     );
 }
