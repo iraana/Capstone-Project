@@ -1,12 +1,26 @@
 import { Gallery } from "../components/Gallery"
+import { motion } from "framer-motion";
 
 export const GalleryPage = () => {
     return (
-        <div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-center text-gray-900 dark:text-white tracking-tight">
-                Gallery
-            </h1>
-            <Gallery />
+        <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+            
+            <motion.div 
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="mb-12 text-center"
+                >
+                <div className="text-center">
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-3">
+                        Gallery
+                    </h1>
+                    <p className="text-lg text-slate-600 dark:text-slate-400 mx-auto max-w-2xl">
+                        View our latest culinary creations and campus highlights.
+                    </p>
+                </div>
+                <Gallery />
+            </motion.div>
         </div>
     );
 }

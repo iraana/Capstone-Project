@@ -45,6 +45,11 @@ export const AddMenu = () => {
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [dishSearch, setDishSearch] = useState('');
+
+  // pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 10
  
   const {
     control,
@@ -66,7 +71,7 @@ export const AddMenu = () => {
     name: 'dishes',
   });
  
-  const { data: dishes = [] } = useQuery({
+  const { data: dishes = [], isLoading: isDishesLoading  } = useQuery({
     queryKey: ['dishes'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -120,10 +125,19 @@ export const AddMenu = () => {
  
  
   const selectedDishIds = fields.map((_, i) => watch(`dishes.${i}.dish_id`));
- 
-  const availableDishes = dishes.filter(
-    (dish) => !selectedDishIds.includes(dish.dish_id)
-  );
+
+  const availableDishes = dishes
+    .filter(
+      (dish) => !selectedDishIds.includes(dish.dish_id)
+    )
+    
+    .filter((dish) => {
+        if (!dishSearch) return true; 
+        const searchLower = dishSearch.toLowerCase();
+        const nameMatch = dish.name.toLowerCase().includes(searchLower);
+        const categoryMatch = dish.category.toLowerCase().includes(searchLower);
+        return nameMatch || categoryMatch;
+    });
  
   const selectedDishes = fields
     .map((_, index) => {
@@ -141,6 +155,17 @@ export const AddMenu = () => {
   const handleRemoveFromMenu = (fieldIndex: number) => {
     remove(fieldIndex);
   };
+
+  // Pagination logic
+  const totalAvailableDishes = availableDishes.length;
+  const totalPages = Math.ceil(totalAvailableDishes / PAGE_SIZE);
+  const isFirstPage = currentPage === 1;
+  const isLastPage = totalPages === 0 || currentPage === totalPages;
+
+  const paginatedDishes = availableDishes.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
+  );
  
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -165,7 +190,7 @@ export const AddMenu = () => {
           </div>
         )}
 
-        {/* Date Picker */}
+
         <div className="space-y-1">
           <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
             Menu Date
@@ -178,10 +203,9 @@ export const AddMenu = () => {
           {errors.date && <p className="text-red-500 text-sm">{errors.date.message}</p>}
         </div>
 
-        {/* Preview Table */}
         <div>
           <h2 className="font-semibold text-lg mb-2">Current Menu Preview</h2>
-          <table className="min-w-full border border-gray-200 shadow-sm rounded-lg">
+          <table className="min-w-full border border-gray-200 shadow-md rounded-lg">
             <thead className="bg-gray-100 dark:bg-zinc-700">
               <tr>
                 <th></th>
@@ -225,10 +249,29 @@ export const AddMenu = () => {
           </table>
         </div>
 
-        {/* Dishes Table */}
-        <div>
+      <div className='space-y-3'>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 flex-shrink-0">
+                Search Dishes:
+            </label>
+            <input
+                type="text"
+                placeholder="Search dish by name or category..."
+                value={dishSearch}
+                onChange={(e) => {
+                    setDishSearch(e.target.value);
+                    setCurrentPage(1); // Reset page on search change
+                }}
+                className="flex-grow rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+            />
+        </div>
+      </div>
+
+        <div className="space-y-4">
           <h2 className="font-semibold text-lg mt-6 mb-2">Available Menu Items</h2>
-          <table className="min-w-full border border-gray-200 shadow-sm rounded-lg">
+          
+          
+          <table className="min-w-full border border-gray-200 shadow-md rounded-lg">
             <thead className="bg-gray-100 dark:bg-zinc-700">
               <tr>
                 <th className="px-3 py-2 text-center">Dish</th>
@@ -238,7 +281,7 @@ export const AddMenu = () => {
               </tr>
             </thead>
             <tbody>
-              {availableDishes.map((dish) => (
+              {paginatedDishes.map((dish) => ( 
                 <tr key={dish.dish_id} className="border-b border-gray-200">
                   <td className="px-3 py-2 text-center">{dish.name}</td>
                   <td className="px-3 py-2 text-center">{dish.category}</td>
@@ -262,15 +305,50 @@ export const AddMenu = () => {
               ))}
             </tbody>
           </table>
-        </div>
 
-        <div className="flex justify-end mt-4">
+          {/* --- THE PAGINATION CONTROLS --- */}
+          {availableDishes.length > 0 && (
+            <div className="flex justify-center items-center pt-2">
+                <div className="flex items-center gap-4 border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 rounded-xl p-1 shadow-sm">
+                    <button
+                        type="button" // Prevents form submission
+                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                        disabled={isFirstPage || isDishesLoading} 
+                        className="p-2 px-3 rounded-lg text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 disabled:opacity-30 transition"
+                    >
+                        &lt;&lt;
+                    </button>
+                    
+                    <div className='text-center min-w-[70px]'> 
+                        <span className='text-sm font-medium text-zinc-700 dark:text-zinc-300 block leading-tight'>
+                            Page {currentPage}
+                        </span>
+                        <span className='text-xs text-zinc-500 dark:text-zinc-500 block leading-tight'>
+                            of {totalPages || 1}
+                        </span>
+                    </div>
+                    
+                    <button
+                        type="button" // Prevents form submission
+                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                        disabled={isLastPage || isDishesLoading} 
+                        className="p-2 px-3 rounded-lg text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 disabled:opacity-30 transition"
+                    >
+                        &gt;&gt;
+                    </button>
+                </div>
+            </div>
+          )}
+          {/* ----------------------------------------------- */}
+        </div>
+ 
+        <div className="flex justify-end mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-800">
           <button
             type="submit"
             disabled={loading}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            className="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-blue-500/20 hover:bg-blue-700 active:scale-95 transition-all disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
-            {loading ? 'Saving...' : 'Save Menu'}
+            {loading ? 'Saving Menu...' : 'Save Menu'}
           </button>
         </div>
 
