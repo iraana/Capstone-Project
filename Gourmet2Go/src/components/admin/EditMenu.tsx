@@ -11,8 +11,9 @@ const fetchMenu = async (menuDate: string) => {
   const { data, error } = await supabase
     .from("MenuDayDishes")
     .select("*, Dishes ( * ), MenuDays ( * )")
-    .eq("MenuDays.date", menuDate);
-
+    .eq("MenuDays.date", menuDate)
+    .eq("MenuDays.status", true);
+    
   if (error) throw error;
   return data;
 };
@@ -156,6 +157,7 @@ export const EditMenu = () => {
       .from('MenuDays')
       .select('menu_day_id')
       .eq('date', date)
+      .eq('status', true)
       .single();
     return !!data;
   } catch {
@@ -185,13 +187,20 @@ const {data: associatedOrders} = useQuery({
   });
 
 const handleDeleteMenu = async () => {
-  const confirmed = window.confirm("Are you sure you want to delete this menu? This action cannot be undone.");
-  if (!confirmed) return;
   try {
     if (associatedOrders && associatedOrders.length > 0) {
-      alert("Cannot delete menu with existing orders.");
-      return;
+      const confirmed = window.confirm("This menu has associated orders. Deleting it will make the menu unavailable but keep the data for existing orders. Do you want to proceed?");
+      if (!confirmed) return;
+      const {error: deleteMenuError} = await supabase
+        .from('MenuDays')
+        .update({ status: false})
+        .eq('date', menuDate);
+      if (deleteMenuError) {
+        console.error("Error deleting menu:", deleteMenuError);
+      }
     } else {
+      const confirmed = window.confirm("Are you sure you want to delete this menu? This action cannot be undone.");
+      if (!confirmed) return;
       const { error: deleteMenuError } = await supabase
         .from('MenuDays')
         .delete()
@@ -349,7 +358,7 @@ const handleDeleteMenu = async () => {
                 </div>
                 <div>
                   <label className="text-xl block font-semibold mb-4 text-gray-900 dark:text-white">Available Menu Items</label>
-                  <div className="border rounded-xl border-gray-200 dark:border-zinc-700 overflow-hidden">
+                  <div className="max-h-96 overflow-y-auto border rounded-xl border-gray-200 dark:border-zinc-700 overflow-hidden">
                     <table className="w-full text-left text-sm">
                       <thead className="bg-gray-50 dark:bg-zinc-700/50">
                         <tr>
