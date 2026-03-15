@@ -20,7 +20,8 @@ export const ListDishes = () => {
         queryFn: async () => {
         const { data, error } = await supabase.from('Dishes')
         .select('*')
-        .eq('dish_status', 'true');
+        .eq('dish_status', true)
+        .order( 'name', { ascending: true });
         if (error) throw error;
         return data as Dish[];
         },

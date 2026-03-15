@@ -72,6 +72,7 @@ export const AddMenu = () => {
       const { data, error } = await supabase
         .from('Dishes')
         .select('dish_id, name, price, category')
+        .eq('dish_status', true)
         .order('name');
  
       if (error) throw error;
