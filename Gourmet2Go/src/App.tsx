@@ -30,11 +30,12 @@ import { OrderDetailsPage } from "./pages/admin/OrderDetailsPage";
 import { AdminScannerPage } from "./pages/admin/AdminScannerPage";
 import { EditDishPage } from "./pages/admin/EditDishPage";
 import { ListDishesPage } from "./pages/admin/ListDishesPage";
-import { AdminInboxPage } from "./pages/admin/AdminInboxPage";
 import { AddToGalleryPage } from "./pages/admin/AddToGalleryPage";
 import { GalleryPage } from "./pages/GalleryPage";
 import { ManageGalleryPage } from "./pages/admin/ManageGalleryPage";
 import { AdminReviewsPage } from "./pages/admin/AdminReviewsPage";
+import { ReviewPage } from "./pages/ReviewPage";
+import { ResetPasswordPage } from "./pages/ResetPasswordPage";
 
 function App() {
   return (
@@ -57,12 +58,14 @@ function App() {
             <Route path="/virtualtour" element={<VirtualTourPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/gallery" element={<GalleryPage />} />
-
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
+            
             {/* Auth only routes */}
             <Route element={<ProtectedRoute allowedRoles={["USER", "ADMIN"]} />}>
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/successful-order" element={<SuccessfulOrderPage />} />
               <Route path="/my-orders" element={<UserOrdersPage />} />
+              <Route path="/review" element={<ReviewPage />} />
             </Route>
 
             {/* Admin only routes */}
@@ -81,7 +84,6 @@ function App() {
               <Route path="/admin/scanner" element={<AdminScannerPage />} />
               <Route path="/admin/edit-dish/:dishId" element={<EditDishPage />} />
               <Route path="/admin/list-dishes" element={<ListDishesPage />} />
-              <Route path="/admin/inbox" element={<AdminInboxPage />} />
               <Route path="/admin/add-to-gallery" element={<AddToGalleryPage />} />
               <Route path="/admin/inbox" element={<AdminInboxPage />} />
               <Route path="/admin/gallery-manager" element={<ManageGalleryPage />} />

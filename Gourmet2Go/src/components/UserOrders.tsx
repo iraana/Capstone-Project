@@ -6,7 +6,8 @@ import QRCode from "react-qr-code";
 import { QrCode, Trash2, ShoppingBag, Utensils, MoveLeft } from "lucide-react"; 
 import { motion, type Variants } from "framer-motion";
 import { useNavigate } from "react-router"; 
-
+import { DateTime } from "luxon";
+import { formatOrderDateTime } from "../utils/formatOrderDateTime";
 
 interface Dish {
   dish_id: number;
@@ -47,6 +48,25 @@ interface Order {
   MenuDays: MenuDay;
   OrderItems: OrderItemWithDish[];
 }
+
+export const canModifyOrder = (menuDate: string) => {
+  const now = DateTime.now().setZone("America/Toronto");
+
+  const today = now.startOf("day");
+
+  const orderDay = DateTime.fromISO(menuDate, {
+    zone: "America/Toronto",
+  }).startOf("day");
+
+  // Future days are always allowed
+  if (orderDay > today) return true;
+
+  // Past days never allowed
+  if (orderDay < today) return false;
+
+  // Same day only before noon
+  return now.hour < 12;
+};
 
 export const UserOrders = () => {
   const { user } = useAuth();
@@ -101,19 +121,12 @@ export const UserOrders = () => {
     },
   });
 
-  const formatOrderDateTime = (date?: string, time?: string) => {
-    if (!date || !time) return "N/A";
-    const cleanTime = time.split(".")[0];
-    const fullDateTime = new Date(`${date}T${cleanTime}`);
-    if (isNaN(fullDateTime.getTime())) return "Invalid Date";
-
-    return fullDateTime.toLocaleString([], {
-      dateStyle: "medium",
-      timeStyle: "short",
-    });
-  };
-
   const handleDelete = async (order: Order) => {
+    if (!canModifyOrder(order.MenuDays.date)) {
+        alert("Order cancellation cutoff has passed.");
+        return;
+      }
+
     try {
       setProcessingId(order.order_id);
 
@@ -244,6 +257,8 @@ export const UserOrders = () => {
     // URL for the QR code
     const qrUrl = `${window.location.origin}/admin/order/${order.order_number}`;
 
+    const canDelete = canModifyOrder(order.MenuDays.date);
+
     return (
       <div
         key={order.order_id}
@@ -255,7 +270,7 @@ export const UserOrders = () => {
               Order #{order.order_number}
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              {formatOrderDateTime(order.MenuDays?.date, order.timestamp)}
+              {formatOrderDateTime(order.timestamp)}
             </p>
           </div>
 
@@ -281,13 +296,15 @@ export const UserOrders = () => {
             {order.status !== "PENDING" && (
                 <button
                 onClick={() => handleDelete(order)}
-                disabled={processingId === order.order_id}
-                className="flex items-center gap-1 text-xs text-red-600 hover:text-red-700 hover:underline disabled:opacity-50"
+                disabled={processingId === order.order_id || !canDelete}
+                className="text-xs font-normal text-red-500 hover:text-red-600 hover:underline disabled:opacity-50"
                 >
                 <Trash2 size={14} />
                 {processingId === order.order_id
-                    ? "Processing..."
-                    : "Remove"}
+                  ? "Cancelling..."
+                  : canDelete
+                    ? "Cancel Order"
+                    : "Cutoff Passed"}
                 </button>
             )}
           </div>
@@ -338,17 +355,19 @@ export const UserOrders = () => {
 
         <div className="flex justify-between font-semibold text-md border-t border-gray-100 dark:border-zinc-700 pt-3 text-gray-900 dark:text-white items-center">
             {order.status === "PENDING" ? (
-                 <button
-                 onClick={() => handleDelete(order)}
-                 disabled={processingId === order.order_id}
-                 className="text-xs font-normal text-red-500 hover:text-red-600 hover:underline disabled:opacity-50"
-               >
-                 {processingId === order.order_id
-                   ? "Cancelling..."
-                   : "Cancel Order"}
-               </button>
+              <button
+                onClick={() => handleDelete(order)}
+                disabled={processingId === order.order_id || !canDelete}
+                className="text-xs font-normal text-red-500 hover:text-red-600 hover:underline disabled:opacity-50"
+              >
+                {processingId === order.order_id
+                  ? "Cancelling..."
+                  : canDelete
+                    ? "Cancel Order"
+                    : "Cutoff Passed"}
+              </button>
             ) : (
-                <span></span> 
+              <span></span>
             )}
          
           <div className="flex gap-4">
