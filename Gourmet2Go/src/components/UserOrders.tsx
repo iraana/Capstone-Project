@@ -3,7 +3,9 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../../supabase-client";
 import { useAuth } from "../context/AuthContext";
 import QRCode from "react-qr-code";
-import { QrCode, Trash2 } from "lucide-react";
+import { QrCode, Trash2, ShoppingBag, Utensils, MoveLeft } from "lucide-react"; 
+import { motion, type Variants } from "framer-motion";
+import { useNavigate } from "react-router"; 
 import { DateTime } from "luxon";
 import { formatOrderDateTime } from "../utils/formatOrderDateTime";
 
@@ -69,10 +71,29 @@ export const canModifyOrder = (menuDate: string) => {
 export const UserOrders = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [showHistory, setShowHistory] = useState(false);
   const[processingId, setProcessingId] = useState<number | null>(null);
-  
   const [activeQrId, setActiveQrId] = useState<number | null>(null);
+
+  // --- ANIMATION VARIANTS (Matching SuccessfulOrder) ---
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.08 },
+    },
+  };
+
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: 18 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.45, ease: "easeOut" },
+    },
+  };
+  // -----------------------------------------------------
 
   const { data: orders, isLoading, error } = useQuery({
     queryKey: ["user_orders", user?.id], // Scoped per user
@@ -83,7 +104,7 @@ export const UserOrders = () => {
         .select(`
           *,
           profiles (first_name, last_name, email),
-          MenuDays (menu_day_id, date, day),
+          MenuDays!inner (menu_day_id, date, day, status),
           OrderItems (
             order_item_id,
             quantity,
@@ -92,6 +113,7 @@ export const UserOrders = () => {
           )
         `)
         .eq("user_id", user!.id)
+        .eq("MenuDays.status", true)
         .eq("is_showing", true) // Filters where is_showing is true
         .order("timestamp", { ascending: false });
 
@@ -140,8 +162,79 @@ export const UserOrders = () => {
   if (!user) return null;
   if (isLoading) return <div className="p-6">Loading orders...</div>;
   if (error) return <div className="p-6 text-red-500">Error loading orders</div>;
-  if (!orders || orders.length === 0)
-    return <div className="p-6">No orders found.</div>;
+
+  // NEW NO ORDERS 
+  if (!orders || orders.length === 0) {
+    return (
+        <main className="relative flex min-h-[80vh] w-full flex-col items-center justify-center overflow-hidden bg-white dark:bg-zinc-900 px-4 transition-colors duration-300">
+          
+          {/* Background Blobs (Blue/Indigo theme for empty state) */}
+          <div className="absolute top-1/4 -left-20 h-72 w-72 rounded-full bg-blue-500/20 blur-[100px] mix-blend-multiply dark:bg-blue-500/10 dark:mix-blend-screen animate-pulse" />
+          <div className="absolute bottom-1/4 -right-20 h-72 w-72 rounded-full bg-indigo-500/20 blur-[100px] mix-blend-multiply dark:bg-indigo-500/10 dark:mix-blend-screen animate-pulse delay-1000" />
+    
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="relative z-10 mx-auto max-w-2xl text-center"
+          >
+            {/* Icon */}
+            <motion.div variants={itemVariants} className="mb-6 flex justify-center">
+              <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-linear-to-br from-blue-50 to-indigo-50 shadow-sm dark:from-zinc-800 dark:to-zinc-800/50 border border-blue-100 dark:border-zinc-700">
+                <ShoppingBag className="h-10 w-10 text-blue-600 dark:text-blue-400" />
+              </div>
+            </motion.div>
+    
+            {/* Text */}
+            <motion.h1
+              variants={itemVariants}
+              className="text-5xl font-extrabold tracking-tight sm:text-6xl bg-linear-to-r from-blue-700 to-indigo-500 bg-clip-text text-transparent select-none pb-2"
+            >
+              No Orders Yet
+            </motion.h1>
+    
+            <motion.h2
+              variants={itemVariants}
+              className="mt-4 text-xl font-semibold tracking-tight text-zinc-900 dark:text-white sm:text-2xl"
+            >
+              Looks like you haven't placed any orders.
+            </motion.h2>
+    
+            <motion.p
+              variants={itemVariants}
+              className="mx-auto mt-4 max-w-md text-base text-zinc-600 dark:text-zinc-400 sm:text-lg"
+            >
+              Browse our menu to find your next favorite meal and place your first order today!
+            </motion.p>
+    
+            {/* Buttons */}
+            <motion.div
+              variants={itemVariants}
+              className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row"
+            >
+              <button
+                onClick={() => navigate(-1)}
+                className="group flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-200 bg-white px-6 py-3 text-sm font-semibold text-zinc-700 transition-all hover:bg-zinc-100 hover:text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-200 focus:ring-offset-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700 dark:focus:ring-zinc-700 dark:focus:ring-offset-zinc-900 sm:w-auto"
+                aria-label="Go back"
+              >
+                <MoveLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+                Go Back
+              </button>
+    
+              <button
+                onClick={() => navigate("/")} 
+                className="group flex w-full items-center justify-center gap-2 rounded-lg bg-linear-to-r from-blue-600 to-indigo-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 transition-all hover:scale-[1.02] hover:shadow-blue-500/30 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 sm:w-auto"
+                aria-label="Browse Menu"
+              >
+                <Utensils className="h-4 w-4" />
+                Browse Menu
+              </button>
+            </motion.div>
+          </motion.div>
+        </main>
+    );
+  }
+  // ---------------------------------------
 
   const pendingOrders = orders.filter((o) => o.status === "PENDING");
   const historyOrders = orders.filter(

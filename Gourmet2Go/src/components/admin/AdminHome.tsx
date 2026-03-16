@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { useAuth } from "../../context/AuthContext";
-import { UserCog, BarChart3, UtensilsCrossed, FilePlus, FilePenLine, Users, ChevronRight, ClipboardClock, BookMinus, Archive, ScanLine, List, Mail, MessageSquare } from "lucide-react";
+import { UserCog, BarChart3, UtensilsCrossed, FilePlus, FilePenLine, Users, ChevronRight, ClipboardClock, BookMinus, Archive, ScanLine, List, Mail, MessageSquare, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "../../../supabase-client";
@@ -106,6 +106,13 @@ const adminPages: AdminPage[] = [
     color: 'from-blue-600 to-indigo-500',
   },
   {
+    id: 'trash-bin',
+    title: 'Trash Bin',
+    description: 'Recover deleted dishes and menus',
+    icon: Trash2,
+    color: 'from-purple-500 to-fuchsia-400',
+  },
+  {
     id: 'user-manager',
     title: 'User Manager',
     description: 'Manage user roles & permissions',
@@ -199,9 +206,9 @@ export const AdminHome = () => {
           transition={{ duration: 0.5 }}
           className="mb-12 text-center"
         >
-          <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-4">
+          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-4">
             Welcome back, <span className="text-transparent bg-clip-text bg-linear-to-r from-green-500 to-emerald-700">{displayName}</span>
-          </h2>
+          </h1>
           <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
             Access your command centre for all admin operations for Gourmet2Go.
           </p>
