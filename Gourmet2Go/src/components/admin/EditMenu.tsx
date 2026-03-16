@@ -372,7 +372,7 @@ const handleDeleteMenu = async () => {
                 </div>
                 <div>
                   <label className="text-xl block font-semibold mb-4 text-gray-900 dark:text-white">Available Menu Items</label>
-                  <div className="max-h-96 overflow-y-auto border rounded-xl border-gray-200 dark:border-zinc-700 overflow-hidden">
+                  <div className="border rounded-xl border-gray-200 dark:border-zinc-700 overflow-hidden">
                     <table className="w-full text-left text-sm">
                       <thead className="bg-gray-50 dark:bg-zinc-700/50">
                         <tr>
