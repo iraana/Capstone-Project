@@ -18,7 +18,7 @@ export const Checkout = () => {
   const total = totalPrice();
     
   const handleConfirmOrder = async () => {
-    // If, user isn't logged in or items is 0, return
+    // If user isn't logged in or items is 0, return
     if (!user || items.length === 0) return;
     
     setLoading(true); // Shows loading state
@@ -26,7 +26,6 @@ export const Checkout = () => {
 
     try {
       const menuId = items[0].menu_id; // Gets the menu_id from the first item
-      const dishIds = items.map((i) => i.dish_id); // Array of dish_ids
 
       // Ensures the user hasn't already made an order for this menu
       const { data: existingOrders, error: existingOrdersError } = await supabase
@@ -42,98 +41,39 @@ export const Checkout = () => {
         throw new Error("You've already placed an order for this menu. We have a strict one order per menu policy. You can delete your current order and re-order if you'd like.");
       }
 
-      // Ensures the item is still in stock
-      const { data: stockData, error: stockError } = await supabase
-        .from('MenuDayDishes')
-        .select(`
-          dish_id, 
-          stock, 
-          Dishes ( name )
-        `)
-        .eq('menu_id', menuId)
-        .in('dish_id', dishIds);
-
-      if (stockError) throw stockError;
-
-      // Loops through all items in the cart and finds the corresponding dish in the database
-      for (const item of items) {
-        const dbItem = stockData?.find((d) => d.dish_id === item.dish_id);
-        
-        if (!dbItem) {
-          throw new Error(`Item ${item.name} is no longer available on this menu.`);
-        }
-
-        if (item.quantity > dbItem.stock) {
-          throw new Error(
-            `Sorry, there are only ${dbItem.stock} left in stock for "${item.name}". Please adjust your cart.`
-          );
-        }
-      }
-
-      // Inserts order into supabase
-      const { data: orderData, error: orderError } = await supabase
-        .from("Orders")
-        .insert({
-          user_id: user.id,
-          menu_id: menuId,
-          notes: notes.trim() || null,
-          total: total,
-          order_number: Math.floor(10000000 + Math.random() * 90000000) // Random 8 digit number
-        })
-        .select("order_id")
-        .single();
-
-      if (orderError) throw orderError;
-
-      const orderId = orderData.order_id; // Stores the order_id
-
-      // Converts cart items into database rows
-      const orderItemsData = items.map((item) => ({
-        order_id: orderId,
+      const orderItemsPayload = items.map((item) => ({
         dish_id: item.dish_id,
         quantity: item.quantity,
-        subtotal: item.price * item.quantity,
       }));
 
-      // Inserts into OrderItems
-      const { error: itemsError } = await supabase
-        .from("OrderItems")
-        .insert(orderItemsData);
-
-      if (itemsError) throw itemsError;
-
-      const stockUpdates = items.map(async (item) => {
-        // Finds the old stock
-        const originalStock = stockData?.find(d => d.dish_id === item.dish_id)?.stock || 0;
-        // Calculates the new stock
-        const newStock = Math.max(0, originalStock - item.quantity);
-
-        // Updates the stock of the dish
-        return supabase
-          .from('MenuDayDishes')
-          .update({ stock: newStock })
-          .eq('menu_id', menuId)
-          .eq('dish_id', item.dish_id);
+      const { error: rpcError } = await supabase.rpc('place_order', {
+        p_menu_id: menuId,
+        p_items: orderItemsPayload,
+        p_notes: notes.trim() || null,
       });
 
-        await Promise.all(stockUpdates); // All stock updates happen in unison
-  
-        clearCart(); // Cart cleared
-        navigate("/successful-order"); // User sent to SuccessfulOrderPage
-      } catch (err: any) {
-        console.error(err);
-  
-        // Check for Postgres Unique Violation (code 23505)
-        // This handles the rare case where the random order_number collides
-        if (err.code === '23505') {
-          setErrorMsg("Small issue processing your order, please try again.");
-        } else {
-          setErrorMsg(err.message || "Failed to place order. Please try again.");
-        }
-      } finally {
-        setLoading(false);
+      if (rpcError) {
+        throw new Error(rpcError.message);
       }
-    };
+
+      // Order was successfully placed
+      clearCart(); // Cart cleared
+      navigate("/successful-order"); // User sent to SuccessfulOrderPage
+      
+    } catch (err: any) {
+      console.error(err);
+
+      // Check for Postgres Unique Violation (code 23505)
+      // This handles the rare case where the random order_number collides
+      if (err.code === '23505') {
+        setErrorMsg("Small issue processing your order, please try again.");
+      } else {
+        setErrorMsg(err.message || "Failed to place order. Please try again.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (items.length === 0) return null; // Checkout won't render if cart is empty
 
@@ -221,7 +161,7 @@ export const Checkout = () => {
                 disabled={loading}
                 className="w-full bg-linear-to-r from-[#00659B] to-[#005082] hover:from-[#005082] hover:to-[#004060] text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-blue-900/20 hover:shadow-xl hover:shadow-blue-900/30 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2"
               >
-                {loading ? <Loader fullScreen text="Processing..." /> : "Confirm Order"}
+                {loading ? <Loader fullScreen={false} text="Processing..." /> : "Confirm Order"}
               </button>
             </div>
           </div>

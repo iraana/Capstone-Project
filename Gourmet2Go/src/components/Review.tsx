@@ -57,6 +57,20 @@ export const Review = () => {
             const { data, error } = await supabase
                 .from('Orders')
                 .select('order_id, user_id, OrderItems(dish_id)')
+                .eq('user_id', user?.id)
+                .eq('status', 'FULFILLED');
+            if (error) throw error;
+            return data;
+        },
+        enabled: !!user,
+    });
+
+    const {data: reviews} = useQuery({
+        queryKey: ['reviews', user?.id],
+        queryFn: async () => {
+            const { data, error } = await supabase
+                .from('Reviews')
+                .select('review_id, user_id, dish_id')
                 .eq('user_id', user?.id);
             if (error) throw error;
             return data;
@@ -64,7 +78,7 @@ export const Review = () => {
         enabled: !!user,
     });
 
-    const reviewableDishes = dishes.filter(dish => orders?.some(order => order.OrderItems?.some(item => item.dish_id === dish.dish_id)));
+    const reviewableDishes = dishes.filter(dish => orders?.some(order => order.OrderItems?.some(item => item.dish_id === dish.dish_id)) && !reviews?.some(review => review.dish_id === dish.dish_id));
 
     const isAuthorized = user && (role === "USER" || role === "ADMIN");
 

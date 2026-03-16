@@ -7,6 +7,7 @@ import { Plus, ShoppingBasket, UtensilsCrossed, Lock, AlertCircle, Trash2 } from
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader } from "./Loader";
 import { Greeter } from "./Greeter";
+import { DateTime } from "luxon";
 
 export interface Dish {
   dish_id: number;
@@ -42,10 +43,31 @@ const itemVariants = {
   visible: { opacity: 1, y: 0 }
 };
 
+const getMenuWindow = () => {
+  const estNow = DateTime.now().setZone("America/Toronto");
+
+  let start = estNow;
+
+  if (estNow.hour >= 12) {
+    start = start.plus({ days: 1 });
+  }
+
+  const end = start.plus({ days: 14 });
+
+  return {
+    start: start.toISO(),
+    end: end.toISO(),
+    estNow: estNow.toISO(),
+  };
+};
+
+const MAX_TOTAL_ITEMS = 5;
+
 export const Menu = () => {
-  const { addItem, items: cartItems, clearCart } = cartStore();
+  const { addItem, items: cartItems, clearCart, totalItems } = cartStore();
   const { user, role } = useAuth(); 
   const [selectedDayId, setSelectedDayId] = useState<number | null>(null);
+  const { start, end } = getMenuWindow();
 
   // Selects from MenuDays and then the related MenuDayDishes and the related Dishes 
   const { data: menuDays, isLoading, error } = useQuery({
@@ -68,12 +90,17 @@ export const Menu = () => {
             )
           )
         `)
+        .gte('date', start)
+        .lte('date', end)
         .order('date', { ascending: true });
 
       if (error) throw error;
       return data as unknown as MenuDay[];
     }
   });
+
+  const currentTotalItems = totalItems();
+  const isCartFull = currentTotalItems >= MAX_TOTAL_ITEMS;
 
   // Sets default day to the first one
   useEffect(() => {
@@ -180,7 +207,7 @@ export const Menu = () => {
   }
 
   return (
-    <div className="max-w-5xl mx-auto pb-20 relative">
+    <main className="max-w-5xl mx-auto pb-20 relative">
       <Greeter />
       
       <AnimatePresence>
@@ -246,7 +273,7 @@ export const Menu = () => {
                 {isSelected && (
                   <motion.div 
                     layoutId="activeTab"
-                    className="absolute -bottom-1 w-1 h-1 bg-white rounded-full mb-2"
+                    className="absolute -bottom-1 w-1 h-1 bg-white rounded-full"
                   />
                 )}
               </button>
@@ -302,6 +329,10 @@ export const Menu = () => {
                             isDisabled = true;
                         } else if (isSoldOut) {
                             buttonText = "Sold Out";
+                            ButtonIcon = Lock;
+                            isDisabled = true;
+                        } else if (isCartFull) {
+                            buttonText = "Cart Full";
                             ButtonIcon = Lock;
                             isDisabled = true;
                         }
@@ -369,6 +400,6 @@ export const Menu = () => {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </main>
   );
 };

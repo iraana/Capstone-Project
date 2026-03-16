@@ -1,15 +1,54 @@
 import { supabase } from "../../../supabase-client";
 import { useAuth } from "../../context/AuthContext";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
+import { useNavigate } from "react-router";
 
-// This is all stuff we'll work on fully implementing in the future
-export const SecurityTab = () => {
-  const { user } = useAuth();
+interface SecurityTabProps {
+  onClose: () => void;
+}
 
-  // We need to make an SMTP server before this can work properly 
+export const SecurityTab = ({ onClose }: SecurityTabProps) => {
+  const { signOut } = useAuth();
+  const [isDeleting, setIsDeleting] = useState(false);
+  const navigate = useNavigate();
+
   const handlePasswordReset = async () => {
-    if (!user?.email) return;
-    await supabase.auth.resetPasswordForEmail(user.email);
-    alert("Password reset email sent!");
+    navigate('/reset-password')
+    onClose();
+  };
+
+  const handleDeleteAccount = async () => {
+    const confirmed = window.confirm(
+      "Are you sure? This action is irreversible. All your data and orders will be deleted."
+    );
+    if (!confirmed) return;
+
+    setIsDeleting(true);
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      const response = await fetch("/api/user/delete-account", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete account");
+      }
+
+      await signOut();
+      alert("Your account has been deleted.");
+    } catch (error) {
+      console.error(error);
+      alert("Error deleting account.");
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -28,7 +67,7 @@ export const SecurityTab = () => {
             onClick={handlePasswordReset}
             className="bg-[#00659B] hover:bg-[#00527c] text-white px-4 py-2 rounded text-sm font-bold transition-colors"
           >
-            Send Password Reset Email
+            Go To Change Password
           </button>
         </div>
 
@@ -36,7 +75,15 @@ export const SecurityTab = () => {
           <h3 className="text-lg font-bold text-red-600 mb-2">
             Danger Zone
           </h3>
-          <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-bold transition-colors">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+            Once you delete your account, there is no going back. Please be certain.
+          </p>
+          <button 
+            onClick={handleDeleteAccount}
+            disabled={isDeleting}
+            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-bold transition-colors disabled:opacity-50 flex items-center gap-2"
+          >
+            {isDeleting && <Loader2 size={16} className="animate-spin" />}
             Delete Account
           </button>
         </div>

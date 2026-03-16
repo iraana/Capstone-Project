@@ -31,6 +31,7 @@ vi.mock('../store/cartStore', () => ({
     addItem: vi.fn(),
     items: [],
     clearCart: vi.fn(),
+    totalItems: vi.fn(() => 0), 
   }),
 }));
 
