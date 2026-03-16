@@ -11,8 +11,9 @@ const fetchMenu = async (menuDate: string) => {
   const { data, error } = await supabase
     .from("MenuDayDishes")
     .select("*, Dishes ( * ), MenuDays ( * )")
-    .eq("MenuDays.date", menuDate);
-
+    .eq("MenuDays.date", menuDate)
+    .eq("MenuDays.status", true);
+    
   if (error) throw error;
   return data;
 };
@@ -57,15 +58,15 @@ type MenuFormValues = z.infer<typeof menuSchema>;
 
 export const EditMenu = () => {
   const { date } = useParams<{ date: string }>();
-  const [menuDate, setMenuDate] = useState<string>(date || "");
+  const[menuDate, setMenuDate] = useState<string>(date || "");
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [hasMenu, setHasMenu] = useState<boolean>(false);
+  const[hasMenu, setHasMenu] = useState<boolean>(false);
   const [_isLoading, setLoading] = useState<boolean>(false);
 
   const[dishSearch, setDishSearch] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
+  const[currentPage, setCurrentPage] = useState(1);
   const PAGE_SIZE = 10;
   
   const getDayFromDate = (date: string) => {
@@ -86,7 +87,7 @@ export const EditMenu = () => {
       defaultValues: {
         date: menuDate,
         day: getDayFromDate(menuDate),
-        dishes: [],
+        dishes:[],
       },
     });
 
@@ -103,7 +104,7 @@ export const EditMenu = () => {
       const { data, error } = await supabase
         .from('Dishes')
         .select('dish_id, name, price, category')
-        .eq('is_available', true)
+        .eq('dish_status', true)
         .order('name');
       
       if (error) throw error;
@@ -174,6 +175,14 @@ export const EditMenu = () => {
     loadMenuItems();
   }, [menuDate, reset]);
 
+  useEffect(() => {
+  const message = sessionStorage.getItem('successMsg');
+  if (message) {
+    setSuccessMsg(message);
+    sessionStorage.removeItem('successMsg');
+  }
+},[]);
+
   const handleRemoveItem = async (fieldIndex: number) => {
     remove(fieldIndex);
   };
@@ -184,6 +193,7 @@ export const EditMenu = () => {
       .from('MenuDays')
       .select('menu_day_id')
       .eq('date', date)
+      .eq('status', true)
       .single();
     return !!data;
   } catch {
@@ -198,6 +208,53 @@ const handleDateChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
   setHasMenu(exists);
   // Optionally reset form state here if needed
 };
+
+const {data: associatedOrders} = useQuery({
+  queryKey: ['associatedOrders', menuDate],
+  queryFn: async () => {
+    const { data, error } = await supabase
+      .from('Orders')
+      .select('order_id, MenuDays!inner(date)')
+      .eq('MenuDays.date', menuDate);
+    if (error) throw error;
+    return data;
+  },
+  enabled: !!menuDate,
+  });
+
+const handleDeleteMenu = async () => {
+  try {
+    if (Array.isArray(associatedOrders) && associatedOrders.length > 0) {
+      const confirmed = window.confirm("This menu has associated orders. Deleting it will make the menu unavailable but keep the data for existing orders. Do you want to proceed?");
+      if (!confirmed) return;
+      const {error: deleteMenuError} = await supabase
+        .from('MenuDays')
+        .update({ status: false})
+        .eq('date', menuDate);
+      if (deleteMenuError) {
+        console.error("Error deleting menu:", deleteMenuError);
+      } else {
+        sessionStorage.setItem('successMsg', 'Menu deleted successfully!');
+        window.location.reload();
+      }
+    } else {
+      const confirmed = window.confirm("Are you sure you want to delete this menu? This action cannot be undone.");
+      if (!confirmed) return;
+      const { error: deleteMenuError } = await supabase
+        .from('MenuDays')
+        .delete()
+        .eq('date', menuDate);  
+      if (deleteMenuError) {
+        console.error("Error deleting menu:", deleteMenuError);
+      } else {
+        sessionStorage.setItem('successMsg', 'Menu deleted successfully!');
+        window.location.reload();
+      }
+    }
+  }catch (error) {
+    console.error("Error deleting menu:", error);
+  }
+}
 
   const onSubmit = async (formData: MenuFormValues) => {
     const originalDishes = menuItems; 
@@ -242,8 +299,8 @@ const handleDateChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     } catch (error: any) {
       setErrorMsg(error.message || 'Failed to update menu');
     }
-    setSuccessMsg("Menu updated successfully!");
-    setErrorMsg(null);
+    sessionStorage.setItem('successMsg', 'Menu updated successfully!');
+    window.location.reload();
   };
 
   return (
@@ -459,7 +516,14 @@ const handleDateChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
             </div>
 
             {/* Action Buttons */}
-            <div className="pt-6 border-t border-zinc-200 dark:border-zinc-800 flex justify-end gap-4 mt-6">
+            <div className="pt-6 border-t border-zinc-200 dark:border-zinc-800 flex flex-col sm:flex-row justify-end gap-4 mt-6">
+              <button
+                type="button"
+                className="px-6 py-2.5 rounded-xl font-semibold bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-900/20 transition-all active:scale-95"
+                onClick={handleDeleteMenu}
+              >
+                Delete Menu
+              </button>
               <button
                 type="button"
                 className="px-6 py-2.5 rounded-xl font-semibold bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-600 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all active:scale-95"
