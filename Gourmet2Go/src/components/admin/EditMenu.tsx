@@ -147,6 +147,14 @@ export const EditMenu = () => {
     loadMenuItems();
   }, [menuDate, reset]);
 
+  useEffect(() => {
+  const message = sessionStorage.getItem('successMsg');
+  if (message) {
+    setSuccessMsg(message);
+    sessionStorage.removeItem('successMsg');
+  }
+}, []);
+
   const handleRemoveItem = async (fieldIndex: number) => {
     remove(fieldIndex);
   };
@@ -178,7 +186,7 @@ const {data: associatedOrders} = useQuery({
   queryFn: async () => {
     const { data, error } = await supabase
       .from('Orders')
-      .select('order_id, MenuDays(date)')
+      .select('order_id, MenuDays!inner(date)')
       .eq('MenuDays.date', menuDate);
     if (error) throw error;
     return data;
@@ -188,7 +196,7 @@ const {data: associatedOrders} = useQuery({
 
 const handleDeleteMenu = async () => {
   try {
-    if (associatedOrders && associatedOrders.length > 0) {
+    if (Array.isArray(associatedOrders) && associatedOrders.length > 0) {
       const confirmed = window.confirm("This menu has associated orders. Deleting it will make the menu unavailable but keep the data for existing orders. Do you want to proceed?");
       if (!confirmed) return;
       const {error: deleteMenuError} = await supabase
@@ -197,6 +205,9 @@ const handleDeleteMenu = async () => {
         .eq('date', menuDate);
       if (deleteMenuError) {
         console.error("Error deleting menu:", deleteMenuError);
+      } else {
+        sessionStorage.setItem('successMsg', 'Menu deleted successfully!');
+        window.location.reload();
       }
     } else {
       const confirmed = window.confirm("Are you sure you want to delete this menu? This action cannot be undone.");
@@ -207,6 +218,9 @@ const handleDeleteMenu = async () => {
         .eq('date', menuDate);  
       if (deleteMenuError) {
         console.error("Error deleting menu:", deleteMenuError);
+      } else {
+        sessionStorage.setItem('successMsg', 'Menu deleted successfully!');
+        window.location.reload();
       }
     }
   }catch (error) {
@@ -257,8 +271,8 @@ const handleDeleteMenu = async () => {
     } catch (error: any) {
       setErrorMsg(error.message || 'Failed to update menu');
     }
-    setSuccessMsg("Menu updated successfully!");
-    setErrorMsg(null);
+    sessionStorage.setItem('successMsg', 'Menu updated successfully!');
+    window.location.reload();
   };
 
   return (
