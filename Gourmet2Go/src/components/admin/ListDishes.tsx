@@ -18,12 +18,12 @@ export const ListDishes = () => {
     const { data: dishes = [], isLoading } = useQuery({
         queryKey: ['dishes'],
         queryFn: async () => {
-            const { data, error } = await supabase
-                .from('Dishes')
-                .select('*')
-                .order('name'); 
-            if (error) throw error;
-            return data as Dish[];
+        const { data, error } = await supabase.from('Dishes')
+          .select('*')
+          .eq('dish_status', true)
+          .order( 'name', { ascending: true });
+        if (error) throw error;
+        return data as Dish[];
         },
     });
 

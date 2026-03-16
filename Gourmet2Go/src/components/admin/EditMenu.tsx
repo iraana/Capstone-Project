@@ -103,8 +103,9 @@ export const EditMenu = () => {
       const { data, error } = await supabase
         .from('Dishes')
         .select('dish_id, name, price, category')
+        .eq('is_available', true)
         .order('name');
-
+      
       if (error) throw error;
 
       return data as Dish[];
