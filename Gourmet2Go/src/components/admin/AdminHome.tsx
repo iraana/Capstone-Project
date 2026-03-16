@@ -199,9 +199,9 @@ export const AdminHome = () => {
           transition={{ duration: 0.5 }}
           className="mb-12 text-center"
         >
-          <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-4">
+          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-4">
             Welcome back, <span className="text-transparent bg-clip-text bg-linear-to-r from-green-500 to-emerald-700">{displayName}</span>
-          </h2>
+          </h1>
           <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
             Access your command centre for all admin operations for Gourmet2Go.
           </p>

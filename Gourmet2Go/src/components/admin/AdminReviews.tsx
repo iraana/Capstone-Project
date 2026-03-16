@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../../supabase-client';
-import { Star, Filter, Download, Calendar } from 'lucide-react';
+import { Star, Filter, Download, Calendar, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
 
@@ -30,6 +30,7 @@ type Review = {
 type FilterType = 'all' | '1' | '2' | '3' | '4' | '5';
 
 export const AdminReviews = () => {
+  const queryClient = useQueryClient();
   const [filter, setFilter] = useState<FilterType>('all');
   const [search, setSearch] = useState('');
   const [startDate, setStartDate] = useState('');
@@ -62,6 +63,20 @@ export const AdminReviews = () => {
       return data as unknown as Review[] || []; 
     },
   });
+
+   const deleteReviewMutation = useMutation({
+    mutationFn: async (reviewId: number) => {
+      const { error } = await supabase
+        .from('Reviews')
+        .delete()
+        .eq('review_id', reviewId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin_reviews', startDate, endDate] });
+    },
+  });
+
 
   // --- Export to CSV 
   const exportToCSV = () => {
@@ -199,6 +214,7 @@ export const AdminReviews = () => {
                         <th className="px-6 py-3 text-left text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Comment</th>
                         <th className="px-6 py-3 text-left text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Reviewer</th>
                         <th className="px-6 py-3 text-left text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Date</th>
+                        <th className="px-6 py-3 text-left text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Actions</th> 
                     </tr>
                 </thead>
                 <tbody className="bg-white dark:bg-zinc-900 divide-y divide-zinc-100 dark:divide-zinc-800">
@@ -221,6 +237,22 @@ export const AdminReviews = () => {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-xs text-zinc-500 dark:text-zinc-400">
                                 {new Date(review.timestamp).toLocaleDateString()}
+                            </td>
+                            {/* --- DELETE BUTTON --- */}
+                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (window.confirm(`Are you sure you want to delete review #${review.review_id}?`)) {
+                                            deleteReviewMutation.mutate(review.review_id);
+                                        }
+                                    }}
+                                    disabled={deleteReviewMutation.isPending}
+                                    className="p-2 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 transition disabled:opacity-50"
+                                    title="Delete Review"
+                                >
+                                    <Trash2 size={18} />
+                                </button>
                             </td>
                         </tr>
                     ))}
