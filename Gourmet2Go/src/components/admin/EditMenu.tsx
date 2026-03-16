@@ -63,6 +63,10 @@ export const EditMenu = () => {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [hasMenu, setHasMenu] = useState<boolean>(false);
   const [_isLoading, setLoading] = useState<boolean>(false);
+
+  const[dishSearch, setDishSearch] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 10;
   
   const getDayFromDate = (date: string) => {
     const [year, month, day] = date.split('-').map(Number);
@@ -93,7 +97,7 @@ export const EditMenu = () => {
       name: 'dishes',
   });
 
-  const { data: dishes = [] } = useQuery({
+  const { data: dishes = [], isLoading: isDishesLoading } = useQuery({
     queryKey: ['dishes'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -111,8 +115,25 @@ export const EditMenu = () => {
 
   const selectedDishIds = fields.map((_, i) => watch(`dishes.${i}.dish_id`));
 
-  const availableDishes = dishes.filter(
-    (dish) => !selectedDishIds.includes(dish.dish_id)
+  const availableDishes = dishes
+    .filter((dish) => !selectedDishIds.includes(dish.dish_id))
+    .filter((dish) => {
+        if (!dishSearch) return true; 
+        const searchLower = dishSearch.toLowerCase();
+        const nameMatch = dish.name.toLowerCase().includes(searchLower);
+        const categoryMatch = dish.category.toLowerCase().includes(searchLower);
+        return nameMatch || categoryMatch;
+    });
+
+  // --- Pagination Logic ---
+  const totalAvailableDishes = availableDishes.length;
+  const totalPages = Math.ceil(totalAvailableDishes / PAGE_SIZE);
+  const isFirstPage = currentPage === 1;
+  const isLastPage = totalPages === 0 || currentPage === totalPages;
+
+  const paginatedDishes = availableDishes.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
   );
 
   const handleAddToMenu = (dish: Dish) => {
@@ -137,6 +158,12 @@ export const EditMenu = () => {
           }));
           setMenuItems(itemsForDate);
           reset({ dishes: itemsForDate, date: menuDate, day: getDayFromDate(menuDate) });
+
+          if (itemsForDate && itemsForDate.length > 0) {
+              setHasMenu(true);
+          } else {
+              checkForMenu(menuDate).then(setHasMenu);
+          }
       } catch (error) {
         console.error("Error loading menu items:", error);
       } finally {
@@ -220,170 +247,253 @@ const handleDateChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
   };
 
   return (
-    <div className="max-w-3x3 mx-auto p-6">
       <form onSubmit={handleSubmit(onSubmit)}>
+        
+        <div className="text-center space-y-2  mb-8">
+          <h1 className="text-3xl sm:text-4xl font-bold text-zinc-900 dark:text-white tracking-tight">
+            Edit Menu
+          </h1>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+            Select a date to update its menu items and stock.
+          </p>
+        </div>
+
         {/* Success/Error messages */}
         {successMsg && (
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+          <div className="text-sm text-green-600 bg-green-100 dark:bg-green-900/30 dark:text-green-400 px-4 py-3 rounded-lg text-center font-medium">
             {successMsg}
           </div>
         )}
         {errorMsg && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+          <div className="text-sm text-red-600 bg-red-100 dark:bg-red-900/30 dark:text-red-400 px-4 py-3 rounded-lg text-center font-medium">
             {errorMsg}
           </div>
         )}
 
-        <div className="bg-white dark:bg-zinc-800 rounded-2xl shadow-lg border border-gray-200 dark:border-zinc-700 overflow-hidden">
-          <div className="p-6 border-b border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-900/50">
-            <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Edit Menu</h1>
-                <p className="text-gray-500 dark:text-gray-400 mt-1">Update menu for a specific day</p>
-              </div>
-              <div className="px-4 py-2 rounded-full border text-sm font-bold uppercase tracking-wide text-center bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400">
-                {menuDate ? menuDate : 'Select Date'}
-              </div>
-            </div>
-          </div>
-
-          <div className="p-6 space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <label className="block text-blue-600 dark:text-blue-400 font-bold text-xs uppercase mb-1">Menu Date</label>
+        <div className="bg-zinc-50 dark:bg-zinc-800/50 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-700 flex flex-col sm:flex-row items-center gap-6">
+            <div className="w-full sm:w-1/2 space-y-1">
+                <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                    Select Date to Edit
+                </label>
                 <input
-                  type="date"
-                  {...register('date')}
-                  className="border rounded px-3 py-2 w-full font-semibold text-gray-900 dark:text-white bg-white dark:bg-zinc-800"
-                  onChange={handleDateChange}
-                  value={menuDate}
+                    type="date"
+                    {...register('date')}
+                    onChange={handleDateChange}
+                    value={menuDate}
+                    className="w-full rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                 />
                 {errors.date && (
-                  <p className="text-red-600 text-sm mt-1">{errors.date.message}</p>
+                  <p className="text-red-500 text-xs mt-1">{errors.date.message}</p>
                 )}
-              </div>
-              <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <span className="block text-blue-600 dark:text-blue-400 font-bold text-xs uppercase">Day</span>
-                <span className="font-semibold text-gray-900 dark:text-white">{getDayFromDate(menuDate)}</span>
+            </div>
+            
+            {menuDate && (
+                <div className="w-full sm:w-1/2 flex items-center sm:justify-end">
+                    <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 px-6 py-3 rounded-xl text-center min-w-[150px]">
+                        <span className="block text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-1">Menu Day</span>
+                        <span className="text-lg font-semibold text-zinc-900 dark:text-white">{getDayFromDate(menuDate)}</span>
+                    </div>
+                </div>
+            )}
+        </div>
+
+        {!menuDate ? (
+            <div className="p-12 text-center bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700">
+                <p className="text-zinc-500 dark:text-zinc-400">Please select a date above to view or edit its menu.</p>
+            </div>
+        ) : hasMenu ? (
+          <div className="space-y-8">
+            
+            <div>
+              <h2 className="font-semibold text-lg mb-3 text-zinc-900 dark:text-white">Currently on Menu</h2>
+              <div className="overflow-x-auto shadow-sm rounded-xl border border-zinc-200 dark:border-zinc-700">
+                <table className="min-w-full text-left text-sm divide-y divide-zinc-200 dark:divide-zinc-700">
+                  <thead className="bg-zinc-50 dark:bg-zinc-800">
+                    <tr>
+                      <th className="p-3 text-center w-16"></th>
+                      <th className="p-3 font-semibold text-zinc-600 dark:text-zinc-300">Dish Name</th>
+                      <th className="p-3 font-semibold text-zinc-600 dark:text-zinc-300 text-center">Category</th>
+                      <th className="p-3 font-semibold text-zinc-600 dark:text-zinc-300 text-center">Price</th>
+                      <th className="p-3 font-semibold text-zinc-600 dark:text-zinc-300 text-center">Stock</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white dark:bg-zinc-900 divide-y divide-zinc-100 dark:divide-zinc-800">
+                    {fields.map((field, index) => {
+                      const dish = dishes.find(d => d.dish_id === field.dish_id);
+                      return (
+                        <tr key={field.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
+                          <td className="p-3 text-center align-middle">
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveItem(index)}
+                              className="p-1.5 rounded-lg text-zinc-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/30 dark:hover:text-red-400 transition-colors"
+                              title="Remove from menu"
+                            >
+                              ❌
+                            </button>
+                          </td>
+                          <td className="p-3 font-medium text-zinc-900 dark:text-white">{dish?.name}</td>
+                          <td className="p-3 text-center text-zinc-600 dark:text-zinc-400">{dish?.category}</td>
+                          <td className="p-3 text-center text-zinc-600 dark:text-zinc-400">${dish?.price.toFixed(2)}</td>
+                          <td className="p-3 text-center">
+                            <input
+                              type="number"
+                              min={1}
+                              {...register(`dishes.${index}.stock`, { valueAsNumber: true })}
+                              className="border border-zinc-300 dark:border-zinc-600 rounded-lg px-2 py-1.5 w-20 text-center bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            />
+                             {errors.dishes?.[index]?.stock && (
+                                <p className="text-red-500 text-xs mt-1">Required</p>
+                              )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                    {fields.length === 0 && (
+                        <tr>
+                            <td colSpan={5} className="p-6 text-center text-zinc-500">All items removed. Save to clear menu, or add items below.</td>
+                        </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
             </div>
 
-            {hasMenu ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="text-xl block font-semibold mb-4 text-gray-900 dark:text-white">Current Menu</label>
-                  <div className="border rounded-xl border-gray-200 dark:border-zinc-700 overflow-hidden">
-                    <table className="w-full text-left text-sm">
-                      <thead className="bg-gray-50 dark:bg-zinc-700/50">
-                        <tr>
-                          <th className="p-3 font-semibold text-gray-600 dark:text-gray-300">Dish</th>
-                          <th className="p-3 font-semibold text-gray-600 dark:text-gray-300">Category</th>
-                          <th className="p-3 font-semibold text-gray-600 dark:text-gray-300">Price</th>
-                          <th className="p-3 font-semibold text-gray-600 dark:text-gray-300">Stock</th>
-                          <th className="p-3 font-semibold text-gray-600 dark:text-gray-300">Action</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-100 dark:divide-zinc-700">
-                        {fields.map((field, index) => {
-                          const dish = dishes.find(d => d.dish_id === field.dish_id);
-                          return (
-                            <tr key={field.id}>
-                              <td className="p-3 text-gray-900 dark:text-white">{dish?.name}</td>
-                              <td className="p-3 text-gray-900 dark:text-white">{dish?.category}</td>
-                              <td className="p-3 text-gray-900 dark:text-white">{dish?.price}</td>
-                              <td className="p-3 text-gray-900 dark:text-white">
-                                <input
-                                  type="number"
-                                  {...register(`dishes.${index}.stock`, { valueAsNumber: true })}
-                                  className="border rounded px-2 py-1 w-20 text-center bg-white dark:bg-zinc-800 text-gray-900 dark:text-white"
-                                />
-                              </td>
-                              <td className="p-3 text-center">
-                                <button
-                                  className="bg-red-600 hover:bg-red-700 text-white py-1 px-3 rounded-xl font-semibold transition-all active:scale-95"
-                                  type="button"
-                                  onClick={() => handleRemoveItem(index)}
-                                >
-                                  Remove
-                                </button>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
+            {/* --- Search Bar --- */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded-xl border border-zinc-200 dark:border-zinc-700">
+                <div className="flex-grow w-full md:max-w-md">
+                    <input
+                        type="text"
+                        placeholder="Search dish by name or category..."
+                        value={dishSearch}
+                        onChange={(e) => {
+                            setDishSearch(e.target.value);
+                            setCurrentPage(1); 
+                        }}
+                        className="w-full rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                    />
                 </div>
-                <div>
-                  <label className="text-xl block font-semibold mb-4 text-gray-900 dark:text-white">Available Menu Items</label>
-                  <div className="border rounded-xl border-gray-200 dark:border-zinc-700 overflow-hidden">
-                    <table className="w-full text-left text-sm">
-                      <thead className="bg-gray-50 dark:bg-zinc-700/50">
+                <p className='text-sm text-zinc-500 dark:text-zinc-400 flex-shrink-0 font-medium'>
+                    Showing {paginatedDishes.length} of {availableDishes.length} items
+                </p>
+            </div>
+
+            <div>
+              <h2 className="font-semibold text-lg mb-3 text-zinc-900 dark:text-white">Available to Add</h2>
+              <div className="overflow-x-auto shadow-sm rounded-xl border border-zinc-200 dark:border-zinc-700">
+                <table className="min-w-full text-left text-sm divide-y divide-zinc-200 dark:divide-zinc-700">
+                  <thead className="bg-zinc-50 dark:bg-zinc-800">
+                    <tr>
+                      <th className="p-3 font-semibold text-zinc-600 dark:text-zinc-300">Dish Name</th>
+                      <th className="p-3 font-semibold text-zinc-600 dark:text-zinc-300 text-center">Category</th>
+                      <th className="p-3 font-semibold text-zinc-600 dark:text-zinc-300 text-center">Price</th>
+                      <th className="p-3 font-semibold text-zinc-600 dark:text-zinc-300 text-center">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white dark:bg-zinc-900 divide-y divide-zinc-100 dark:divide-zinc-800">
+                    {paginatedDishes.length === 0 ? (
                         <tr>
-                          <th className="p-3 font-semibold text-gray-600 dark:text-gray-300">Dish</th>
-                          <th className="p-3 font-semibold text-gray-600 dark:text-gray-300">Category</th>
-                          <th className="p-3 font-semibold text-gray-600 dark:text-gray-300">Price</th>
-                          <th className="p-3 font-semibold text-gray-600 dark:text-gray-300">Action</th>
+                            <td colSpan={4} className="p-6 text-center text-zinc-500">No dishes match your search.</td>
                         </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-100 dark:divide-zinc-700">
-                        {availableDishes.map((item) => (
-                          <tr key={item.dish_id}>
-                            <td className="p-3 text-gray-900 dark:text-white">{item.name}</td>
-                            <td className="p-3 text-gray-900 dark:text-white">{item.category}</td>
-                            <td className="p-3 text-gray-900 dark:text-white">{item.price}</td>
+                    ) : (
+                        paginatedDishes.map((item) => (
+                        <tr key={item.dish_id} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
+                            <td className="p-3 font-medium text-zinc-900 dark:text-white">{item.name}</td>
+                            <td className="p-3 text-center text-zinc-600 dark:text-zinc-400">{item.category}</td>
+                            <td className="p-3 text-center text-zinc-600 dark:text-zinc-400">${item.price.toFixed(2)}</td>
                             <td className="p-3 text-center flex justify-center gap-2">
-                              <button
-                                className="bg-[#00659B] hover:bg-[#005082] text-white py-1 px-3 rounded-xl font-semibold transition-all active:scale-95"
+                            <button
+                                className="bg-[#00659B] hover:bg-[#005082] text-white py-1.5 px-4 rounded-lg text-sm font-medium transition-all active:scale-95 shadow-sm"
                                 type="button"
                                 onClick={() => handleAddToMenu(item)}
-                              >
-                                Add to Menu
-                              </button>
-                              <NavLink
+                            >
+                                Add
+                            </button>
+                            <NavLink
                                 to={`/admin/edit-dish/${item.dish_id}`}
-                                className="bg-green-600 hover:bg-green-700 text-white py-1 px-3 rounded-xl font-semibold transition-all active:scale-95"
-                              >
-                                Edit Item
-                              </NavLink>
+                                className="bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 text-zinc-800 dark:text-zinc-200 py-1.5 px-4 rounded-lg text-sm font-medium transition-all active:scale-95 shadow-sm"
+                            >
+                                Edit
+                            </NavLink>
                             </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                        </tr>
+                        ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+              
+              {/* Pagination Controls */}
+              {availableDishes.length > 0 && (
+                <div className="flex justify-center items-center pt-4">
+                    <div className="flex items-center gap-4 border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 rounded-xl p-1.5 shadow-sm">
+                        <button
+                            type="button"
+                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                            disabled={isFirstPage || isDishesLoading} 
+                            className="p-2 px-3 rounded-lg text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 disabled:opacity-30 transition"
+                        >
+                            &lt;&lt;
+                        </button>
+                        
+                        <div className='text-center min-w-[70px]'> 
+                            <span className='text-sm font-medium text-zinc-700 dark:text-zinc-300 block leading-tight'>
+                                Page {currentPage}
+                            </span>
+                            <span className='text-xs text-zinc-500 dark:text-zinc-500 block leading-tight'>
+                                of {totalPages || 1}
+                            </span>
+                        </div>
+                        
+                        <button
+                            type="button"
+                            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                            disabled={isLastPage || isDishesLoading} 
+                            className="p-2 px-3 rounded-lg text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 disabled:opacity-30 transition"
+                        >
+                            &gt;&gt;
+                        </button>
+                    </div>
                 </div>
-              </div>
-            ) : (
-              <div className="flex justify-center">
-                <button
-                  type="button"
-                  className="bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-xl font-bold shadow-lg shadow-blue-900/20 transition-all active:scale-95"
-                  onClick={() => {navigate('/admin/add-menu');}}
-                >
-                  Create Menu
-                </button>
-              </div>
-            )}
+              )}
+            </div>
 
-            <div className="pt-4 border-t border-gray-100 dark:border-zinc-700 flex flex-col sm:flex-row gap-3 mt-6">
-              <button
-                type="submit"
-                className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-xl font-bold shadow-lg shadow-green-900/20 transition-all active:scale-95"
-              >
-                Save Changes
-              </button>
+            {/* Action Buttons */}
+            <div className="pt-6 border-t border-zinc-200 dark:border-zinc-800 flex justify-end gap-4 mt-6">
               <button
                 type="button"
-                className="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-3 px-4 rounded-xl font-semibold transition-all active:scale-95"
+                className="px-6 py-2.5 rounded-xl font-semibold bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-600 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all active:scale-95"
                 onClick={() => navigate('/admin')}
               >
                 Cancel
               </button>
+              <button
+                type="submit"
+                disabled={_isLoading}
+                className="px-8 py-2.5 rounded-xl font-bold bg-blue-600 text-white shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all active:scale-95 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              >
+                {_isLoading ? 'Saving...' : 'Save Menu Changes'}
+              </button>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="p-12 text-center bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl shadow-sm border border-dashed border-zinc-300 dark:border-zinc-700">
+            <div className="mb-4">
+                <span className="text-4xl">📅</span>
+            </div>
+            <h3 className="text-lg font-bold text-zinc-900 dark:text-white mb-2">No menu found for this date</h3>
+            <p className="text-zinc-500 dark:text-zinc-400 mb-6 max-w-md mx-auto">
+              There is currently no menu scheduled for {getDayFromDate(menuDate)}, {menuDate}. Would you like to create one?
+            </p>
+            <button
+              type="button"
+              className="bg-blue-600 hover:bg-blue-700 text-white py-2.5 px-6 rounded-xl font-bold shadow-lg shadow-blue-500/20 transition-all active:scale-95"
+              onClick={() => navigate('/admin/add-menu')}
+            >
+              Go to Create Menu
+            </button>
+          </div>
+        )}
       </form>
-    </div>
   );
 };

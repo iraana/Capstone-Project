@@ -2,16 +2,20 @@ import { supabase } from "../../../supabase-client";
 import { useAuth } from "../../context/AuthContext";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { useNavigate } from "react-router";
 
-export const SecurityTab = () => {
-  const { user, signOut } = useAuth();
+interface SecurityTabProps {
+  onClose: () => void;
+}
+
+export const SecurityTab = ({ onClose }: SecurityTabProps) => {
+  const { signOut } = useAuth();
   const [isDeleting, setIsDeleting] = useState(false);
+  const navigate = useNavigate();
 
-  // We'll need an SMTP server for this in the future
   const handlePasswordReset = async () => {
-    if (!user?.email) return;
-    await supabase.auth.resetPasswordForEmail(user.email);
-    alert("Password reset email sent!");
+    navigate('/reset-password')
+    onClose();
   };
 
   const handleDeleteAccount = async () => {
@@ -63,7 +67,7 @@ export const SecurityTab = () => {
             onClick={handlePasswordReset}
             className="bg-[#00659B] hover:bg-[#00527c] text-white px-4 py-2 rounded text-sm font-bold transition-colors"
           >
-            Send Password Reset Email
+            Go To Change Password
           </button>
         </div>
 

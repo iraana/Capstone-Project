@@ -80,7 +80,7 @@ export const AccountSettings = ({
 
               <div className="flex-1 overflow-y-auto px-8 md:px-12 lg:px-16 pb-20">
                 {activeTab === "my-account" && <MyAccountTab />}
-                {activeTab === "security" && <SecurityTab />}
+                {activeTab === "security" && <SecurityTab onClose={onClose} />}
               </div>
             </div>
           </div>

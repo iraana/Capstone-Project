@@ -22,6 +22,7 @@ const getNavLinks = (): NavLinkType[] => [
   { name: "Gallery", path: "/gallery" },
   { name: "Menu", path: "/" },
   { name: "My Orders", path: "/my-orders", roles: ["USER", "ADMIN"]},
+  { name: "Review", path: "/review", roles: ["USER", "ADMIN"]},
   { name: "Virtual Tour", path: "/virtualtour" }
 ];
 
@@ -43,20 +44,22 @@ export const Navbar = () => {
     return () => clearTimeout(timer);
   }, [cartCount]);
 
+  const userId = user?.id
+
   const { data: profile } = useQuery({
-    queryKey: ["profile", "navbar", user?.id],
+    queryKey: ["profile", "navbar", userId],
+    enabled: !!userId,
     queryFn: async () => {
       if (!user) return null;
       const { data, error } = await supabase
         .from("profiles")
         .select("first_name, last_name")
-        .eq("id", user.id)
+        .eq("id", userId)
         .single();
       
       if (error) return null;
       return data;
-    },
-    enabled: !!user,
+    }
   });
 
   const displayName = profile?.first_name || profile?.last_name || user?.email?.split('@')[0];

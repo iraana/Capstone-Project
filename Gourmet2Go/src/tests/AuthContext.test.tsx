@@ -13,6 +13,7 @@ vi.mock('../../supabase-client', () => ({
       signUp: vi.fn(),
       signInWithPassword: vi.fn(),
       signOut: vi.fn(),
+      refreshSession: vi.fn(),
     },
     from: vi.fn(),
   },
@@ -41,8 +42,9 @@ describe('AuthContext', () => {
         queries: { retry: false },
       },
     });
-    vi.clearAllMocks();
   });
+
+  vi.clearAllMocks();
 
   afterEach(() => {
     queryClient.clear();
@@ -303,7 +305,7 @@ describe('AuthContext', () => {
           email: 'new@saultcollege.ca',
           password: 'Password123!',
           options: {
-            emailRedirectTo: 'http://localhost:5173',
+            emailRedirectTo: 'https://gourmet2go.vercel.app/',
             data: {
               first_name: 'John',
               last_name: 'Doe',
