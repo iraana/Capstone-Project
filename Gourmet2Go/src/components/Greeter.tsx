@@ -12,40 +12,14 @@ export const Greeter = () => {
   const [timeGreeting, setTimeGreeting] = useState("");
   const [isDaytime, setIsDaytime] = useState(true);
 
-  // If user is null, not logged in
-  if (!user) {
-    return (
-      <motion.section
-        className="mb-8 w-full text-center bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-zinc-700"
-        role="alert"
-        initial={shouldReduceMotion ? undefined : { opacity: 0, y: 6 }}
-        animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0, transition: { duration: 0.35, ease: easeOut } }}
-      >
-        <div className="flex flex-col items-center gap-4">
-          <div className="p-3 rounded-full bg-green-50 dark:bg-zinc-800">
-            <LogIn className="w-6 h-6 text-green-500" aria-hidden="true" />
-          </div>
-
-          {/* Prompt to sign in */}
-          <h2 className="text-xl sm:text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
-            You must sign in with a Sault College email to order
-          </h2>
-
-          <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 max-w-md">
-            Please log in to add to your cart and place your order.
-          </p>
-        </div>
-      </motion.section>
-    );
-  }
-
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
+    enabled: !!user?.id,
     queryFn: async () => {
       const { data } = await supabase
         .from("profiles")
         .select("first_name")
-        .eq("id", user.id)
+        .eq("id", user!.id)
         .single();
       return data;
     },
@@ -107,6 +81,33 @@ export const Greeter = () => {
   const iconSpin = {
     animate: { rotate: 360, transition: { repeat: Infinity, duration: 1.4 } },
   };
+
+  // If user is null, not logged in
+  if (!user) {
+    return (
+      <motion.section
+        className="mb-8 w-full text-center bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-md border border-gray-100 dark:border-zinc-700"
+        role="alert"
+        initial={shouldReduceMotion ? undefined : { opacity: 0, y: 6 }}
+        animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0, transition: { duration: 0.35, ease: easeOut } }}
+      >
+        <div className="flex flex-col items-center gap-4">
+          <div className="p-3 rounded-full bg-green-50 dark:bg-zinc-800">
+            <LogIn className="w-6 h-6 text-green-500" aria-hidden="true" />
+          </div>
+
+          {/* Prompt to sign in */}
+          <h2 className="text-xl sm:text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
+            You must sign in with a Sault College email to order
+          </h2>
+
+          <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 max-w-md">
+            Please log in to add to your cart and place your order.
+          </p>
+        </div>
+      </motion.section>
+    );
+  }
 
   return (
     <motion.section

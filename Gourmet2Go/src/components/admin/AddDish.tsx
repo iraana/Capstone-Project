@@ -120,7 +120,7 @@ export const AddDish = () => {
                 <option value="Sandwiches">Sandwiches</option>
                 <option value="Entrees">Entrees</option>
                 <option value="Desserts">Desserts</option>
-                <option value="Bowl">Bowl</option>
+                <option value="Bowls">Bowls</option>
               </select>
               {errors.category && (
                 <p className="text-sm text-red-500">

@@ -22,13 +22,16 @@ export const CartSidebar = () => {
 
   const { user } = useAuth();
 
+  const userId = user?.id;
+
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
+    enabled: !!userId,
     queryFn: async () => {
       const { data } = await supabase
         .from("profiles")
         .select("first_name, last_name")
-        .eq("id", user?.id)
+        .eq("id", userId)
         .single();
       return data;
     },
