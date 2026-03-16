@@ -50,7 +50,7 @@ describe('cartStore', () => {
 });
 
     it('increments quantity when adding existing item', () => {
-      const { addItem, items } = cartStore.getState();
+      const { addItem } = cartStore.getState();
       
       const item = {
         dish_id: 1,
