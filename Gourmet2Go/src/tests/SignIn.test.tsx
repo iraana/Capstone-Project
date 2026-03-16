@@ -93,7 +93,7 @@ describe('SignIn Component', () => {
       const emailInput = screen.getByLabelText(/email address/i);
       const submitButton = screen.getByRole('button', { name: /sign in/i });
 
-      await user.type(emailInput, 'test@saultcollege.ca');
+      await user.type(emailInput, '12345678@saultcollege.ca');
       await user.click(submitButton);
 
       await waitFor(() => {
@@ -126,12 +126,12 @@ describe('SignIn Component', () => {
       const passwordInput = screen.getByLabelText(/password/i);
       const submitButton = screen.getByRole('button', { name: /sign in/i });
 
-      await user.type(emailInput, 'test@saultcollege.ca');
+      await user.type(emailInput, '12345678@saultcollege.ca');
       await user.type(passwordInput, 'Password123!');
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(mockSignInWithEmail).toHaveBeenCalledWith('test@saultcollege.ca', 'Password123!');
+        expect(mockSignInWithEmail).toHaveBeenCalledWith('12345678@saultcollege.ca', 'Password123!');
       });
     });
 
@@ -145,7 +145,7 @@ describe('SignIn Component', () => {
       const passwordInput = screen.getByLabelText(/password/i);
       const submitButton = screen.getByRole('button', { name: /sign in/i });
 
-      await user.type(emailInput, 'test@saultcollege.ca');
+      await user.type(emailInput, '12345678@saultcollege.ca');
       await user.type(passwordInput, 'Password123!');
       await user.click(submitButton);
 
@@ -164,7 +164,7 @@ describe('SignIn Component', () => {
       const passwordInput = screen.getByLabelText(/password/i);
       const submitButton = screen.getByRole('button', { name: /sign in/i });
 
-      await user.type(emailInput, 'test@saultcollege.ca');
+      await user.type(emailInput, '12345678@saultcollege.ca');
       await user.type(passwordInput, 'Password123!');
       await user.click(submitButton);
 
@@ -193,9 +193,9 @@ describe('SignIn Component', () => {
       renderSignIn();
 
       const emailInput = screen.getByLabelText(/email address/i);
-      await user.type(emailInput, 'student@saultcollege.ca');
+      await user.type(emailInput, '12345678@saultcollege.ca');
 
-      expect(emailInput).toHaveValue('student@saultcollege.ca');
+      expect(emailInput).toHaveValue('12345678@saultcollege.ca');
     });
 
     it('allows typing in password input', async () => {

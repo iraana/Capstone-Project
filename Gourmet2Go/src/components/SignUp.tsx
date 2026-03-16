@@ -7,7 +7,11 @@ import { useState } from "react";
 // Validator using zod, remember these from CSD213?
 const signUpSchema = z
   .object({
-    email: z.email("Invalid email address"),
+    email: z
+    .email("Invalid email address")
+    .refine((email) => /^[0-9]{8}@saultcollege\.ca$/i.test(email), {
+      message: "You must use your 8-digit Sault College email to sign up",
+    }),
 
     password: z
       .string()
