@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { useAuth } from "../../context/AuthContext";
-import { UserCog, BarChart3, UtensilsCrossed, FilePlus, FilePenLine, Users, ChevronRight, ClipboardClock, BookMinus, Archive, ScanLine, List, Mail, MessageSquare } from "lucide-react";
+import { UserCog, BarChart3, UtensilsCrossed, FilePlus, FilePenLine, Users, ChevronRight, ClipboardClock, BookMinus, Archive, ScanLine, List, Mail, MessageSquare, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "../../../supabase-client";
@@ -104,6 +104,13 @@ const adminPages: AdminPage[] = [
     description: 'Scan QR code for quick pickup',
     icon: ScanLine,
     color: 'from-blue-600 to-indigo-500',
+  },
+  {
+    id: 'trash-bin',
+    title: 'Trash Bin',
+    description: 'Recover deleted dishes and menus',
+    icon: Trash2,
+    color: 'from-purple-500 to-fuchsia-400',
   },
   {
     id: 'user-manager',

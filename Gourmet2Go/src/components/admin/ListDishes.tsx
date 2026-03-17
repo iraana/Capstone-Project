@@ -1,16 +1,19 @@
 import { NavLink } from "react-router";
 import { supabase } from "../../../supabase-client";
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 
 type Dish = {
-    dish_id: number;
-    name: string;
-    price: number;
-    category: string;
+  dish_id: number;
+  name: string;
+  price: number;
+  category: string;
 };
 
 export const ListDishes = () => {
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
+    const [successMsg, setSuccessMsg] = useState<string | null>(null);
+    const queryClient = useQueryClient();
     const [search, setSearch] = useState('');
     const[currentPage, setCurrentPage] = useState(1);
     const PAGE_SIZE = 20;
@@ -18,14 +21,30 @@ export const ListDishes = () => {
     const { data: dishes = [], isLoading } = useQuery({
         queryKey: ['dishes'],
         queryFn: async () => {
-        const { data, error } = await supabase.from('Dishes')
-          .select('*')
-          .eq('dish_status', true)
-          .order( 'name', { ascending: true });
-        if (error) throw error;
-        return data as Dish[];
+            const { data, error } = await supabase
+              .from('Dishes')
+              .select('*')
+              .eq('dish_status', true)
+              .order( 'name', { ascending: true });
+            if (error) throw error;
+            return data as Dish[];
         },
     });
+
+    const handleDelete = async (dishId: number) => {
+        if (!confirm("Are you sure you want to delete this dish?")) return;
+        const { error } = await supabase.from('Dishes').update({ dish_status: 'false' }).eq('dish_id', dishId);
+        if (error) {
+            setErrorMsg("Failed to delete dish: " + error.message);
+            setSuccessMsg(null);
+        } else {
+            setSuccessMsg("Dish deleted successfully");
+            setErrorMsg(null);
+            queryClient.setQueryData<Dish[]>(['dishes'], (old) =>
+            (old ?? []).filter((dish) => dish.dish_id !== dishId)
+            );
+        }
+    };
 
     const filteredDishes = dishes.filter((dish) => {
         if (!search) return true;
@@ -50,10 +69,21 @@ export const ListDishes = () => {
 
     return (
       <div className="space-y-4">
+        {successMsg && (
+            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-2">
+                {successMsg}
+            </div>
+        )}
+
+        {errorMsg && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-2">
+                {errorMsg}
+            </div>
+        )}
         
         <div className='space-y-3'>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 flex-shrink-0">
+            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 shrink-0">
                 Search Dishes:
             </label>
             <input
@@ -64,7 +94,7 @@ export const ListDishes = () => {
                     setSearch(e.target.value);
                     setCurrentPage(1); // Reset page on search change
                 }}
-                className="flex-grow rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                className="grow rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
             />
         </div>
       </div>
@@ -107,6 +137,13 @@ export const ListDishes = () => {
                       >
                         Edit Item
                       </NavLink>
+                      &nbsp;
+                      <button
+                        onClick={() => handleDelete(item.dish_id)}
+                        className="bg-red-600 hover:bg-red-700 text-white py-1 px-3 rounded-xl font-semibold transition-all active:scale-95"
+                      >
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 ))
@@ -127,7 +164,7 @@ export const ListDishes = () => {
                         &lt;&lt;
                     </button>
                     
-                    <div className='text-center min-w-[70px]'> 
+                    <div className='text-center min-w-70px'> 
                         <span className='text-sm font-bold text-zinc-700 dark:text-zinc-300 block leading-tight'>
                             Page {currentPage}
                         </span>

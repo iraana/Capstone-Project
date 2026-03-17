@@ -36,6 +36,7 @@ import { ManageGalleryPage } from "./pages/admin/ManageGalleryPage";
 import { AdminReviewsPage } from "./pages/admin/AdminReviewsPage";
 import { ReviewPage } from "./pages/ReviewPage";
 import { ResetPasswordPage } from "./pages/ResetPasswordPage";
+import { TrashBinPage } from "./pages/admin/TrashBinPage";
 
 function App() {
   return (
@@ -88,6 +89,7 @@ function App() {
               <Route path="/admin/inbox" element={<AdminInboxPage />} />
               <Route path="/admin/gallery-manager" element={<ManageGalleryPage />} />
               <Route path="/admin/reviews" element={<AdminReviewsPage />} /> 
+              <Route path="/admin/trash-bin" element={<TrashBinPage />} />
             </Route>
 
           </Routes>

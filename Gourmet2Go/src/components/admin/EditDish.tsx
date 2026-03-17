@@ -43,6 +43,7 @@ export const EditDish = () => {
         queryFn: async () => {
         const { data, error } = await supabase.from('Dishes')
         .select('*')
+        .eq('dish_status', true)
         .eq('dish_id', Number(dishId))
         .single();
         if (error) throw error;

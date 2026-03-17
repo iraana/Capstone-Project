@@ -104,7 +104,7 @@ export const UserOrders = () => {
         .select(`
           *,
           profiles (first_name, last_name, email),
-          MenuDays (menu_day_id, date, day),
+          MenuDays!inner (menu_day_id, date, day, status),
           OrderItems (
             order_item_id,
             quantity,
@@ -113,6 +113,7 @@ export const UserOrders = () => {
           )
         `)
         .eq("user_id", user!.id)
+        .eq("MenuDays.status", true)
         .eq("is_showing", true) // Filters where is_showing is true
         .order("timestamp", { ascending: false });
 

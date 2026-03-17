@@ -79,19 +79,23 @@ export const Menu = () => {
           menu_day_id,
           date,
           day,
+          status,
           MenuDayDishes (
             menu_day_dish_id,
             stock,
-            Dishes (
+            Dishes!inner (
               dish_id,
               name,
               category,
-              price
+              price,
+              dish_status
             )
           )
         `)
         .gte('date', start)
         .lte('date', end)
+        .eq('status', true)
+        .eq('MenuDayDishes.Dishes.dish_status', true)
         .order('date', { ascending: true });
 
       if (error) throw error;

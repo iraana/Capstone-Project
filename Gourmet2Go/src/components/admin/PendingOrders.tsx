@@ -59,7 +59,7 @@ export const PendingOrders = () => {
         .select(`
           *,
           profiles (first_name, last_name, email),
-          MenuDays (menu_day_id, date, day),
+          MenuDays!inner (menu_day_id, date, day, status),
           OrderItems (
             order_item_id,
             quantity,
@@ -68,6 +68,7 @@ export const PendingOrders = () => {
           )
         `)
         .eq("status", "PENDING") 
+        .eq("MenuDays.status", true)
         .order("timestamp", { ascending: false });
 
       if (error) throw error;

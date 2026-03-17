@@ -11,6 +11,7 @@ const fetchMenu = async (menuDate: string) => {
   const { data, error } = await supabase
     .from("MenuDayDishes")
     .select("*, Dishes ( * ), MenuDays ( * )")
+    .eq('Dishes.dish_status', true)
     .eq("MenuDays.date", menuDate)
     .eq("MenuDays.status", true);
     
@@ -346,7 +347,7 @@ const handleDeleteMenu = async () => {
             
             {menuDate && (
                 <div className="w-full sm:w-1/2 flex items-center sm:justify-end">
-                    <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 px-6 py-3 rounded-xl text-center min-w-[150px]">
+                    <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 px-6 py-3 rounded-xl text-center min-w-150px">
                         <span className="block text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-1">Menu Day</span>
                         <span className="text-lg font-semibold text-zinc-900 dark:text-white">{getDayFromDate(menuDate)}</span>
                     </div>
@@ -418,7 +419,7 @@ const handleDeleteMenu = async () => {
 
             {/* --- Search Bar --- */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded-xl border border-zinc-200 dark:border-zinc-700">
-                <div className="flex-grow w-full md:max-w-md">
+                <div className="grow w-full md:max-w-md">
                     <input
                         type="text"
                         placeholder="Search dish by name or category..."
@@ -430,7 +431,7 @@ const handleDeleteMenu = async () => {
                         className="w-full rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                     />
                 </div>
-                <p className='text-sm text-zinc-500 dark:text-zinc-400 flex-shrink-0 font-medium'>
+                <p className='text-sm text-zinc-500 dark:text-zinc-400 shrink-0 font-medium'>
                     Showing {paginatedDishes.length} of {availableDishes.length} items
                 </p>
             </div>
@@ -493,7 +494,7 @@ const handleDeleteMenu = async () => {
                             &lt;&lt;
                         </button>
                         
-                        <div className='text-center min-w-[70px]'> 
+                        <div className='text-center min-w-70px'> 
                             <span className='text-sm font-medium text-zinc-700 dark:text-zinc-300 block leading-tight'>
                                 Page {currentPage}
                             </span>
