@@ -26,6 +26,16 @@ important for the client and users.
 - ViewReviews
 - Favicon 
 
+- Add Menu: 
+  - Add "successfully saved" message and possibly reroute
+  - Fix issue where very menu saves to Monday
+  
+- Edit Menu: 
+  - Fix issue where every item in the "MenuDishes" table appears when editing any menu. (I believe this is because of the way the menus are being fetched, only be the date)
+  - Allow current menu items stock to be changed
+  - Allow adding of dishes
+  - Save menu button
+  - Cancel button
 
 ## Library Choices
 
@@ -187,9 +197,10 @@ had no way to delete accounts from the UI until now. My plan for the Flask backe
 
 
 To make it work locally you'll first need Python installed on your machine. Then, run this in the terminal
-```pip install -r requirements.txt``` and after run the index.py file in the api folder. Everything else is configured and you can use the 
-delete user and ban user buttons. However, you don't really need to do this if you don't want to use those features. The app works just 
-fine without the Flask backend running. Although, if you do want to try those features then you'll have to have it running.
+```pip install -r requirements.txt``` and after run the index.py file in the api folder. Everything else is 
+configured and you can use the delete user and ban user buttons. However, you don't really need to do this if you don't want to 
+use those features. The app works just fine without the Flask backend running. Although, if you do want to try those features 
+then you'll have to have it running.
 
 
 ## Misc

@@ -32,7 +32,6 @@ import { EditDishPage } from "./pages/admin/EditDishPage";
 import { ListDishesPage } from "./pages/admin/ListDishesPage";
 import { AddToGalleryPage } from "./pages/admin/AddToGalleryPage";
 import { GalleryPage } from "./pages/GalleryPage";
-import { AdminInboxPage } from "./pages/admin/AdminInboxPage";
 import { ManageGalleryPage } from "./pages/admin/ManageGalleryPage";
 import { AdminReviewsPage } from "./pages/admin/AdminReviewsPage";
 import { ReviewPage } from "./pages/ReviewPage";
@@ -56,6 +55,7 @@ function App() {
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/unauthorized" element={<UnauthorizedPage />} />
+            <Route path="/contact" element={<ContactPage />} />
             <Route path="/virtualtour" element={<VirtualTourPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/gallery" element={<GalleryPage />} />
