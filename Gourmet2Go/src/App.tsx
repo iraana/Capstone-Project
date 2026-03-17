@@ -37,6 +37,7 @@ import { AdminReviewsPage } from "./pages/admin/AdminReviewsPage";
 import { ReviewPage } from "./pages/ReviewPage";
 import { ResetPasswordPage } from "./pages/ResetPasswordPage";
 import { TrashBinPage } from "./pages/admin/TrashBinPage";
+import { AdminInboxPage } from "./pages/admin/AdminInboxPage";
 
 function App() {
   return (
