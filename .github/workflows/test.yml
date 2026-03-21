@@ -24,11 +24,11 @@ jobs:
           
       - name: Install dependencies
         run: npm install
-        working-directory: ./Gourmet2Go/src
+        working-directory: ./src
         
       - name: Run Vitest
         run: npm run test -- --coverage
-        working-directory: ./Gourmet2Go/src
+        working-directory: ./src
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
