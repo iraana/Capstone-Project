@@ -253,9 +253,9 @@ export const AdminHome = () => {
                 </div>
 
                 <div className="mt-auto">
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">
+                  <p className="text-xl font-bold text-slate-900 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">
                     {page.title}
-                  </h3>
+                  </p>
                   <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors">
                     {page.description}
                   </p>
