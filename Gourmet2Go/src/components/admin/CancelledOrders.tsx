@@ -143,11 +143,12 @@ export const CancelledOrders = () => {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white dark:bg-zinc-900 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
         <div className="flex items-center gap-3">
-          <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            Filter by Menu:
-          </span>
+          <label htmlFor="menu-filter" className="text-sm font-medium text-gray-700 dark:text-zinc-300">
+              Filter by Menu:
+          </label>
 
           <select
+            id="menu-filter"
             className="border border-zinc-300 dark:border-zinc-700 rounded-md px-3 py-2 text-sm bg-white dark:bg-zinc-900 focus:ring-2 focus:ring-blue-500 outline-none"
             value={selectedMenuId}
             onChange={(e) =>

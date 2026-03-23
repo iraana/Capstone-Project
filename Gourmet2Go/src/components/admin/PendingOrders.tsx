@@ -210,11 +210,12 @@ export const PendingOrders = () => {
         border border-gray-200 dark:border-zinc-700">
 
         <div className="flex items-center gap-3">
-          <span className="text-sm font-medium text-gray-700 dark:text-zinc-300">
-            Filter by Menu:
-          </span>
+          <label htmlFor="menu-filter" className="text-sm font-medium text-gray-700 dark:text-zinc-300">
+              Filter by Menu:
+          </label>
 
           <select
+            id="menu-filter"
             className="border border-gray-300 dark:border-zinc-600 
             bg-white dark:bg-zinc-700 
             text-gray-800 dark:text-white
