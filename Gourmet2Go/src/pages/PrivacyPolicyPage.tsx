@@ -177,14 +177,14 @@ export const PrivacyPolicyPage = () => {
     
     <div className="space-y-4 mt-4">
       <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-primary p-4 rounded-r-lg">
-        <h4 className="font-bold text-gray-900 dark:text-white mb-2">College Administration</h4>
+        <p className="font-bold text-gray-900 dark:text-white mb-2">College Administration</p>
         <p className="text-sm text-gray-700 dark:text-gray-300">
           When required for institutional reporting or compliance purposes
         </p>
       </div>
 
       <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-primary p-4 rounded-r-lg">
-        <h4 className="font-bold text-gray-900 dark:text-white mb-2">Emergency Situations</h4>
+        <p className="font-bold text-gray-900 dark:text-white mb-2">Emergency Situations</p>
         <p className="text-sm text-gray-700 dark:text-gray-300">
           To protect health and safety in cases involving food allergies or medical emergencies
         </p>
@@ -275,7 +275,7 @@ export const PrivacyPolicyPage = () => {
                     <div className="flex items-start">
                       <span className="text-2xl mr-3 shrink-0">{right.icon}</span>
                       <div>
-                        <h4 className="font-bold text-gray-900 dark:text-white mb-1">{right.title}</h4>
+                        <p className="font-bold text-gray-900 dark:text-white mb-1">{right.title}</p>
                         <p className="text-sm text-gray-700 dark:text-gray-300">{right.desc}</p>
                       </div>
                     </div>
