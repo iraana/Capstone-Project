@@ -85,7 +85,7 @@ export const ToSPage = () => {
             
             <div className="space-y-6">
               <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-primary p-4 rounded-r-lg">
-                <h4 className="font-bold text-gray-900 dark:text-white mb-2">Order Limits</h4>
+                <p className="font-bold text-gray-900 dark:text-white mb-2">Order Limits</p>
                 <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
                   <li>• One active order per person at a time</li>
                   <li>• Maximum 5 items total per order</li>
@@ -94,7 +94,7 @@ export const ToSPage = () => {
               </div>
 
               <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-primary p-4 rounded-r-lg">
-                <h4 className="font-bold text-gray-900 dark:text-white mb-2">Order Deadlines</h4>
+                <p className="font-bold text-gray-900 dark:text-white mb-2">Order Deadlines</p>
                 <p className="text-sm text-gray-700 dark:text-gray-300">
                   Orders must be placed by 12:00 PM (15 minutes before service begins). Late orders 
                   will not be accepted. This ensures our culinary team has adequate time to prepare 
@@ -103,7 +103,7 @@ export const ToSPage = () => {
               </div>
 
               <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-primary p-4 rounded-r-lg">
-                <h4 className="font-bold text-gray-900 dark:text-white mb-2">Reservations</h4>
+                <p className="font-bold text-gray-900 dark:text-white mb-2">Reservations</p>
                 <p className="text-sm text-gray-700 dark:text-gray-300">
                   Adding items to your cart does NOT reserve them. Items are only reserved after 
                   you complete checkout and receive order confirmation. Reserved items are released 
