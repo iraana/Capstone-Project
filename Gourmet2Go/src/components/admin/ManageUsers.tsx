@@ -173,6 +173,11 @@ export const ManageUsers = () => {
               {toggleBan.isPending ? "Processing..." : user.is_banned ? "Unban" : "Ban"}
             </button>
 
+            {/* --- ADDED ACCESSIBILITY LABEL --- */}
+            <label htmlFor={`role-select-${user.id}`} className="sr-only">
+              Change role for {user.first_name}
+            </label>
+
             <select
               value={user.role}
               onChange={(e) =>
