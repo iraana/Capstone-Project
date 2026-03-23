@@ -4,7 +4,7 @@ import { AdminReviews } from "../../components/admin/AdminReviews";
 
 export const AdminReviewsPage = () => {
   return (
-    <div className="min-h-screen bg-white dark:bg-zinc-900 px-4 sm:px-6 lg:px-8 py-10 transition-colors">
+    <main className="min-h-screen bg-white dark:bg-zinc-900 px-4 sm:px-6 lg:px-8 py-10 transition-colors">
       
       <div className="max-w-7xl mx-auto space-y-8">
 
@@ -33,6 +33,6 @@ export const AdminReviewsPage = () => {
         </div>
 
       </div>
-    </div>
+    </main>
   );
 };

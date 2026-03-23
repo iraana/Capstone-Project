@@ -1,7 +1,7 @@
 const LAST_UPDATED = 'February 17, 2026';
 export const PrivacyPolicyPage = () => {
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-zinc-900 -mt-20">
+    <main className="min-h-screen bg-gray-50 dark:bg-zinc-900 -mt-20">
       
      
       <div className="relative bg-primary text-white py-20">
@@ -165,33 +165,33 @@ export const PrivacyPolicyPage = () => {
           </div>
 
         
-      <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-zinc-700">
-  <h2 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-4">
-    4. How We Share Your Information
-  </h2>
-  <div className="prose prose-lg text-gray-700 dark:text-gray-300 leading-relaxed space-y-4">
-    <p>
-      We do not sell, trade, or rent your personal information to third parties. 
-      We may share your information only in the following circumstances:
-    </p>
-    
-    <div className="space-y-4 mt-4">
-      <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-primary p-4 rounded-r-lg">
-        <p className="font-bold text-gray-900 dark:text-white mb-2">College Administration</p>
-        <p className="text-sm text-gray-700 dark:text-gray-300">
-          When required for institutional reporting or compliance purposes
-        </p>
-      </div>
+          <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-zinc-700">
+            <h2 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-4">
+              4. How We Share Your Information
+            </h2>
+            <div className="prose prose-lg text-gray-700 dark:text-gray-300 leading-relaxed space-y-4">
+              <p>
+                We do not sell, trade, or rent your personal information to third parties. 
+                We may share your information only in the following circumstances:
+              </p>
+              
+              <div className="space-y-4 mt-4">
+                <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-primary p-4 rounded-r-lg">
+                  <p className="font-bold text-gray-900 dark:text-white mb-2">College Administration</p>
+                  <p className="text-sm text-gray-700 dark:text-gray-300">
+                    When required for institutional reporting or compliance purposes
+                  </p>
+                </div>
 
-      <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-primary p-4 rounded-r-lg">
-        <p className="font-bold text-gray-900 dark:text-white mb-2">Emergency Situations</p>
-        <p className="text-sm text-gray-700 dark:text-gray-300">
-          To protect health and safety in cases involving food allergies or medical emergencies
-        </p>
-      </div>
-    </div>
-  </div>
-</div>
+                <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-primary p-4 rounded-r-lg">
+                  <p className="font-bold text-gray-900 dark:text-white mb-2">Emergency Situations</p>
+                  <p className="text-sm text-gray-700 dark:text-gray-300">
+                    To protect health and safety in cases involving food allergies or medical emergencies
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
 
           <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-zinc-700">
             <h2 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-4">
@@ -309,6 +309,6 @@ export const PrivacyPolicyPage = () => {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 };

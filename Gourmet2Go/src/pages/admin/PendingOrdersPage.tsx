@@ -5,7 +5,7 @@ import { ArrowLeft } from "lucide-react";
 export const PendingOrdersPage = () => {
 
   return (
-    <div className="bg-white dark:bg-zinc-900 px-4 sm:px-6 lg:px-8 py-6 transition-colors">
+    <main className="bg-white dark:bg-zinc-900 px-4 sm:px-6 lg:px-8 py-6 transition-colors">
       <div className="max-w-7xl mx-auto space-y-6">
 
         {/* Top Navigation */}
@@ -31,6 +31,6 @@ export const PendingOrdersPage = () => {
         <PendingOrders />
 
       </div>
-    </div>
+    </main>
   );
 };
