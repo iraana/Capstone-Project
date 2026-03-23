@@ -174,7 +174,7 @@ export const Navbar = () => {
 
             <div className="md:hidden flex items-center gap-4">
               {canAccessCart && (
-                <button onClick={toggleCart} className="relative text-white p-1">
+                <button onClick={toggleCart} className="relative text-white p-1" aria-label="Open Cart">
                   <ShoppingCart className="w-6 h-6" />
                   {cartCount > 0 && (
                     <span className="absolute -top-1 -right-1 bg-secondary text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
@@ -187,6 +187,7 @@ export const Navbar = () => {
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
                 className="text-white focus:outline-none p-1"
+                aria-label={menuOpen ? "Close menu" : "Open menu"}
               >
                 {menuOpen ? <X className="w-6 h-6" /> : <MenuIcon className="w-6 h-6" />}
               </button>
