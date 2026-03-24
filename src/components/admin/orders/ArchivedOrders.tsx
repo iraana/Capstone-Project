@@ -1,0 +1,343 @@
+import { useState, useMemo } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "../../../../supabase-client.ts";
+import { Loader } from "../../Loader.tsx";
+import { useNavigate } from "react-router";
+
+interface Dish {
+  dish_id: number;
+  name: string;
+  price: number;
+}
+
+interface OrderItemWithDish {
+  order_item_id: number;
+  quantity: number;
+  subtotal: number;
+  Dishes: Dish; 
+}
+
+interface UserProfile {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+}
+
+interface MenuDay {
+  menu_day_id: number;
+  date: string;
+  day: string;
+}
+
+interface Order {
+  order_id: number;
+  timestamp: string;
+  status: 'PENDING' | 'FULFILLED' | 'INACTIVE';
+  notes: string | null;
+  total: number;
+  order_number: number;
+  menu_id: number;
+  profiles: UserProfile;    
+  MenuDays: MenuDay;        
+  OrderItems: OrderItemWithDish[]; 
+}
+
+export const ArchivedOrders = () => {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const [selectedMenuId, setSelectedMenuId] = useState<number | "ALL">("ALL");
+  const [search, setSearch] = useState("");
+
+  const { data: orders, isLoading, error } = useQuery({
+    queryKey: ["archived_orders"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("Orders")
+        .select(`
+          *,
+          profiles (first_name, last_name, email),
+          MenuDays!inner (menu_day_id, date, day, status),
+          OrderItems (
+            order_item_id,
+            quantity,
+            subtotal,
+            Dishes (dish_id, name, price)
+          )
+        `)
+        .eq("status", "FULFILLED") 
+        .eq("MenuDays.status", true)
+        .order("timestamp", { ascending: false });
+
+      if (error) throw error;
+      return data as unknown as Order[];
+    },
+  });
+
+  const updateStatusMutation = useMutation({
+    mutationFn: async ({ orderId, newStatus }: { orderId: number; newStatus: string }) => {
+      const { error } = await supabase
+        .from("Orders")
+        .update({ status: newStatus })
+        .eq("order_id", orderId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["archived_orders"] });
+    },
+  });
+
+  const availableMenus = useMemo(() => {
+    if (!orders) return [];
+    const map = new Map();
+    orders.forEach((o) => {
+      if (o.MenuDays && !map.has(o.MenuDays.menu_day_id)) {
+        map.set(o.MenuDays.menu_day_id, o.MenuDays);
+      }
+    });
+    return Array.from(map.values()).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }, [orders]);
+
+  const filteredOrders = useMemo(() => {
+    if (!orders) return [];
+    
+    let result = orders;
+    
+    if (selectedMenuId !== "ALL") {
+      result = result.filter(
+        (o) => o.MenuDays?.menu_day_id === selectedMenuId
+      );
+    }
+    
+    if (search.trim() !== "") {
+      result = result.filter((o) =>
+        o.order_number
+          .toString()
+          .includes(search.trim()) ||
+        o.profiles?.first_name
+          .toLowerCase()
+          .includes(search.trim().toLowerCase()) ||
+        o.profiles?.last_name
+          .toLowerCase()
+          .includes(search.trim().toLowerCase()) ||
+        o.profiles?.email
+          .toLowerCase()
+          .includes(search.trim().toLowerCase())
+      );
+    }
+    
+    return result;
+  }, [orders, selectedMenuId, search]);
+
+  if (isLoading) return <Loader fullScreen />;
+
+  if (error) {
+    return (
+      <div className="min-h-[50vh] flex items-center justify-center text-red-500">
+        <p>Error loading orders: {(error as Error).message}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
+
+      {/* Filter Section */}
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between 
+        bg-white dark:bg-zinc-800 
+        p-4 rounded-xl shadow-sm 
+        border border-gray-200 dark:border-zinc-700">
+
+        <div className="flex items-center gap-3">
+          <span className="text-sm font-medium text-gray-900 dark:text-zinc-300">
+            Filter by Menu:
+          </span>
+
+          <select
+            id="menu-filter"
+            className="border border-gray-300 dark:border-zinc-600 
+            bg-white dark:bg-zinc-700 
+            text-gray-800 dark:text-white
+            rounded-md p-2 text-sm 
+            focus:ring-2 focus:ring-blue-500 outline-none"
+            value={selectedMenuId}
+            onChange={(e) =>
+              setSelectedMenuId(
+                e.target.value === "ALL" ? "ALL" : Number(e.target.value)
+              )
+            }
+          >
+            <option value="ALL">All Menus</option>
+            {availableMenus.map((menu) => (
+              <option key={menu.menu_day_id} value={menu.menu_day_id}>
+                {new Date(menu.date).toLocaleDateString()} - {menu.day}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Search */}
+      <input
+        type="text"
+        placeholder="Search by order number, name, or email..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="w-full rounded-lg 
+        border border-gray-300 dark:border-zinc-600 
+        bg-white dark:bg-zinc-800 
+        text-gray-800 dark:text-white
+        px-4 py-2 text-sm 
+        focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+      />
+
+      {/* Orders Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredOrders.length === 0 ? (
+          <div className="col-span-full text-center py-20 text-gray-400 dark:text-zinc-500">
+            No archived orders found.
+          </div>
+        ) : (
+          filteredOrders.map((order) => (
+            <div
+              key={order.order_id}
+              onClick={() => navigate(`/admin/order/${order.order_number}`)}
+              className="rounded-xl shadow-sm border overflow-hidden flex flex-col transition
+              bg-white dark:bg-zinc-800
+              border-green-200 dark:border-green-800 opacity-90 cursor-pointer hover:shadow-md"
+            >
+
+              {/* Header */}
+              <div className="p-4 
+                bg-gray-50 dark:bg-zinc-700 
+                border-b border-gray-100 dark:border-zinc-600 
+                flex justify-between items-start">
+
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-lg text-gray-900 dark:text-white">
+                      #{order.order_number}
+                    </span>
+
+                    <span className="px-2 py-0.5 rounded-full text-xs font-semibold
+                      bg-green-100 text-green-800 
+                      dark:bg-green-900 dark:text-green-200">
+                      {order.status}
+                    </span>
+                  </div>
+
+                  <div className="text-sm text-gray-800 dark:text-zinc-300 mt-1">
+                    {order.profiles?.first_name} {order.profiles?.last_name}
+                  </div>
+
+                  <div className="text-sm text-gray-800 dark:text-zinc-300 mt-1">
+                    {order.profiles?.email}
+                  </div>
+                </div>
+
+                <div className="text-right text-xs text-gray-400 dark:text-zinc-400">
+                  <div>
+                    {order.MenuDays
+                      ? new Date(order.MenuDays.date).toLocaleDateString()
+                      : "No Date"}
+                  </div>
+                  <div>
+                    {new Date(
+                      `${order.MenuDays.date}T${order.timestamp}`
+                    ).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* Items */}
+              <div className="p-4 grow space-y-3 text-gray-800 dark:text-zinc-200">
+                <ul className="space-y-2">
+                  {order.OrderItems.map((item) => (
+                    <li
+                      key={item.order_item_id}
+                      className="flex justify-between text-sm"
+                    >
+                      <div className="flex gap-2">
+                        <span className="font-bold w-6 text-center 
+                          bg-gray-100 dark:bg-zinc-700 
+                          rounded text-gray-700 dark:text-white">
+                          {item.quantity}x
+                        </span>
+                        <span>{item.Dishes?.name || "Unknown Dish"}</span>
+                      </div>
+                      <span className="text-gray-500 dark:text-zinc-400">
+                        ${item.subtotal.toFixed(2)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+
+                {order.notes && (
+                  <div className="mt-4 p-2 
+                    bg-green-50 dark:bg-green-900/40 
+                    text-green-800 dark:text-green-200 
+                    text-xs rounded border 
+                    border-green-100 dark:border-green-700">
+                    <strong>Note:</strong> {order.notes}
+                  </div>
+                )}
+              </div>
+
+              {/* Footer */}
+              <div className="p-4 
+                border-t border-gray-100 dark:border-zinc-600 
+                bg-gray-50 dark:bg-zinc-700">
+
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-sm text-gray-500 dark:text-zinc-400">
+                    Total
+                  </span>
+                  <span className="text-xl font-bold text-gray-900 dark:text-white">
+                    ${order.total.toFixed(2)}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      updateStatusMutation.mutate({
+                        orderId: order.order_id,
+                        newStatus: "PENDING",
+                      });
+                    }}
+                    disabled={updateStatusMutation.isPending}
+                    className="bg-green-600 hover:bg-green-700 text-white py-2 rounded-md text-sm font-medium transition disabled:opacity-50"
+                  >
+                    Reopen
+                  </button>
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      updateStatusMutation.mutate({
+                        orderId: order.order_id,
+                        newStatus: "INACTIVE",
+                      });
+                    }}
+                    disabled={updateStatusMutation.isPending}
+                    className="bg-white dark:bg-zinc-800 
+                    border border-red-200 dark:border-red-700 
+                    text-red-600 dark:text-red-400 
+                    hover:bg-red-50 dark:hover:bg-red-900/30 
+                    py-2 rounded-md text-sm font-medium transition"
+                  >
+                    Move to Cancelled
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+};
