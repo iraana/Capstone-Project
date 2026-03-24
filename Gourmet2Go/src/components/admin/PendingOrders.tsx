@@ -215,6 +215,7 @@ export const PendingOrders = () => {
           </span>
 
           <select
+            id="menu-filter"
             className="border border-gray-300 dark:border-zinc-600 
             bg-white dark:bg-zinc-700 
             text-gray-800 dark:text-white

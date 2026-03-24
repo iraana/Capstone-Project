@@ -330,10 +330,11 @@ const handleDeleteMenu = async () => {
 
         <div className="bg-zinc-50 dark:bg-zinc-800/50 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-700 flex flex-col sm:flex-row items-center gap-6">
             <div className="w-full sm:w-1/2 space-y-1">
-                <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                <label htmlFor="menu-date" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
                     Select Date to Edit
                 </label>
                 <input
+                    id="menu-date"
                     type="date"
                     {...register('date')}
                     onChange={handleDateChange}

@@ -207,8 +207,7 @@ export const AddToGallery = () => {
                   accept="image/*"
                   onChange={handleFileChange}
                   disabled={isProcessing}
-                  className="sr-only"
-                  aria-hidden
+                  className="sr-only" 
                 />
               </label>
             </div>

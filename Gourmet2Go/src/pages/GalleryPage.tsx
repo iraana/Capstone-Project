@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 
 export const GalleryPage = () => {
     return (
-        <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+        <main className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
             
             <motion.div 
                 initial={{ opacity: 0, y: -20 }}
@@ -21,6 +21,6 @@ export const GalleryPage = () => {
                 </div>
                 <Gallery />
             </motion.div>
-        </div>
+        </main>
     );
 }

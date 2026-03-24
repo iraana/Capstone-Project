@@ -4,7 +4,7 @@ import { ArrowLeft } from "lucide-react"
 
 export const CancelledOrdersPage = () => {
   return (
-    <div className="bg-white dark:bg-zinc-900 px-4 sm:px-6 lg:px-8 py-10 transition-colors">
+    <main className="bg-white dark:bg-zinc-900 px-4 sm:px-6 lg:px-8 py-10 transition-colors">
       <div className="max-w-7xl mx-auto space-y-6">
 
         <NavLink
@@ -29,6 +29,6 @@ export const CancelledOrdersPage = () => {
         <CancelledOrders />
 
       </div>
-    </div>
+    </main>
   )
 }

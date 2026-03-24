@@ -2,8 +2,8 @@ import { AdminHome } from "../../components/admin/AdminHome"
 
 export const AdminHomePage = () => {
     return (
-        <div>
+        <main>
             <AdminHome />
-        </div>
+        </main>
     )
 }

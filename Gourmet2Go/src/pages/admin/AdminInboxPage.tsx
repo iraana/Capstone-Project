@@ -4,7 +4,7 @@ import { AdminInbox } from "../../components/admin/AdminInbox";
 
 export const AdminInboxPage = () => {
   return (
-    <div className="min-h-screen bg-white dark:bg-zinc-900 px-4 sm:px-6 lg:px-8 py-10 transition-colors">
+    <main className="min-h-screen bg-white dark:bg-zinc-900 px-4 sm:px-6 lg:px-8 py-10 transition-colors">
       <div className="max-w-6xl mx-auto space-y-8">
 
         <div className="space-y-2">
@@ -30,6 +30,6 @@ export const AdminInboxPage = () => {
         </div>
 
       </div>
-    </div>
+    </main>
   );
 };

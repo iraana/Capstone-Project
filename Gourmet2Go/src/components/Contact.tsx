@@ -67,7 +67,7 @@ export const Contact = () => {
             <MapPin size={24} />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">Pickup Location</h3>
+            <p className="text-lg font-semibold text-zinc-900 dark:text-white">Pickup Location</p>
             <p className="text-zinc-600 dark:text-zinc-400 mt-1">443 Northern Ave, Sault Ste. Marie, ON<br />Room L1170</p>
           </div>
         </div>
@@ -77,7 +77,7 @@ export const Contact = () => {
             <Phone size={24} />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">Phone</h3>
+            <p className="text-lg font-semibold text-zinc-900 dark:text-white">Phone</p>
             <p className="text-zinc-600 dark:text-zinc-400 mt-1">(705) 123-4567</p>
           </div>
         </div>
@@ -88,7 +88,7 @@ export const Contact = () => {
             <Clock size={24} />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">Service Hours</h3>
+            <p className="text-lg font-semibold text-zinc-900 dark:text-white">Service Hours</p>
             <p className="text-zinc-600 dark:text-zinc-400 mt-1">Wednesdays & Thursdays<br />12:15 PM – 12:45 PM</p>
           </div>
         </div>

@@ -120,6 +120,13 @@ export const Review = () => {
                     <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Your Review</h1>
                     <h2 className="text-sm text-gray-500 dark:text-gray-400">(Disclaimer: Only one review can be submitted per dish, and all reviews are final)</h2>
                     <p className="text-gray-500 dark:text-gray-400 mt-1">Share your thoughts about this dish:</p>
+                    {/* --- ADDED LABEL FOR ACCESSIBILITY --- */}
+                    <label 
+                        htmlFor="dish-select" 
+                        className="block text-blue-600 dark:text-blue-400 font-bold text-xs uppercase mb-1 mt-4"
+                    >
+                        Select a Dish
+                    </label>
                     <select
                         className="w-full border rounded px-3 py-2 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white"
                         value={selectedDish}

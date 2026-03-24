@@ -118,23 +118,28 @@ export const SignUp = () => {
         </div>
 
         <div className="flex items-start gap-2">
-          <input type="checkbox" {...register("accept_terms")} className="mt-1 h-4 w-4 rounded border-zinc-300 text-blue-600 focus:ring-blue-500" />
-
-          <label className="text-sm text-zinc-600 dark:text-zinc-400">
-            I agree to the{" "}
-            <a
-              href="/terms-of-service"
-              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
-            >
-              Terms of Service
-            </a>{" "}
-            and{" "}
-            <a
-              href="/privacy-policy"
-              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
-            >
-              Privacy Policy
-            </a>
+          <label className="flex items-start gap-2 cursor-pointer">
+            <input 
+              type="checkbox" 
+              {...register("accept_terms")} 
+              className="mt-0.5 h-4 w-4 rounded border-zinc-300 text-blue-600 focus:ring-blue-500 cursor-pointer" 
+            />
+            <span className="text-sm text-zinc-600 dark:text-zinc-400">
+              I agree to the{" "}
+              <a
+                href="/terms-of-service"
+                className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+              >
+                Terms of Service
+              </a>{" "}
+              and{" "}
+              <a
+                href="/privacy-policy"
+                className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+              >
+                Privacy Policy
+              </a>
+            </span>
           </label>
         </div>
 
