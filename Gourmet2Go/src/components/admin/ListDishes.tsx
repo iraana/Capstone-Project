@@ -133,7 +133,7 @@ export const ListDishes = () => {
                     <td className="px-4 py-3 text-center">
                       <NavLink
                         to={`/admin/edit-dish/${item.dish_id}`}
-                        className="inline-block bg-green-600 text-white px-4 py-1.5 rounded-lg text-sm font-semibold hover:bg-green-700 shadow-sm transition-all active:scale-95"
+                         className="inline-block bg-green-700 text-white px-4 py-1.5 rounded-lg text-sm font-semibold hover:bg-green-800 shadow-sm transition-all active:scale-95"
                       >
                         Edit Item
                       </NavLink>

@@ -124,8 +124,8 @@ export const AboutPage = () => {
                 <span className="mr-2">📍</span>
                 Pickup Location
               </h3>
-              <p className="text-blue-100 mb-2">Room L1170 - Culinary Department</p>
-              <p className="text-sm text-blue-200">
+              <p className="text-white  mb-2">Room L1170 - Culinary Department</p>
+              <p className="text-sm text-blue-50">
                 Located in the main building. You'll receive an email with your pickup 
                 time when your order is ready.
               </p>
