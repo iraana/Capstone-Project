@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { SignIn } from '../components/SignIn';
+import { SignIn } from '../components/auth/SignIn.tsx';
 import { BrowserRouter } from 'react-router';
 import * as AuthContext from '../context/AuthContext';
 
