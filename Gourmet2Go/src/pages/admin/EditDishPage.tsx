@@ -4,7 +4,7 @@ import { ArrowLeft, List } from "lucide-react";
 
 export const EditDishPage = () => {
   return (
-    <div className="bg-white dark:bg-zinc-900 px-4 sm:px-6 lg:px-8 py-6 transition-colors">
+    <main className="bg-white dark:bg-zinc-900 px-4 sm:px-6 lg:px-8 py-6 transition-colors">
       <div className="max-w-3xl mx-auto space-y-6">
 
         {/* Navigation Links */}
@@ -30,6 +30,6 @@ export const EditDishPage = () => {
           <EditDish />
         </div>
       </div>
-    </div>
+    </main>
   );
 };

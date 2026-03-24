@@ -4,7 +4,7 @@ import { ArrowLeft } from "lucide-react"
 
 export const ListDishesPage = () => {
   return (
-    <div className="bg-white dark:bg-zinc-900 px-4 sm:px-6 lg:px-8 py-6 min-h-screen transition-colors">
+    <main className="bg-white dark:bg-zinc-900 px-4 sm:px-6 lg:px-8 py-6 min-h-screen transition-colors">
       <div className="max-w-7xl mx-auto space-y-6">
 
         {/* Back to Dashboard */}
@@ -29,6 +29,6 @@ export const ListDishesPage = () => {
         {/* Table */}
         <ListDishes />
       </div>
-    </div>
+    </main>
   );
 };

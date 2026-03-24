@@ -194,10 +194,11 @@ export const AddMenu = () => {
 
 
         <div className="space-y-1">
-          <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          <label htmlFor="menu-date" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
             Menu Date
           </label>
           <input
+            id="menu-date"
             type="date"
             {...register("date")}
             className="w-full rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"

@@ -190,12 +190,31 @@ export const AdminReviews = () => {
       {/* Date Range Filters */}
       <div className='flex flex-wrap items-center gap-4 p-3 border border-zinc-200 dark:border-zinc-700 rounded-xl bg-white dark:bg-zinc-800'>
         <Calendar size={20} className="text-zinc-500 shrink-0" />
-        <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 shrink-0">Date Range:</label>
-        <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} 
-               className="p-1.5 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 text-sm" />
+        
+        {/* Main label for the whole group */}
+        <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300 shrink-0">Date Range:</span>
+        
+        {/* Start Date */}
+        <label htmlFor="start-date" className="sr-only">Start Date</label>
+        <input 
+            id="start-date"
+            type="date" 
+            value={startDate} 
+            onChange={(e) => setStartDate(e.target.value)} 
+            className="p-1.5 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 text-sm" 
+        />
+        
         <span className="text-zinc-400 dark:text-zinc-500">to</span>
-        <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} 
-               className="p-1.5 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 text-sm" />
+        
+        {/* End Date */}
+        <label htmlFor="end-date" className="sr-only">End Date</label>
+        <input 
+            id="end-date"
+            type="date" 
+            value={endDate} 
+            onChange={(e) => setEndDate(e.target.value)} 
+            className="p-1.5 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 text-sm" 
+        />
       </div>
 
 

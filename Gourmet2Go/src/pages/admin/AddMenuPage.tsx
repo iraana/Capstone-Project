@@ -4,7 +4,7 @@ import { ArrowLeft} from "lucide-react";
 
 export const AddMenuPage = () => {
   return (
-    <div className="bg-white dark:bg-zinc-900 px-4 sm:px-6 lg:px-8 py-10 transition-colors">
+    <main className="bg-white dark:bg-zinc-900 px-4 sm:px-6 lg:px-8 py-10 transition-colors">
       <div className="max-w-6xl mx-auto space-y-8">
 
 
@@ -34,6 +34,6 @@ export const AddMenuPage = () => {
         </div>
 
       </div>
-    </div>
+    </main>
   );
 };

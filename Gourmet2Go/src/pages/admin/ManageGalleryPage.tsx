@@ -4,7 +4,7 @@ import { ManageGallery } from "../../components/admin/ManageGallery";
 
 export const ManageGalleryPage = () => {
   return (
-    <div className="bg-white dark:bg-zinc-900 px-4 sm:px-6 lg:px-8 py-10 transition-colors">
+    <main className="bg-white dark:bg-zinc-900 px-4 sm:px-6 lg:px-8 py-10 transition-colors">
 
       <div className="max-w-4xl mx-auto space-y-6">
 
@@ -26,6 +26,6 @@ export const ManageGalleryPage = () => {
         </div>
 
       </div>
-    </div>
+    </main>
   );
 };

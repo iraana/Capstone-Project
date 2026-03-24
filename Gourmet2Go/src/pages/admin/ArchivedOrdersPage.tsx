@@ -4,7 +4,7 @@ import { ArrowLeft } from "lucide-react"
 
 export const ArchivedOrdersPage = () => {
   return (
-    <div className="bg-white dark:bg-zinc-900 px-4 sm:px-6 lg:px-8 py-10 transition-colors">
+    <main className="bg-white dark:bg-zinc-900 px-4 sm:px-6 lg:px-8 py-10 transition-colors">
 
       <div className="max-w-7xl mx-auto space-y-6">
 
@@ -31,6 +31,6 @@ export const ArchivedOrdersPage = () => {
 
       </div>
 
-    </div>
+    </main>
   )
 }

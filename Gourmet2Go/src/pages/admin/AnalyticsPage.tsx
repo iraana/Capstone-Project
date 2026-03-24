@@ -4,7 +4,7 @@ import { ArrowLeft } from "lucide-react"
 
 export const AnalyticsPage = () => {
     return (
-        <div>
+        <main className="bg-white dark:bg-zinc-900 px-4 sm:px-6 lg:px-8 py-10 transition-colors">
           <div className="mb-8">
             <NavLink
               to="/admin"
@@ -15,6 +15,6 @@ export const AnalyticsPage = () => {
             </NavLink>
           </div>
             <Analytics />
-        </div>
+        </main>
     )
 }
