@@ -10,32 +10,9 @@ important for the client and users.
 
 ## TODO
 
-
-- Analytics
-- Robust testing
-- Annihilate .env from commit history somehow
 - Mobile responsiveness, ensure there is a good UI/UX on mobile devices
 - Accessibility standards (can navigate with keyboard, alt-text for images, etc.)
-- Dark Mode full integration
-- Account creation email confirmation, possible MFA as well
-
-
-- Delete dishes
-- Delete menus
-- Reviews
-- ViewReviews
 - Favicon 
-
-- Add Menu: 
-  - Add "successfully saved" message and possibly reroute
-  - Fix issue where very menu saves to Monday
-  
-- Edit Menu: 
-  - Fix issue where every item in the "MenuDishes" table appears when editing any menu. (I believe this is because of the way the menus are being fetched, only be the date)
-  - Allow current menu items stock to be changed
-  - Allow adding of dishes
-  - Save menu button
-  - Cancel button
 
 ## Library Choices
 
@@ -60,7 +37,7 @@ us to optimize some features to work offline.
 - vite-plugin-top-level-await to import the wasm
 - GoTrue so the Flask backend can communicate with the Supabase Auth server
 - python-dotenv so the Flask backend can read the .env *locally*
-
+- Recharts to build charts for analytics
 
 ## Conventions 
 
