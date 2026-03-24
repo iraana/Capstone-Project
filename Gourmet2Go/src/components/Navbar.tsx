@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { AccountSettings } from "./account/AccountSettings"; 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "../../supabase-client";
+import { Logo } from "./Logo";
 
 type Role = "NO_ACCESS" | "USER" | "ADMIN";
 
@@ -19,11 +20,11 @@ interface NavLinkType {
 
 const getNavLinks = (): NavLinkType[] => [
   { name: "Administration", path: "/admin", roles: ["ADMIN"] },
-  { name: "Gallery", path: "/gallery" },
+  { name: "Gallery", path: "/gallery"},
   { name: "Menu", path: "/" },
   { name: "My Orders", path: "/my-orders", roles: ["USER", "ADMIN"]},
   { name: "Review", path: "/review", roles: ["USER", "ADMIN"]},
-  { name: "Virtual Tour", path: "/virtualtour" }
+  { name: "Virtual Tour", path: "/virtualtour", roles: ["USER"]}
 ];
 
 export const Navbar = () => {
@@ -77,6 +78,7 @@ export const Navbar = () => {
           <div className="flex justify-between items-center h-16">
             
             <NavLink to="/" className="flex items-center gap-2 group">
+              <Logo />
               <span className="font-extrabold text-2xl tracking-tight group-hover:opacity-90 transition-opacity">
                 Gourmet2Go
               </span>
