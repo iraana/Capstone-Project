@@ -1,5 +1,65 @@
 # Architecture 
 
+## High-Level Diagram
+
+```mermaid
+graph TD
+classDef frontend fill:#00659B,stroke:#fff,stroke-width:2px,color:#fff,rx:8px,ry:8px;
+classDef wasm fill:#654FF0,stroke:#fff,stroke-width:2px,color:#fff,rx:8px,ry:8px;
+classDef serverless fill:#3776AB,stroke:#fff,stroke-width:2px,color:#fff,rx:8px,ry:8px;
+classDef supabase fill:#3ECF8E,stroke:#fff,stroke-width:2px,color:#111,rx:8px,ry:8px;
+classDef external fill:#F59E0B,stroke:#fff,stroke-width:2px,color:#fff,rx:8px,ry:8px;
+
+    subgraph "Frontend Client (Browser / PWA)"
+        UI[React UI & Pages<br/>React Router]:::frontend
+        State[Zustand Store<br/>Local Storage Persist]:::frontend
+        Query[TanStack React Query<br/>Cache & Data Fetching]:::frontend
+        WASM[Rust WASM Module<br/>Image Optimization]:::wasm
+        SW[Service Worker<br/>Vite PWA]:::frontend
+        
+        UI <-->|Cart Management| State
+        UI <-->|Read / Mutate| Query
+        SW -.->|Offline Support & Caching| UI
+        UI -->|Raw Image Bytes| WASM
+        WASM -->|Resized WebP Bytes| UI
+    end
+
+    subgraph "Vercel Serverless API"
+        Flask[Flask API Backend<br/>index.py]:::serverless
+    end
+
+    subgraph "Backend as a Service (Supabase)"
+        Auth[Supabase Auth<br/>GoTrue]:::supabase
+        DB[(PostgreSQL DB<br/>Tables, RLS)]:::supabase
+        RPC[Database Functions<br/>RPCs & Triggers]:::supabase
+        Storage[Supabase Storage<br/>gallery-images]:::supabase
+        Realtime[Supabase Realtime<br/>WebSockets]:::supabase
+        
+        DB <-->|Business Logic| RPC
+    end
+
+    subgraph "External 3rd Party APIs"
+        Weather[Open-Meteo API<br/>Weather Data]:::external
+    end
+
+    %% Client to Supabase connections
+    UI <-->|Session / JWT| Auth
+    Query <-->|CRUD Operations| DB
+    UI -->|Upload Processed WebP| Storage
+    Storage -->|Serve Image URLs| UI
+    Realtime -.->|Live Order Updates| UI
+
+    %% Client to Flask API connections
+    UI -->|Admin Actions: Ban/Delete User| Flask
+
+    %% Flask to Supabase connections
+    Flask -->|Bypass RLS w/ Service Key| DB
+    Flask -->|Delete/Ban Account| Auth
+
+    %% Client to External connections
+    UI -->|Fetch Temp for Greeter| Weather
+```
+
 ## Flask API Diagram
 
 ```mermaid
@@ -46,8 +106,216 @@ classDef external fill:#f59e0b,stroke:#fff,stroke-width:2px,color:#fff,rx:5px,ry
     IsAdmin -.->|Select Role| SupabaseDB
     DeleteData -.->|Delete Orders/Profile| SupabaseDB
     DeleteData -.->|Delete User| SupabaseAuth
-
 ```
+
+## Folder Structure 
+
+```text
+Capstone-Project/
+├── .github/
+│   └── workflows
+├── api
+├── docs
+├── public
+├── src/
+│   ├── assets
+│   ├── components/
+│   │   ├── account
+│   │   ├── admin/
+│   │   │   ├── analytics
+│   │   │   ├── gallery
+│   │   │   ├── menu
+│   │   │   ├── orders
+│   │   │   └── users
+│   │   ├── auth
+│   │   └── checkout
+│   ├── context
+│   ├── hooks
+│   ├── pages/
+│   │   ├── admin/
+│   │   │   ├── gallery
+│   │   │   ├── menu
+│   │   │   ├── orders
+│   │   │   └── users
+│   │   ├── auth
+│   │   ├── checkout
+│   │   ├── error
+│   │   └── legal
+│   ├── store
+│   ├── tests
+│   ├── types
+│   └── utils
+└── wasm-lib/
+    ├── pkg
+    └── src
+```
+
+## State Management
+
+#### State management is the client-side brain of an app. The state management for this app is seperated into **three distinct categories** based on purpose:
+
+### 1. Tanstack React Query (Server State)
+
+Fetching data from the database is not just about getting the data. It is also about caching, loading states, error
+handling, and background refetching. In this app, we are often fetching dish, menu, and order data. This data is always 
+changing and Tanstack React Query allows the frontend to be a synchronized mirror of the database. This is achieved by
+utilizing `queryClient.invalidateQueries()` when a user/admin inserts, deletes, or updates. For instance, it is used
+to invalidate the user's orders after they delete one of their orders, causing an instant refetch without refreshing.
+
+### 2. Zustand (Global Client State)
+
+This is used for cart management which lives completely in the user's browser. It allows the cart to be accessible
+across the entire app. Zustand was chosen over Redux and other state managers due to it being lightweight. We persist
+cart data to `localStorage` which means if a user fills up their cart and accidentally close their browser, they can
+come back and their cart will be fully restored. We do clear the cart on sign out because if a user signs out and
+someone else signs in on that device, we don't want them to inherit the previous user's cart.
+
+### 3. React Context (Authentication State)
+
+Our AuthContext component wraps the entire app, instantly listening to Supabase's `onAuthStateChange`. This provides the
+app with the current user and their role (who they are, what they can do). This is what enables RBAC 
+(Role-Based Access Control) and RLS (Row-Level Security). Certain pages are not renderable to unauthenticated users or
+users who are not admins. Additionally, certain actions are not possible for certain users as the API endpoints for the
+tables are protected by RLS.
+
+## Server Management
+
+#### We utilize a hybrid cloud architecture for server management which will be explained in detail:
+
+### Supabase (Primary Backend (BaaS))
+
+All CRUD operations, Authentication, and Image Storage are offloaded and handled by Supabase. This greatly reduced the
+need for boilerplate code. We have RLS policies on all tables which means if someone intercepts the API endpoints, they
+still cannot read or modify data that doesn't belong to them. 
+
+What is happening under the hood:
+
+```mermaid
+flowchart TD
+    A[Internet] --> B[AWS ELB]
+    B --> C[Kong Gateway]
+
+    subgraph Services
+        D[PostgREST]
+        E[GoTrue]
+        F[Storage API]
+    end
+
+    C --> D
+    C --> E
+    C --> F
+
+    subgraph Data Layer
+        G[PostgreSQL RDS]
+        H[S3 Buckets]
+    end
+
+    D --> G
+    E --> G
+    F --> G
+    G --> H
+```
+
+Easiest way to think of this is Supabase being a layer on top of AWS that turns cloud infrastructure into a 
+Postgres-first backend platform. Without Supabase, we would need to manually build:
+
+- EC2 instances
+- Auth system
+- File upload service
+- WebSocket server
+- Database permissions layer
+
+Here is table that further demonstrates how Supabase uses AWS:
+
+| AWS | Supabase |
+|---|---|
+| EC2 | API, auth, realtime services |
+| RDS/Postgres | database/backend logic |
+| S3 | file storage |
+| ELB | unified API endpoint |
+
+### Flask (Vercel Serverless)
+
+We built a lightweight Flask backend that is deployed with Vercel Serverless. Vercel uses AWS Lambda under the hood to
+make Vercel Serverless work. We built these APIs to do destructive actions (deleting accounts, issuing bans). This
+requires the Service Role Key as it bypasses RLS. We can not under any circumstances expose this key to the browser.
+That is why these actions are performed server-side. 
+
+The system works by having the React frontend pass the current user's JWT token to Flask. After that, Flask confirms the
+user is a legitimate **admin**. Once this is confirmed, the action is performed. Overall, the system follows the
+principle of least privilege.
+
+### RPCs and Triggers
+
+Complex business logic was moved out of the client-side and implemented on the server-side (Supabase). For example, we
+use the `place_order` RPC (Remote Procedure Call) to process the order in a full atomic transaction. This is to prevent 
+**race conditions**.
+
+### pg_cron (Automated Maintenance)
+
+We implemented `pg_cron` in the database to run at 4:00 AM UTC which is midnight EDT. It automatically sweeps the
+database and sets expired `PENDING` orders to `INACTIVE`.
+
+### WebSockets (Event-Driven Architecture)
+
+**Pending Orders** is a page that we felt needed to be highly-reactive to deliver the ideal UX. That is why we tapped
+into Supabase Realtime. This allows Tanstack React Query to listen to changes in the database and instantly display
+changes.
+
+## Authentication 
+
+We had to build our own authentication system using email and password as we didn't have access to the Sault College 
+Azure tenant.  For this reason, we built a multi-layered security model:
+
+### 1. Domain-Restricted Identity
+
+**Gourmet2Go** is only for the Sault College community. We have prevented non-Sault College students from making an
+account on the client and server. We made a Zod schema for sign in and sign up that uses a regex pattern: 
+
+```ts
+.refine((email) => /^[0-9]{8}@saultcollege\.ca$/i.test(email), {
+      message: "You must use your 8-digit Sault College email to sign in",
+    }),
+```
+
+This ensures that the email has an 8 digit student number and has the Sault College domain. Also, we made 
+`handle_new_user` in Supabase that is a function that is triggered after a new entry in `auth.users`. If the email
+provided in the sign up does not have a Sault College domain, then the user will automatically be given the `NO_ACCESS`
+role in the `profiles` table. If it does have the Sault College domain, then they are given the `USER` role. If you 
+have the `NO_ACCESS` role and try to sign in, you will be signed out right away.
+
+### 2. RBAC
+
+There are three tiers to the roles (`NO_ACCESS`, `USER`, `ADMIN`). Admins are treated as superusers. The role is
+provided `AuthContext`.  At the UI level, things like the Administration tab are not rendered unless you are an `ADMIN`.
+At the routing level, `ProtectedRoute` acts as a bouncer, redirecting unauthenticated users to the 401 error page.
+
+### 3. Database-Level Protection
+
+Users are allowed to update their name but nothing else. If a user makes a curl command to `PATCH` their role to be an
+`ADMIN`, we stop it with the `protect_profile_columns` trigger. This overrides the malicious input with the original
+values.
+
+### 4. JWT Validation
+
+When we call the Flask API, we pass the current user's bearer token. Flask verifies it against the Supabase Auth server,
+extracts the user ID, and queries the profiles table to ensure the current user is an `ADMIN`. Then, it will perform the 
+destructive action.
+
+## PWA
+
+**Gourmet2Go** is a PWA (Progressive Web App) which is used to deliver a native app-like experience. This means the web
+app can be downloaded like a desktop app and mobile app. We utilize PWA technology to cache data using a Service Worker.
+This means if a user cannot get onto school wi-fi and don't have data, they can still go onto the app and have their QR
+code ready for pickup. This is one of many benefits of having the app usable offline.
+
+## WASM
+
+Since Supabase only offers 1 GB of storage in the free tier, we needed to optimize. This is why we built a Rust script
+that was compiled to WASM (Web Assembly). When an Admin uploads a photo to the gallery, it resizes the image to 1280x960
+which is an HD image (slightly above 720p) with a 4:3 aspect ratio. It also converts the image to a WebP which are
+smaller than PNGs and JPEGs. This all happens client-side which is nice because we don't have to worry about image
+processing endpoints being abused.
 
 ## RPC Functions
 
@@ -181,13 +449,6 @@ BEGIN
   IF EXISTS (
     SELECT 1 FROM public."Orders"
     WHERE user_id = auth.uid() AND menu_id = p_menu_id
-  ) THEN
-    RAISE EXCEPTION 'You already have an active order for this menu.';
-  END IF;
-
-  IF EXISTS (
-    SELECT 1 FROM public."Orders" 
-    WHERE user_id = auth.uid() AND menu_id = p_menu_id 
   ) THEN
     RAISE EXCEPTION 'You already have an active order for this menu.';
   END IF;
