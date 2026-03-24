@@ -184,7 +184,7 @@ export const Review = () => {
                             <div className="flex gap-4 mt-4">
                                 <button
                                     type="submit"
-                                    className="bg-green-600 hover:bg-green-700 text-white cursor-pointer px-4 py-2 rounded-xl font-bold shadow-lg shadow-green-900/20 transition-all active:scale-95"
+                                     className="bg-green-700 hover:bg-green-800 text-white cursor-pointer px-4 py-2 rounded-xl font-bold shadow-lg shadow-green-900/20 transition-all active:scale-95"
                                 >
                                     Submit Review
                                 </button>

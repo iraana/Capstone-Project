@@ -143,7 +143,7 @@ export const CancelledOrders = () => {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white dark:bg-zinc-900 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
         <div className="flex items-center gap-3">
-          <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          <span className="text-sm font-medium text-gray-900 dark:text-zinc-300">
             Filter by Menu:
           </span>
 
@@ -208,11 +208,11 @@ export const CancelledOrders = () => {
                     </span>
                   </div>
 
-                  <div className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
+                  <div className="text-sm text-gray-800 dark:text-zinc-400 mt-1">
                     {order.profiles?.first_name} {order.profiles?.last_name}
                   </div>
 
-                  <div className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
+                  <div className="text-sm text-gray-800 dark:text-zinc-400 mt-1">
                     {order.profiles?.email}
                   </div>
                 </div>

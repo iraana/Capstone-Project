@@ -210,7 +210,7 @@ export const PendingOrders = () => {
         border border-gray-200 dark:border-zinc-700">
 
         <div className="flex items-center gap-3">
-          <span className="text-sm font-medium text-gray-700 dark:text-zinc-300">
+          <span className="text-sm font-medium text-gray-900 dark:text-zinc-300">
             Filter by Menu:
           </span>
 
@@ -296,7 +296,7 @@ export const PendingOrders = () => {
                     </span>
                   </div>
 
-                  <div className="text-sm text-gray-600 dark:text-zinc-300 mt-1">
+                  <div className="text-sm text-gray-800 dark:text-zinc-300 mt-1">
                     {order.profiles?.first_name} {order.profiles?.last_name}
                   </div>
 
@@ -305,7 +305,7 @@ export const PendingOrders = () => {
                   </div>
                 </div>
 
-                <div className="text-right text-xs text-gray-400 dark:text-zinc-400">
+                <div className="text-sm text-gray-800 dark:text-zinc-300 mt-1">
                   <div>
                     {order.MenuDays
                       ? "Menu day: " + new Date(order.MenuDays.date).toLocaleDateString()

@@ -149,7 +149,7 @@ export const ArchivedOrders = () => {
         border border-gray-200 dark:border-zinc-700">
 
         <div className="flex items-center gap-3">
-          <span className="text-sm font-medium text-gray-700 dark:text-zinc-300">
+          <span className="text-sm font-medium text-gray-900 dark:text-zinc-300">
             Filter by Menu:
           </span>
 
@@ -225,11 +225,11 @@ export const ArchivedOrders = () => {
                     </span>
                   </div>
 
-                  <div className="text-sm text-gray-600 dark:text-zinc-300 mt-1">
+                  <div className="text-sm text-gray-800 dark:text-zinc-300 mt-1">
                     {order.profiles?.first_name} {order.profiles?.last_name}
                   </div>
 
-                  <div className="text-sm text-gray-600 dark:text-zinc-300 mt-1">
+                  <div className="text-sm text-gray-800 dark:text-zinc-300 mt-1">
                     {order.profiles?.email}
                   </div>
                 </div>

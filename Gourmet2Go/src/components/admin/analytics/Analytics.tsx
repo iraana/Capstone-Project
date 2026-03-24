@@ -250,13 +250,13 @@ export const Analytics = () => {
 
       <motion.div variants={itemVariants} className="bg-white dark:bg-zinc-800 rounded-2xl border border-gray-200 dark:border-zinc-700 shadow-sm overflow-hidden">
         <div className="p-5 border-b border-gray-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900/80 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
-          <h3 className="font-bold text-zinc-900 dark:text-white flex items-center gap-2">
-            <UtensilsCrossed size={18} className="text-zinc-400 dark:text-zinc-500" /> Detailed Data Report
+          <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <UtensilsCrossed size={18} className="text-gray-700 dark:text-zinc-500" /> Detailed Data Report
           </h3>
           <button
             onClick={handleExportCSV}
             disabled={tableData.length === 0}
-            className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-200 rounded-xl shadow-sm hover:bg-gray-50 dark:hover:bg-zinc-700 hover:text-blue-600 dark:hover:text-blue-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
+            className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 text-gray-900 dark:text-zinc-200 rounded-xl shadow-sm hover:bg-gray-50 dark:hover:bg-zinc-700 hover:text-blue-600 dark:hover:text-blue-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
           >
             <Download size={16} /> Export to CSV
           </button>

@@ -304,7 +304,7 @@ export const AddMenu = () => {
                     </button>
                     <NavLink
                       to={`/admin/edit-dish/${dish.dish_id}`}
-                      className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
+                       className="bg-green-700 text-white px-3 py-1 rounded hover:bg-green-800"
                     >
                       Edit Item
                     </NavLink>
