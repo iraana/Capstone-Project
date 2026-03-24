@@ -3,7 +3,7 @@ export const Logo = () => {
     <img 
       src="/logo.svg" 
       alt="Gourmet2Go Logo" 
-      className="h-10 w-auto" 
+      className="h-12 w-auto" 
     />
   );
 };
