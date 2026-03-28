@@ -15,7 +15,7 @@
 [![GitHub last commit](https://img.shields.io/github/last-commit/iraana/Capstone-Project)](#)
 ![Visitors](https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2Firaana%2FCapstone-Project&label=visitors&countColor=%230c7ebe&style=flat&labelStyle=none)
 [![Contributors](https://img.shields.io/github/contributors/iraana/Capstone-Project?style=flat&color=FFD700&logo=github)](https://github.com/iraana/Capstone-Project/graphs/contributors)
-[![Tests](https://img.shields.io/badge/tests-100+%20passing-brightgreen)](https://github.com/iraana/Capstone-Project/tree/main/Gourmet2Go/src/tests)
+[![Tests](https://img.shields.io/badge/tests-250+%20passing-brightgreen)](https://github.com/iraana/Capstone-Project/tree/main/src/tests)
 [![CodeQL](https://github.com/iraana/Capstone-Project/actions/workflows/codeql.yml/badge.svg)](https://github.com/iraana/Capstone-Project/security/code-scanning)
 [![Live Deployment](https://img.shields.io/badge/Live-Deployment-brightgreen?style=flat)](https://gourmet2go.vercel.app/)
 
@@ -90,6 +90,7 @@ We will add like 4 or 5 screenshots of stuff not in the trailer
 ![JSDOM](https://img.shields.io/badge/JSDOM-F7DF1E?style=flat&logo=javascript&logoColor=black)
 ![Jest DOM](https://img.shields.io/badge/Jest_DOM-C21325?style=flat&logo=jest&logoColor=white)
 ![User Event](https://img.shields.io/badge/User_Event-F7DF1E?style=flat&logo=javascript&logoColor=black)
+![pytest](https://img.shields.io/badge/pytest-3776AB?style=flat&logo=pytest&logoColor=white)
 ![React QR Code](https://img.shields.io/badge/React_QR_Code-61DAFB?style=flat&logo=react&logoColor=black)
 ![React QR Scanner](https://img.shields.io/badge/React_QR_Scanner-61DAFB?style=flat&logo=react&logoColor=black)
 ![Vite Plugin WASM](https://img.shields.io/badge/Vite_Plugin_WASM-646CFF?style=flat&logo=vite&logoColor=white)
@@ -191,7 +192,7 @@ the app with order numbers and QR codes for quick look up.
 This application uses React with Vite for the frontend, Supabase as the Backend as a Service (BaaS), and a small Flask serverless API. 
 You will need Node.js and Python installed on your machine before you can run the app locally. You will also need to setup Supabase. You
 can learn more by going to our `SETUP.md` 
-<a href="https://github.com/iraana/Capstone-Project/tree/main/docs/SETUP.md">click here</a>.
+<a href="https://github.com/iraana/Capstone-Project/blob/main/docs/SETUP.md">click here</a>.
 
 
 ## Documentation <a name="documentation"></a>
@@ -216,7 +217,7 @@ development journey does not end here. Your input is crucial for our continuous 
 
 
 Please take a look at our `CONTRIBUTING.md` for more details on how to contribute 
-<a href="https://github.com/iraana/Capstone-Project/CONTRIBUTING.md">click here</a>
+<a href="https://github.com/iraana/Capstone-Project/blob/main/CONTRIBUTING.md">click here</a>
 
 
 ## License <a name="license"></a>

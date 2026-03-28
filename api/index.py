@@ -91,9 +91,7 @@ def delete_user_data(target_user_id: str):
         for po in pending_orders.data:
             # Safely cancels the order and restores stock in the DB
             supabase.rpc('cancel_pending_order', {'p_order_id': po['order_id']}).execute()
-    
-    # Gets everything related to the user
-    orders_response = None
+
     try:
         orders_response = supabase.table('Orders').select('order_id').eq('user_id', target_user_id).execute()
     except Exception as e:
@@ -112,10 +110,10 @@ def delete_user_data(target_user_id: str):
         )
 
     # Deletes everything related to the user. Because of foreign key constraints, we have to delete from OrderItems first, then Orders, then profiles, and finally the user account itself
-    
+
     if orders_response.data:
         order_ids = [o['order_id'] for o in orders_response.data if 'order_id' in o]
-        
+
         if order_ids:
             try:
                 # Delete order items that reference those orders first because of FK constraints
@@ -167,8 +165,8 @@ def delete_user_data(target_user_id: str):
 def toggle_ban():
     # Get the user from the JWT token
     user = get_user_from_token()
-    
-    # If the user is not an admin, return 403 Forbidden 
+
+    # If the user is not an admin, return 403 Forbidden
     if not user or not is_admin(user["id"]):
         # Be explicit about why access was denied
         message = (
@@ -179,7 +177,7 @@ def toggle_ban():
         return jsonify({"error": message}), 403
 
     # Read the request body
-    data = request.json
+    data = request.get_json(silent=True)
     if data is None:
         msg = "Bad Request: Missing JSON body. Expected a JSON payload with keys 'userId' and 'isBanned'."
         logger.warning(msg)
@@ -254,7 +252,7 @@ def admin_delete_user():
         logger.warning(f"Admin delete-user attempt denied. Reason: {message}")
         return jsonify({"error": message}), 403
 
-    data = request.json
+    data = request.get_json(silent=True)
     if data is None:
         msg = "Bad Request: Missing JSON body. Expected a JSON payload with key 'userId'."
         logger.warning(msg)
@@ -292,7 +290,7 @@ def delete_self():
         delete_user_data(user["id"])
         return jsonify({"message": "Account deleted successfully"}), 200
     except Exception as e:
-        logger.exception(f"Error deleting account for user '{user.id}': {e}")
+        logger.exception(f"Error deleting account for user '{user['id']}': {e}")
         return jsonify({
             "error": "Failed to delete account. The server encountered an error while removing your data. "
                      "If this persists, contact support with your account id. See server logs for details."
