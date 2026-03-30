@@ -38,7 +38,9 @@
 ## Trailer
 
 
-Here we will add a gif that shows us placing an order on the app
+*A quick walkthrough of placing an order on Gourmet2Go:*
+
+![Gourmet2Go Trailer](assets/trailer.mov)
 
 
 </div>
