@@ -115,6 +115,7 @@ Capstone-Project/
 ├── .github/
 │   └── workflows
 ├── api
+├── assets
 ├── docs
 ├── public
 ├── src/
