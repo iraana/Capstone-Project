@@ -40,7 +40,7 @@
 
 *A quick walkthrough of placing an order on Gourmet2Go:*
 
-![Gourmet2Go Trailer](assets/trailer.mov)
+![Gourmet2Go Trailer](assets/trailer.gif)
 
 
 </div>
