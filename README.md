@@ -52,7 +52,31 @@
 ## Screenshots
 
 
-We will add like 4 or 5 screenshots of stuff not in the trailer
+<div align="center">
+
+### 🖥️ Desktop View
+<div style="display: flex; justify-content: center; gap: 20px;">
+    <div style="width: 45%;">
+        <img src="assets/admin-dashboard.png" alt="Admin Dashboard" style="height: 300px; width: 100%; object-fit: cover; border-radius: 8px;">
+        <p><i>Command center for all operations</i></p>
+    </div>
+    <div style="width: 45%;">
+        <img src="assets/analytics.png" alt="Analytics" style="height: 300px; width: 100%; object-fit: cover; border-radius: 8px;">
+        <p><i>BI-driven dish and buyer analytics</i></p>
+    </div>
+</div>
+
+### 📱 Mobile Experience
+<div style="display: flex; justify-content: center; gap: 20px;">
+    <div style="width: 250px;">
+        <img src="assets/mobile-nav.png" alt="Mobile Nav" style="height: 450px; width: 100%; object-fit: cover; border-radius: 8px;">
+        <p><i>Responsive navigation</i></p>
+    </div>
+    <div style="width: 250px;">
+        <img src="assets/orders.png" alt="Order History" style="height: 450px; width: 100%; object-fit: cover; border-radius: 8px;">
+        <p><i>Track orders</i></p>
+    </div>
+</div>
 
 
 </div>
