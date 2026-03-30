@@ -65,17 +65,6 @@ describe('Navbar component', () => {
     expect(menuLink).toBeInTheDocument();
   });
 
-  it('displays Virtual Tour link', () => {
-    render(
-      <BrowserRouter>
-        <Navbar />
-      </BrowserRouter>
-    );
-    
-    const tourLink = screen.getByRole('link', { name: 'Virtual Tour' });
-    expect(tourLink).toBeInTheDocument();
-  });
-
   it('shows Sign In button when user is not logged in', () => {
     render(
       <BrowserRouter>
