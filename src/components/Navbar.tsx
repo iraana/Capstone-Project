@@ -8,7 +8,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { AccountSettings } from "./account/AccountSettings"; 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "../../supabase-client";
-import {Logo} from "./Logo";
 
 type Role = "NO_ACCESS" | "USER" | "ADMIN";
 
@@ -78,7 +77,7 @@ export const Navbar = () => {
           <div className="flex justify-between items-center h-16">
             
             <NavLink to="/" className="flex items-center gap-2 group">
-            <Logo/>
+            <img src="/logo.svg" alt="Gourmet2Go Logo" className="w-12 h-12 object-contain" />
               <span className="font-extrabold text-2xl tracking-tight group-hover:opacity-90 transition-opacity">
                 Gourmet2Go
               </span>
