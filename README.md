@@ -9,13 +9,13 @@
 
 [![GitHub Stars](https://img.shields.io/github/stars/iraana/Capstone-Project?style=flat&color=FFD700&logo=starship&logoColor=white)](https://github.com/iraana/Capstone-Project/stargazers)
 [![GitHub Forks](https://img.shields.io/github/forks/iraana/Capstone-Project?style=flat&color=0891b2&logo=github&logoColor=white)](https://github.com/iraana/Capstone-Project/network)
-[![GitHub License](https://img.shields.io/badge/license-All%20Rights%20Reserved-22c55e?style=flat)](https://github.com/iraana/Capstone-Project/blob/main/LICENSE)
+[![GitHub License](https://img.shields.io/badge/license-PolyForm%20Noncommercial-22c55e?style=flat)](https://github.com/iraana/Capstone-Project/blob/main/LICENSE)
 [![GitHub Release](https://img.shields.io/github/v/release/iraana/Capstone-Project?style=flat&color=FFD700&logo=github&logoColor=white)](https://github.com/iraana/Capstone-Project/releases)
 [![GitHub release date](https://img.shields.io/github/release-date/iraana/Capstone-Project)](#)
 [![GitHub last commit](https://img.shields.io/github/last-commit/iraana/Capstone-Project)](#)
 ![Visitors](https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2Firaana%2FCapstone-Project&label=visitors&countColor=%230c7ebe&style=flat&labelStyle=none)
 [![Contributors](https://img.shields.io/github/contributors/iraana/Capstone-Project?style=flat&color=FFD700&logo=github)](https://github.com/iraana/Capstone-Project/graphs/contributors)
-[![Tests](https://img.shields.io/badge/tests-250+%20passing-brightgreen)](https://github.com/iraana/Capstone-Project/tree/main/src/tests)
+[![Tests](https://img.shields.io/badge/tests-300+%20passing-brightgreen)](https://github.com/iraana/Capstone-Project/tree/main/src/tests)
 [![CodeQL](https://github.com/iraana/Capstone-Project/actions/workflows/codeql.yml/badge.svg)](https://github.com/iraana/Capstone-Project/security/code-scanning)
 [![Live Deployment](https://img.shields.io/badge/Live-Deployment-brightgreen?style=flat)](https://gourmet2go.vercel.app/)
 
@@ -46,15 +46,13 @@
 </div>
 
 
-<div align="center">
-
-
 ## Screenshots
 
 
 <div align="center">
 
-### 🖥️ Desktop View
+### Desktop View
+
 <div style="display: flex; justify-content: center; gap: 20px;">
     <div style="width: 45%;">
         <img src="assets/admin-dashboard.png" alt="Admin Dashboard">
@@ -66,7 +64,8 @@
     </div>
 </div>
 
-### 📱 Mobile Experience
+### Mobile Experience
+
 <div style="display: flex; justify-content: center; gap: 20px;">
     <div style="width: 250px;">
         <img src="assets/mobile-nav.png" alt="Mobile Nav">
