@@ -7,6 +7,14 @@
     {
       "source": "/(.*)",
       "destination": "/index.html"
+    },
+    {
+      "images": [
+        {
+          "source": "/logo.svg",
+          "destination": "/logo.svg"
+        }
+      ]
     }
   ]
 }
