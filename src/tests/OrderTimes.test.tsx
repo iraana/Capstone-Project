@@ -100,7 +100,7 @@ describe('OrderTimes', () => {
 
   describe('Matrix Dimensions', () => {
     it('handles 7x24 matrix correctly', () => {
-      const { container } = render(
+      render(
         <OrderTimes dayHourMatrix={mockMatrix} dayHourMax={10} />
       );
       

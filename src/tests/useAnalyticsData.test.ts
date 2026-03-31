@@ -37,7 +37,6 @@ describe('useAnalyticsData', () => {
   });
 
   const mockSupabaseResponse = (orders: any[], menuDays: any[]) => {
-    let callCount = 0;
     (supabase.from as any).mockImplementation((table: string) => {
       if (table === 'Orders') {
         return {
