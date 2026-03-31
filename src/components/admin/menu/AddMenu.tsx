@@ -118,7 +118,13 @@ export const AddMenu = () => {
       setSuccessMsg('Menu saved successfully!');
       reset();
     } catch (err: any) {
+      if (err.code === '23505') {
+      setErrorMsg('A menu for this date already exists. Please choose another date.');
+    } else if (err.code === '23503') {
+      setErrorMsg('One or more dishes are invalid or do not exist.');
+    } else {
       setErrorMsg(err.message || 'Failed to create menu');
+    }
     } finally {
       setLoading(false);
     }
