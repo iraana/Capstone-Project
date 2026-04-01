@@ -198,6 +198,7 @@ the app with order numbers and QR codes for quick look up.
 - Analytics
 - Reviews
 - Inbox
+- Trash bin (recover deleted dishes and menus)
 
 
 ### Technical Highlights
