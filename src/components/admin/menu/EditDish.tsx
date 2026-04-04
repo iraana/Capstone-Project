@@ -18,7 +18,7 @@ const dishSchema = z.object({
   price: z
     .number("Price must be a number")
     .positive("Price must be positive")
-    .refine((val) => Number((val * 100).toFixed(0)) === val * 100, "Max 2 decimal places"),
+    .refine((val) => Number((val * 100).toFixed(2)) === val * 100, "Max 2 decimal places"),
   category: z.enum(['Other', 'Soups', 'Salads', 'Sandwiches', 'Entrees', 'Desserts', 'Bowls']),
 });
 
