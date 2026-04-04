@@ -57,7 +57,7 @@ export const Contact = () => {
   };
 
   const inputClasses = (error: any) => `
-    w-full rounded-lg border bg-zinc-50 dark:bg-zinc-900 px-4 py-3 focus:outline-none focus:ring-2 transition-all
+    w-full rounded-lg border bg-white dark:bg-zinc-800 px-4 py-3 focus:outline-none focus:ring-2 transition-all
     ${error ? "border-red-500 focus:ring-red-500/50" : "border-zinc-300 dark:border-zinc-700 focus:border-blue-500 focus:ring-blue-500/20"}
   `;
 
