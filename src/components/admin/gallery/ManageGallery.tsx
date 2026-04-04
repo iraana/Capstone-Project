@@ -125,7 +125,7 @@ export const ManageGallery = () => {
           key={post.id}
           className="flex flex-col sm:flex-row sm:items-center justify-between rounded-lg border border-blue-100 dark:border-zinc-700 bg-white dark:bg-zinc-800 p-4 shadow-sm hover:shadow-md transition gap-4"
         >
-          <div className="flex items-center gap-4 mb-2 sm:mb-0 w-full sm:w-auto overflow-hidden">
+          <div className="flex items-center gap-4 mb-2 sm:mb-0 w-full sm:w-auto">
             <img
               src={post.image_url}
               alt={post.caption}
