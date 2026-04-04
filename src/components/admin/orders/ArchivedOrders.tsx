@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../../../../supabase-client.ts";
 import { Loader } from "../../Loader.tsx";
 import { useNavigate } from "react-router";
+import { formatOrderDateTime } from "../../../utils/formatOrderDateTime.ts";
 
 interface Dish {
   dish_id: number;
@@ -242,12 +243,7 @@ export const ArchivedOrders = () => {
                       : "No Date"}
                   </div>
                   <div>
-                    {new Date(
-                      `${order.MenuDays.date}T${order.timestamp}`
-                    ).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
+                    {formatOrderDateTime(order.timestamp)}
                   </div>
                 </div>
               </div>
