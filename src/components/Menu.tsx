@@ -259,7 +259,7 @@ export const Menu = () => {
                   ${isSelected 
                     ? "bg-[#00659B] text-white border-[#00659B] shadow-lg shadow-blue-900/20 scale-105 z-10" 
                     : isLockedTab && isAuthorized
-                        ? "bg-gray-50 dark:bg-zinc-900 text-gray-400 dark:text-zinc-600 border-transparent hover:bg-gray-100" 
+                        ? "bg-gray-50 dark:bg-zinc-900 text-gray-400 dark:text-zinc-600 border-transparent hover:bg-gray-100 dark:hover:bg-zinc-800" 
                         : "bg-gray-50 dark:bg-zinc-800 text-gray-600 dark:text-gray-400 border-transparent hover:bg-gray-100 dark:hover:bg-zinc-700"}
                   `}
                 >
