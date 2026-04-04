@@ -126,7 +126,7 @@ export const OrderDetails = () => {
     <div className="max-w-3xl mx-auto p-6">
       <button
         onClick={() => navigate("/admin/pending-orders")}
-        className="flex items-center gap-2 text-gray-500 hover:text-gray-900 mb-6 transition-colors"
+        className="flex items-center gap-2 text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white mb-6 transition-colors group"
       >
         <ArrowLeft size={20} />
         Back to List
