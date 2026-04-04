@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 import logging
 import requests
+from openai import OpenAI
 
 load_dotenv()
 
@@ -36,6 +37,8 @@ if not url or not key:
     )
 
 supabase: Client = create_client(url, key)
+
+client_ai = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 @app.route('/api/hello', methods=['GET'])
 def hello_world():
@@ -295,6 +298,40 @@ def delete_self():
             "error": "Failed to delete account. The server encountered an error while removing your data. "
                      "If this persists, contact support with your account id. See server logs for details."
         }), 500
+    
+@app.route('/api/admin/generate-description', methods=['POST'])
+def generate_description():
+    try:
+        # 1. Security check
+        user = get_user_from_token()
+        if not user or not is_admin(user["id"]):
+            logger.warning(f"AI Blocked: User {user.get('id') if user else 'Unknown'} is not an admin.")
+            return jsonify({"error": "Admin privileges required"}), 403
+
+        # 2. Get data from React
+        data = request.get_json(silent=True)
+        dish_name = data.get('name')
+        category = data.get('category', 'dish')
+
+        if not dish_name:
+            return jsonify({"error": "Dish name is required"}), 400
+
+        # 3. Call OpenAI
+        response = client_ai.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a professional gourmet chef writing a menu. Write a short, delicious description (max 20 words)."},
+                {"role": "user", "content": f"Write a description for a {category} called '{dish_name}'."}
+            ],
+            max_tokens=60
+        )
+        
+        description = response.choices[0].message.content.strip()
+        return jsonify({"description": description}), 200
+
+    except Exception as e:
+        logger.error(f"AI Error: {str(e)}")
+        return jsonify({"error": "AI service failed. Check Python logs."}), 500
 
 # If this file is ran directly it will start the Flask dev server on port 5000 with debug mode on
 if __name__ == '__main__':
