@@ -1,10 +1,19 @@
+# Database 
+
 ![alt text](image.png)
 
+## Database SQL
 
-```sql 
+
+
+
+<details>
+<summary><b>Database SQL</b></summary>
+
+```
+
 -- WARNING: This schema is for context only and is not meant to be run.
 -- Table order and constraints may not be valid for execution.
-```
 
 CREATE TABLE public.Dishes (
   dish_id smallint GENERATED ALWAYS AS IDENTITY NOT NULL,
@@ -91,31 +100,774 @@ CREATE TABLE public.profiles (
   CONSTRAINT profiles_pkey PRIMARY KEY (id),
   CONSTRAINT profiles_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
 );
+```
 
-
+</details>
 
 ## Table Descriptions
 
-### Dishes:
+<details>
+<summary><b>Dishes</b></summary>
 
-Purpose: Stores information on dishes as well as their current active status.
+## Dishes
 
-### Gallery:
+Purpose: Stores all currently and previously available food items.
 
-Purpose: Stores image information for the gallery.
+Fields:
 
-### MenuDayDishes:
+- dish_id
+- name
+- category
+- price
+- dish_status
 
-Purpose: Join table for dishes and 
+Relationships:
 
-### MenuDays:
+  - Referenced in:
 
-### OrderItems:
+    - MenuDayDishes
+    - OrderItems
+    - Reviews
 
-### Orders:
+</details>
 
-### profiles:
+<details>
+<summary><b>Gallery</b></summary>
 
-### Reviews:
+## Gallery
 
-### contact_messages:
+Purpose: Stores image files for the Gallery.
+
+Fields:
+
+- id
+- created_at
+- caption
+- image_url
+
+</details>
+
+<details>
+<summary><b>MenuDayDishes</b></summary>
+
+## MenuDayDishes
+
+Purpose: Join table linking dishes to specific menus.
+
+Fields:
+
+- menu_day_dish_id
+- dish_id → FK → Dishes
+- menu_id → FK → MenuDays
+- stock
+
+Relatonships:
+
+  - References:
+    - Dishes
+    - MenuDays
+
+</details>
+
+<details>
+<summary><b>MenuDays</b></summary>
+
+## MenuDays
+
+Purpose: Stores the date of each created menu.
+
+Fields:
+
+- menu_day_id
+- date
+- day
+- status
+
+Relationships:
+
+  - Referenced in:
+
+    - MenuDayDishes
+    - Orders
+
+</details>
+
+<details>
+<summary><b>OrderItems</b></summary>
+
+## OrderItems
+
+Purpose: Stores dishes that are associated with an order.
+
+Fields:
+
+- order_item_id
+- order_id → FK → Orders
+- dish_id → FK → Dishes
+- quantity
+- subtotal
+
+Relatonships: 
+
+  - References:
+    
+    - Dishes
+    - Orders
+
+</details>
+
+<details>
+<summary><b>Orders</b></summary>
+
+## Orders
+
+Purpose: Represents an order.
+
+Fields:
+
+- order_id 
+- user_id → FK → profiles
+- menu_id → FK → MenuDays
+- timestamp 
+- status 
+- total 
+- order_number 
+- notes 
+- is_showing 
+
+Relatonships:
+
+  - References:
+
+    - profiles
+    - MenuDays
+
+</details>
+
+<details>
+<summary><b>profiles</b></summary>
+
+## profiles
+
+Purpose: Stores user data for authentication
+
+Fields:
+
+- id
+- first_name
+- last_name
+- email
+- role
+- is_banned
+
+</details>
+
+<details>
+<summary><b>Reviews</b></summary>
+
+## Reviews
+
+Purpose: Stores user reviews made for specific dishes.
+
+Fields:
+
+- review_id
+- user_id → FK → profiles
+- dish_id → FK → Dishes
+- rating
+- comment 
+- timestamp 
+
+Relationships:
+
+  - References:
+  
+    - profiles
+    - Dishes
+
+</details>
+
+<details>
+<summary><b>contact_messages</b></summary>
+
+## contact_messages
+
+Purpose: Stores messages submitted through the contact form.
+
+Fields:
+
+- id
+- name
+- email
+- is_read
+- message
+- created_at
+
+</details>
+
+## RLS Policies
+
+<details>
+<summary><b>Dishes</b></summary>
+
+<details>
+<summary>Admins can delete all contact messages</summary>
+
+```
+alter policy "Admins can delete all contact messages"
+on "public"."contact_messages"
+to authenticated
+using (
+  is_admin()
+);
+```
+</details>
+
+<details>
+<summary>Admins can read all contact messages </summary>
+
+```
+alter policy "Admins can read all contact messages"
+on "public"."contact_messages"
+to authenticated
+using (
+  is_admin()
+);
+```
+</details>
+
+<details>
+<summary>Admins can update all contact messages </summary>
+
+```
+alter policy "Admins can update all contact messages"
+on "public"."contact_messages"
+to authenticated
+using (
+  is_admin()
+);
+```
+</details>
+
+<details>
+<summary>Anyone can leave a contact message </summary>
+
+```
+alter policy "Anyone can leave a contact message"
+on "public"."contact_messages"
+to public
+with check (
+  true
+);
+```
+</details>
+
+</details>
+
+<details>
+<summary><b>Gallery</b></summary>
+
+<details>
+<summary>Admins can create gallery posts </summary>
+
+```
+alter policy "Admins can create gallery posts"
+on "public"."Gallery"
+to authenticated
+with check (
+  is_admin()
+);
+```
+</details>
+
+<details>
+<summary>Admins can delete gallery posts </summary>
+
+```
+alter policy "Admins can delete gallery posts"
+on "public"."Gallery"
+to authenticated
+using (
+  is_admin()
+);
+```
+</details>
+
+<details>
+<summary>Admins can update gallery posts </summary>
+
+```
+alter policy "Admins can update gallery posts"
+on "public"."Gallery"
+to authenticated
+using (
+  is_admin()
+);
+```
+</details>
+
+<details>
+<summary>Anyone can read gallery posts </summary>
+
+```
+alter policy "Anyone can read gallery posts"
+on "public"."Gallery"
+to public
+using (
+  true
+);
+```
+</details>
+
+</details>
+
+<details>
+<summary><b>MenuDayDishes</b></summary>
+
+<details>
+<summary>Admins can create menu day dishes </summary>
+
+```
+alter policy "Admins can create menu day dishes"
+on "public"."MenuDayDishes"
+to authenticated
+with check (
+  is_admin()
+);
+```
+
+</details>
+
+<details>
+<summary>Admins can delete menu day dishes </summary>
+
+```
+alter policy "Admins can delete menu day dishes"
+on "public"."MenuDayDishes"
+to authenticated
+using (
+  is_admin()
+);
+```
+
+</details>
+
+<details>
+<summary>Admins can update menu day dishes </summary>
+
+```
+alter policy "Admins can update menu day dishes"
+on "public"."MenuDayDishes"
+to authenticated
+using (
+  is_admin()
+);
+```
+
+</details>
+
+<details>
+<summary>Anyone can read menu day dishes </summary>
+
+```
+alter policy "Anyone can read menu day dishes"
+on "public"."MenuDayDishes"
+to public
+using (
+  true
+);
+```
+</details>
+
+</details>
+
+<details>
+<summary><b>MenuDays</b></summary>
+
+<details>
+<summary>Admins can create menu days </summary>
+
+```
+alter policy "Admins can create menu days"
+on "public"."MenuDays"
+to authenticated
+with check (
+  is_admin()
+);
+```
+
+</details>
+
+<details>
+<summary>Admins can delete menu days </summary>
+
+```
+alter policy "Admins can delete menu days"
+on "public"."MenuDays"
+to authenticated
+using (
+  is_admin()
+);
+```
+
+</details>
+
+<details>
+<summary>Admins can update menu days </summary>
+
+```
+alter policy "Admins can update menu days"
+on "public"."MenuDays"
+to authenticated
+using (
+  is_admin()
+);
+```
+
+</details>
+
+<details>
+<summary>Anyone can read menu days </summary>
+
+```
+alter policy "Anyone can read menu days"
+on "public"."MenuDays"
+to public
+using (
+  true
+);
+```
+
+</details>
+
+</details>
+
+<details>
+<summary><b>OrderItems</b></summary>
+
+<details>
+<summary>Admins can delete all order items </summary>
+
+```
+alter policy "Admins can delete all order items"
+on "public"."OrderItems"
+to authenticated
+using (
+  is_admin()
+);
+```
+
+</details>
+
+<details>
+<summary>Admins can read all order items </summary>
+
+```
+alter policy "Admins can read all order items"
+on "public"."OrderItems"
+to authenticated
+using (
+  is_admin()
+);
+```
+
+</details>
+
+<details>
+<summary>Users can read their own order items </summary>
+
+```
+alter policy "Users can read their own order items"
+on "public"."OrderItems"
+to authenticated
+using (
+  (EXISTS ( SELECT 1
+   FROM "Orders"
+  WHERE (("Orders".order_id = "OrderItems".order_id) AND ("Orders".user_id = auth.uid()))))
+);
+```
+
+</details>
+
+</details>
+
+<details>
+<summary><b>Orders</b></summary>
+
+<details>
+<summary>Admins can delete all orders </summary>
+
+```
+alter policy "Admins can delete all orders"
+on "public"."Orders"
+to authenticated
+using (
+  is_admin()
+);
+```
+
+</details>
+
+<details>
+<summary>Admins can read all orders </summary>
+
+```
+alter policy "Admins can read all orders"
+on "public"."Orders"
+to authenticated
+using (
+  is_admin()
+);
+```
+
+</details>
+
+<details>
+<summary>Admins can update all orders </summary>
+
+```
+alter policy "Admins can update all orders"
+on "public"."Orders"
+to authenticated
+using (
+  is_admin()
+);
+```
+
+</details>
+
+<details>
+<summary>Users can read their own orders </summary>
+
+```
+alter policy "Users can read their own orders"
+on "public"."Orders"
+to authenticated
+using (
+  (user_id = auth.uid())
+);
+```
+
+</details>
+
+<details>
+<summary>Users can soft delete their own order </summary>
+
+```
+alter policy "Users can soft delete their own order"
+on "public"."Orders"
+to authenticated
+using (
+  (user_id = auth.uid())
+);
+```
+
+</details>
+
+</details>
+
+<details>
+<summary><b>profiles</b></summary>
+
+<details>
+<summary>Admins can delete all profiles </summary>
+
+```
+alter policy "Admins can delete all profiles"
+on "public"."profiles"
+to authenticated
+using (
+  is_admin()
+);
+```
+</details>
+
+<details>
+<summary>Admins can read all profiles </summary>
+
+```
+alter policy "Admins can read all profiles"
+on "public"."profiles"
+to authenticated
+using (
+  is_admin()
+);
+```
+</details>
+
+
+<details>
+<summary>Admins can update all profiles </summary>
+
+```
+alter policy "Admins can update all profiles"
+on "public"."profiles"
+to authenticated
+using (
+
+  is_admin()
+);
+```
+
+</details>
+
+<details>
+<summary>Users can delete themselves </summary>
+
+```
+alter policy "Users can delete themselves"
+on "public"."profiles"
+to authenticated
+using (
+  (id = auth.uid())
+);
+```
+</details>
+
+
+<details>
+<summary>Users can read their own profile </summary>
+
+```
+alter policy "Users can read their own profile"
+on "public"."profiles"
+to authenticated
+using (
+  (id = auth.uid())
+);
+```
+</details>
+
+
+<details>
+<summary>Users can update their own profile </summary>
+
+```
+alter policy "Users can update their own profile"
+on "public"."profiles"
+to authenticated
+using (
+  (id = auth.uid())
+);
+```
+
+</details>
+
+
+</details>
+
+<details>
+<summary><b>Reviews</b></summary>
+
+<details>
+<summary>Admins can delete all reviews </summary>
+
+```
+alter policy "Admins can delete all reviews"
+on "public"."Reviews"
+to authenticated
+using (
+  is_admin()
+);
+```
+
+</details>
+
+<details>
+<summary>Admins can view all reviews </summary>
+
+```
+alter policy "Admins can view all reviews"
+on "public"."Reviews"
+to authenticated
+using (
+  is_admin()
+);
+```
+</details>
+
+<details>
+<summary>Users can leave reviews </summary>
+
+```
+alter policy "Users can leave reviews"
+on "public"."Reviews"
+to authenticated
+with check (
+  (user_id = auth.uid())
+);
+```
+</details>
+
+<details>
+<summary>Users can view their own reviews </summary>
+
+```
+alter policy "Users can view their own reviews"
+on "public"."Reviews"
+to authenticated
+using (
+  (auth.uid() = user_id)
+);
+```
+</details>
+
+
+</details>
+
+<details>
+<summary><b>contact_messages</b></summary>
+
+<details>
+<summary>Admins can delete all contact messages </summary>
+
+```
+alter policy "Admins can delete all contact messages"
+on "public"."contact_messages"
+to authenticated
+using (
+  is_admin()
+);
+```
+</details>
+
+<details>
+<summary>Admins can read all contact messages </summary>
+
+```
+alter policy "Admins can read all contact messages"
+on "public"."contact_messages"
+to authenticated
+using (
+  is_admin()
+);
+```
+</details>
+
+<details>
+<summary>Admins can update all contact messages </summary>
+
+```
+alter policy "Admins can update all contact messages"
+on "public"."contact_messages"
+to authenticated
+using (
+  is_admin()
+);
+```
+</details>
+
+<details>
+<summary>Anyone can leave a contact message </summary>
+
+```
+alter policy "Anyone can leave a contact message"
+on "public"."contact_messages"
+to public
+with check (
+  true
+);
+```
+</details>
+
+</details>
