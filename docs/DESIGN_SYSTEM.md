@@ -1,10 +1,10 @@
-# Design System | Gourmet2Go
+# Design System 
 
 This document details the visual architecture and styling methodology used in the Gourmet2Go project. Our design goal was to combine the elegance of a high-end restaurant with the efficiency of a modern web application.
 
 ---
 
-## 🚀 Why Tailwind CSS?
+## Why Tailwind CSS?
 
 We selected **Tailwind CSS** as our primary styling engine. In a collaborative environment with four developers, Tailwind provided a "single source of truth" for our UI.
 
@@ -18,7 +18,7 @@ We selected **Tailwind CSS** as our primary styling engine. In a collaborative e
 
 ---
 
-## 🎨 Colour Palette
+## Colour Palette
 
 Our palette is inspired by the **Sault College** identity, refined with a professional "Zinc" grayscale to provide depth in both themes.
 
@@ -38,7 +38,7 @@ Our palette is inspired by the **Sault College** identity, refined with a profes
 
 ---
 
-## 🌓 Adaptive Theming
+## Adaptive Theming
 
 Gourmet2Go features a fully integrated **Light and Dark Mode** system that respects user preferences and persists across sessions.
 
@@ -50,7 +50,7 @@ Gourmet2Go features a fully integrated **Light and Dark Mode** system that respe
 
 ---
 
-## 🔡 Typography
+## Typography
 
 We utilized a **Dual-Font Strategy** to balance professional branding with technical legibility.
 
@@ -64,21 +64,21 @@ We utilized a **Dual-Font Strategy** to balance professional branding with techn
 
 ---
 
-## 📸 Component Showcase
+## Component Showcase
 
-### 🖥️ Admin Dashboard (Tile System)
+### Admin Dashboard (Tile System)
 The "Command Centre" utilizes a modular tile system. Each tile features a distinct linear gradient and a Lucide icon for intuitive navigation.
 ![Admin Dashboard](../assets/admin-dashboard.png)
 
-### 📊 Business Intelligence (Analytics)
+### Business Intelligence (Analytics)
 Our data visualization uses `Recharts` and `Luxon`. The charts dynamically adjust their stroke and fill colors based on the current theme (Light/Dark).
 ![Analytics Page](../assets/analytics.png)
 
-### 🛒 The Navigation & Cart
+### The Navigation & Cart
 The mobile experience focuses on accessibility, using an `AnimatePresence` drawer for the cart and a full-screen overlay for mobile navigation.
 ![Mobile Experience](../assets/mobile-nav.png)
 
-### 📅 Order Tracking & QR Codes
+### Order Tracking & QR Codes
 The "My Orders" interface provides high-contrast badges for status tracking and a dynamically generated QR code for contactless kitchen pickup.
 ![Order History](../assets/orders.png)
 
