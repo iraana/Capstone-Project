@@ -461,19 +461,19 @@ const handleDeleteMenu = async () => {
                             <td className="p-3 text-center text-zinc-600 dark:text-zinc-400">{item.category}</td>
                             <td className="p-3 text-center text-zinc-600 dark:text-zinc-400">${item.price.toFixed(2)}</td>
                             <td className="p-3 text-center flex justify-center gap-2">
-                            <button
-                                className="bg-[#00659B] hover:bg-[#005082] text-white py-1.5 px-4 rounded-lg text-sm font-medium transition-all active:scale-95 shadow-sm"
+                              <button
                                 type="button"
                                 onClick={() => handleAddToMenu(item)}
-                            >
+                                className="px-4 py-1.5 rounded-lg text-sm font-bold bg-[#00659B] text-white hover:bg-[#005082] transition-all active:scale-95"
+                              >
                                 Add
-                            </button>
-                            <NavLink
+                              </button>
+                              <NavLink
                                 to={`/admin/edit-dish/${item.dish_id}`}
-                                className="bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 text-zinc-800 dark:text-zinc-200 py-1.5 px-4 rounded-lg text-sm font-medium transition-all active:scale-95 shadow-sm"
-                            >
+                                className="px-4 py-1.5 rounded-lg text-sm font-medium border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-all active:scale-95"
+                              >
                                 Edit
-                            </NavLink>
+                              </NavLink>
                             </td>
                         </tr>
                         ))
@@ -518,27 +518,27 @@ const handleDeleteMenu = async () => {
             </div>
 
             {/* Action Buttons */}
-            <div className="pt-6 border-t border-zinc-200 dark:border-zinc-800 flex flex-col sm:flex-row justify-end gap-4 mt-6">
+            <div className="pt-6 border-t border-zinc-100 dark:border-zinc-800 flex flex-col sm:flex-row justify-end gap-4 mt-6">
               <button
                 type="button"
-                className="px-6 py-2.5 rounded-xl font-semibold bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-900/20 transition-all active:scale-95"
                 onClick={handleDeleteMenu}
+                className="px-6 py-2.5 rounded-xl font-semibold border border-rose-200 dark:border-rose-900/50 bg-rose-50/30 dark:bg-rose-900/10 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all active:scale-95"
               >
                 Delete Menu
               </button>
               <button
                 type="button"
-                className="px-6 py-2.5 rounded-xl font-semibold bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-600 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all active:scale-95"
                 onClick={() => navigate('/admin')}
+                className="px-6 py-2.5 rounded-xl font-semibold border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all active:scale-95"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={_isLoading}
-                className="px-8 py-2.5 rounded-xl font-bold bg-blue-600 text-white shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all active:scale-95 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                className="px-8 py-2.5 rounded-xl font-bold bg-[#00659B] text-white shadow-lg shadow-blue-900/20 hover:bg-[#005082] transition-all active:scale-95 disabled:bg-zinc-300"
               >
-                {_isLoading ? 'Saving...' : 'Save Menu Changes'}
+                {_isLoading ? 'Saving...' : 'Save Changes'}
               </button>
             </div>
           </div>

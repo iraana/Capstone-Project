@@ -130,17 +130,16 @@ export const ListDishes = () => {
                     <td className="px-4 py-3 text-sm font-medium text-zinc-900 dark:text-white">{item.name}</td>
                     <td className="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">{item.category}</td>
                     <td className="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">${item.price.toFixed(2)}</td>
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-4 py-3 text-center flex justify-center gap-3">
                       <NavLink
                         to={`/admin/edit-dish/${item.dish_id}`}
-                         className="inline-block bg-green-700 text-white px-4 py-1.5 rounded-lg text-sm font-semibold hover:bg-green-800 shadow-sm transition-all active:scale-95"
+                        className="px-4 py-1.5 rounded-lg text-sm font-medium border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-all active:scale-95"
                       >
-                        Edit Item
+                        Edit
                       </NavLink>
-                      &nbsp;
                       <button
                         onClick={() => handleDelete(item.dish_id)}
-                        className="bg-red-600 hover:bg-red-700 text-white py-1 px-3 rounded-xl font-semibold transition-all active:scale-95"
+                        className="px-4 py-1.5 rounded-lg text-sm font-medium border border-rose-200 dark:border-rose-900/50 bg-rose-50/50 dark:bg-rose-900/10 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/20 transition-all active:scale-95"
                       >
                         Delete
                       </button>
