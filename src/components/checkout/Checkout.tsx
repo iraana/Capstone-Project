@@ -3,8 +3,9 @@ import { cartStore } from "../../store/cartStore.ts";
 import { useAuth } from "../../context/AuthContext.tsx";
 import { supabase } from "../../../supabase-client.ts";
 import { useNavigate } from "react-router";
-import { ArrowLeft, ShoppingBag, AlertCircle, FileText } from "lucide-react";
+import { ArrowLeft, ShoppingBag, FileText } from "lucide-react";
 import { Loader } from "../Loader.tsx";
+import { toast } from "sonner";
 
 export const Checkout = () => {
   const { items, totalPrice, clearCart } = cartStore();
@@ -13,7 +14,6 @@ export const Checkout = () => {
   
   const [loading, setLoading] = useState(false);
   const [notes, setNotes] = useState("");
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const total = totalPrice();
     
@@ -21,8 +21,8 @@ export const Checkout = () => {
     // If user isn't logged in or items is 0, return
     if (!user || items.length === 0) return;
     
-    setLoading(true); // Shows loading state
-    setErrorMsg(null); // Clears error messages
+    setLoading(true); // Shows loading state on button
+    const toastId = toast.loading("Processing your order..."); // Triggers sonner toast
 
     try {
       const menuId = items[0].menu_id; // Gets the menu_id from the first item
@@ -57,6 +57,7 @@ export const Checkout = () => {
       }
 
       // Order was successfully placed
+      toast.success("Order confirmed!", { id: toastId });
       clearCart(); // Cart cleared
       navigate("/successful-order"); // User sent to SuccessfulOrderPage
       
@@ -66,9 +67,9 @@ export const Checkout = () => {
       // Check for Postgres Unique Violation (code 23505)
       // This handles the rare case where the random order_number collides
       if (err.code === '23505') {
-        setErrorMsg("Small issue processing your order, please try again.");
+        toast.error("Small issue processing your order, please try again.", { id: toastId });
       } else {
-        setErrorMsg(err.message || "Failed to place order. Please try again.");
+        toast.error(err.message || "Failed to place order. Please try again.", { id: toastId });
       }
     } finally {
       setLoading(false);
@@ -83,9 +84,13 @@ export const Checkout = () => {
         <div className="flex items-center gap-4 mb-8">
           <button 
             onClick={() => navigate(-1)}
+            aria-label="Go back"
             className="group flex items-center justify-center w-10 h-10 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-full hover:border-[#00659B] hover:text-[#00659B] transition-all shadow-sm"
           >
-            <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-300 group-hover:text-[#00659B]" />
+            <ArrowLeft 
+              className="w-5 h-5 text-gray-600 dark:text-gray-300 group-hover:text-[#00659B]" 
+              aria-hidden="true"
+            />
           </button>
           <div>
             <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">Checkout</h1>
@@ -96,20 +101,19 @@ export const Checkout = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           <div className="lg:col-span-2 space-y-6">
-
             <div className="bg-white dark:bg-zinc-900 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-zinc-800">
               <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                 <FileText className="w-5 h-5 text-[#00659B]" />
-                Order Notes <span className="text-gray-400 font-normal text-sm ml-auto">(Optional)</span>
+                Order Notes <span className="text-zinc-900 dark:text-white font-normal text-sm ml-auto">(Optional)</span>
               </h2>
               <div className="relative">
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Anything else we need to know to make your order perfect..."
-                  className="w-full h-40 p-4 rounded-lg bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 focus:ring-2 focus:ring-[#00659B] focus:border-transparent focus:outline-none transition-all resize-none text-gray-900 dark:text-white placeholder-gray-400"
+                  className="w-full h-40 p-4 rounded-lg bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 focus:ring-2 focus:ring-[#00659B] focus:border-transparent focus:outline-none transition-all resize-none text-zinc-900 dark:text-white placeholder-gray-400"
                 />
-                <p className="text-xs text-gray-400 mt-2 text-right">
+                <p className="text-xs text-zinc-900 dark:text-white mt-2 text-right">
                   {notes.length} characters
                 </p>
               </div>
@@ -148,13 +152,6 @@ export const Checkout = () => {
                   <span className="text-xl font-extrabold text-[#00659B]">${total.toFixed(2)}</span>
                 </div>
               </div>
-
-              {errorMsg && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-100 text-red-700 text-sm rounded-lg flex items-start gap-2">
-                    <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-                    <span>{errorMsg}</span>
-                </div>
-              )}
 
               <button
                 onClick={handleConfirmOrder}

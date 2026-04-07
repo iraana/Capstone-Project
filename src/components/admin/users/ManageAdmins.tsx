@@ -174,6 +174,7 @@ export const ManageAdmins = () => {
               Change role for {user.first_name}
             </label>
             <select
+              id={`role-select-${user.id}`}
               value={user.role}
               onChange={(e) =>
                 changeRole.mutate({

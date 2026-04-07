@@ -2,16 +2,16 @@ import { useAuth } from "../../context/AuthContext.tsx";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useState } from "react";
+import { toast } from "sonner";
 
 // Validator using zod, remember these from CSD213?
 const signUpSchema = z
   .object({
     email: z
-    .email("Invalid email address")
-    .refine((email) => /^[0-9]{8}@saultcollege\.ca$/i.test(email), {
-      message: "You must use your 8-digit Sault College email to sign up",
-    }),
+      .email("Invalid email address")
+      .refine((email) => /^[0-9]{8}@saultcollege\.ca$/i.test(email), {
+        message: "You must use your 8-digit Sault College email to sign up",
+      }),
 
     password: z
       .string()
@@ -33,16 +33,14 @@ const signUpSchema = z
   .refine((data) => data.password === data.confirm_password, {
     message: "Passwords do not match",
     path: ["confirm_password"],
-});
+  });
 
 // Infer the form data type from the schema
 type SignUpFormData = z.infer<typeof signUpSchema>;
 
 export const SignUp = () => {
-  const [successMsg, setSuccessMsg] = useState<string | null>(null);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const { signUpWithEmail } = useAuth(); // The sign-up function I made in AuthContext
-  
+
   const {
     register, // Used on input fields
     handleSubmit, // Used on the form
@@ -52,21 +50,24 @@ export const SignUp = () => {
   });
 
   const onSubmit = async (data: SignUpFormData) => {
+    const toastId = toast.loading("Creating your account...");
+
     const { error } = await signUpWithEmail({
-          email: data.email,
-          password: data.password,
-          options: {
-              data: {
-                  first_name: data.first_name,
-                  last_name: data.last_name,
-              },
-          },
-      });
-      if (error) {
-          setErrorMsg('Error signing up');
-      } else {
-          setSuccessMsg('Sign-up successful! Check your email for the confirmation link.');
-      }
+      email: data.email,
+      password: data.password,
+      options: {
+        data: {
+          first_name: data.first_name,
+          last_name: data.last_name,
+        },
+      },
+    });
+
+    if (error) {
+      toast.error(error.message || "Error signing up. Please try again.", { id: toastId });
+    } else {
+      toast.success("Sign-up successful! Check your email for the confirmation link.", { id: toastId });
+    }
   };
 
   const inputClasses = (error: any) => `
@@ -85,14 +86,16 @@ export const SignUp = () => {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div className="flex gap-4">
-            <div className="flex-1">
-                <label className={labelClasses}>First Name</label>
-                <input {...register("first_name")} className={inputClasses(errors.first_name)} placeholder="John" />
-            </div>
-            <div className="flex-1">
-                <label className={labelClasses}>Last Name</label>
-                <input {...register("last_name")} className={inputClasses(errors.last_name)} placeholder="Doe" />
-            </div>
+          <div className="flex-1">
+            <label className={labelClasses}>First Name</label>
+            <input {...register("first_name")} className={inputClasses(errors.first_name)} placeholder="John" />
+            {errors.first_name && <p className="text-red-500 text-xs mt-1.5 ml-1">{errors.first_name.message}</p>}
+          </div>
+          <div className="flex-1">
+            <label className={labelClasses}>Last Name</label>
+            <input {...register("last_name")} className={inputClasses(errors.last_name)} placeholder="Doe" />
+            {errors.last_name && <p className="text-red-500 text-xs mt-1.5 ml-1">{errors.last_name.message}</p>}
+          </div>
         </div>
 
         <div>
@@ -117,12 +120,12 @@ export const SignUp = () => {
           )}
         </div>
 
-        <div className="flex items-start gap-2">
+        <div className="flex items-start gap-2 pt-2">
           <label className="flex items-start gap-2 cursor-pointer">
-            <input 
-              type="checkbox" 
-              {...register("accept_terms")} 
-              className="mt-0.5 h-4 w-4 rounded border-zinc-300 text-blue-600 focus:ring-blue-500 cursor-pointer" 
+            <input
+              type="checkbox"
+              {...register("accept_terms")}
+              className="mt-0.5 h-4 w-4 rounded border-zinc-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
             />
             <span className="text-sm text-zinc-600 dark:text-zinc-400">
               I agree to the{" "}
@@ -150,14 +153,11 @@ export const SignUp = () => {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-linear-to-r from-blue-600 to-emerald-500 hover:from-blue-700 hover:to-emerald-600 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all active:scale-[0.98] disabled:opacity-70"
+          className="w-full bg-linear-to-r from-blue-600 to-emerald-500 hover:from-blue-700 hover:to-emerald-600 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all active:scale-[0.98] disabled:opacity-70 mt-2"
         >
           {isSubmitting ? "Creating Account..." : "Sign Up"}
         </button>
       </form>
-
-      {errorMsg && <div className="mt-4 text-red-500 text-center text-sm">{errorMsg}</div>}
-      {successMsg && <div className="mt-4 text-emerald-500 text-center text-sm font-medium">{successMsg}</div>}
 
       <div className="mt-8 pt-6 border-t border-zinc-100 dark:border-zinc-800 text-center">
         <p className="text-sm text-zinc-500 dark:text-zinc-400">

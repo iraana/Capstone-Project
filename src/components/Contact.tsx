@@ -107,7 +107,7 @@ export const Contact = () => {
         onSubmit={handleSubmit(onSubmit)} 
         className="bg-white dark:bg-zinc-800 p-8 rounded-3xl shadow-xl border border-zinc-200 dark:border-zinc-700 space-y-5"
       >
-        <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-6">Send us a message</h3>
+        <p className="text-2xl font-bold text-zinc-900 dark:text-white mb-6">Send us a message</p>
         
         <div>
           <label className="block text-sm font-medium mb-1.5 text-zinc-700 dark:text-zinc-300">Name</label>
@@ -133,7 +133,7 @@ export const Contact = () => {
         <button 
           type="submit" 
           disabled={isSubmitting} 
-          className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-green-500 px-4 py-3.5 text-white font-bold shadow-lg hover:from-blue-700 hover:to-green-600 active:scale-[0.98] transition-all disabled:opacity-70 mt-2"
+          className="w-full rounded-xl bg-linear-to-r from-blue-600 to-green-500 px-4 py-3.5 text-white font-bold shadow-lg hover:from-blue-700 hover:to-green-600 active:scale-[0.98] transition-all disabled:opacity-70 mt-2"
         >
           {isSubmitting ? "Sending..." : "Send Message"}
         </button>

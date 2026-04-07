@@ -193,7 +193,7 @@ export const Analytics = () => {
             <div>
               <p className="text-xs text-zinc-500 dark:text-zinc-400 uppercase font-bold tracking-wider">Gross Revenue</p>
               <p className="text-2xl font-bold text-zinc-900 dark:text-white leading-tight mt-0.5">${kpis.totalRevenue.toFixed(2)}</p>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 font-medium bg-zinc-100 dark:bg-zinc-700/50 inline-block px-2 py-0.5 rounded-md">
+              <p className="text-xs text-zinc-700 dark:text-zinc-300 mt-1 font-medium bg-zinc-200 dark:bg-zinc-700 inline-block px-2 py-0.5 rounded-md">
                 AOV: ${kpis.aov.toFixed(2)}
               </p>
             </div>
@@ -236,7 +236,7 @@ export const Analytics = () => {
           <button onClick={() => setActiveTab("revenue-by-dish")} className={getTabClass("revenue-by-dish", "text-pink-600 dark:text-pink-400 border-pink-600 dark:border-pink-400")}><CircleDollarSign size={18} /> Dish Rev</button>
           <button onClick={() => setActiveTab("top-dishes")} className={getTabClass("top-dishes", "text-[#00659B] dark:text-blue-400 border-[#00659B] dark:border-blue-400")}><TrendingUp size={18} /> Highest</button>
           <button onClick={() => setActiveTab("lowest-dishes")} className={getTabClass("lowest-dishes", "text-rose-600 dark:text-rose-400 border-rose-600 dark:border-rose-400")}><TrendingDown size={18} /> Lowest</button>
-          <button onClick={() => setActiveTab("top-buyers")} className={getTabClass("top-buyers", "text-emerald-600 dark:text-emerald-400 border-emerald-600 dark:border-emerald-400")}><Users size={18} /> Top Spenders</button>
+          <button onClick={() => setActiveTab("top-buyers")} className={getTabClass("top-buyers", "text-emerald-700 dark:text-emerald-300 border-emerald-600 dark:border-emerald-400")}><Users size={18} /> Top Spenders</button>
           <button onClick={() => setActiveTab("top-buyers-orders")} className={getTabClass("top-buyers-orders", "text-sky-500 dark:text-sky-400 border-sky-500 dark:border-sky-400")}><Award size={18} /> Most Orders</button>
           <button onClick={() => setActiveTab("order-times")} className={getTabClass("order-times", "text-amber-600 dark:text-amber-400 border-amber-600 dark:border-amber-400")}><Clock size={18} /> Schedule</button>
         </div>
@@ -250,9 +250,9 @@ export const Analytics = () => {
 
       <motion.div variants={itemVariants} className="bg-white dark:bg-zinc-800 rounded-2xl border border-gray-200 dark:border-zinc-700 shadow-sm overflow-hidden">
         <div className="p-5 border-b border-gray-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900/80 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
-          <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          <p className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
             <UtensilsCrossed size={18} className="text-gray-700 dark:text-zinc-500" /> Detailed Data Report
-          </h3>
+          </p>
           <button
             onClick={handleExportCSV}
             disabled={tableData.length === 0}
@@ -282,7 +282,7 @@ export const Analytics = () => {
                   
                   {activeTab === "revenue-trend" && (
                     <>
-                      <td className="px-6 py-4 font-bold text-right text-emerald-600 dark:text-emerald-400">${Number(item.revenue).toFixed(2)}</td>
+                      <td className="px-6 py-4 font-bold text-right text-emerald-700 dark:text-emerald-300">${Number(item.revenue).toFixed(2)}</td>
                       <td className="px-6 py-4 font-semibold text-right">{item.orders}</td>
                       <td className="px-6 py-4 font-semibold text-right">${Number(item.aov).toFixed(2)}</td>
                     </>
@@ -298,7 +298,7 @@ export const Analytics = () => {
                   {(activeTab === "top-buyers" || activeTab === "top-buyers-orders") && (
                     <>
                       <td className="px-6 py-4 font-bold text-right">${Number(item.spent ?? 0).toFixed(2)}</td>
-                      <td className="px-6 py-4 text-right text-emerald-600 dark:text-emerald-400 font-semibold">{item.orders ?? "-"}</td>
+                      <td className="px-6 py-4 text-right text-emerald-700 dark:text-emerald-300 font-semibold">{item.orders ?? "-"}</td>
                     </>
                   )}
 

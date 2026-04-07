@@ -210,15 +210,18 @@ export const PendingOrders = () => {
         border border-gray-200 dark:border-zinc-700">
 
         <div className="flex items-center gap-3">
-          <span className="text-sm font-medium text-gray-900 dark:text-zinc-300">
+          <label
+            htmlFor="menu-filter"
+            className="text-sm font-medium text-gray-900 dark:text-zinc-300"
+          >
             Filter by Menu:
-          </span>
-
+          </label>
+          
           <select
             id="menu-filter"
             className="border border-gray-300 dark:border-zinc-600 
             bg-white dark:bg-zinc-700 
-            text-gray-800 dark:text-white
+            text-gray-900 dark:text-white
             rounded-md p-2 text-sm 
             focus:ring-2 focus:ring-blue-500 outline-none"
             value={selectedMenuId}
@@ -255,7 +258,7 @@ export const PendingOrders = () => {
       {/* Orders Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredOrders.length === 0 ? (
-          <div className="col-span-full text-center py-20 text-gray-400 dark:text-zinc-500">
+          <div className="col-span-full text-center py-20 text-gray-600 dark:text-zinc-400">
             No orders found for this selection.
           </div>
         ) : (
@@ -303,7 +306,7 @@ export const PendingOrders = () => {
                   </div>
                 </div>
 
-                <div className="text-right text-xs text-gray-400 dark:text-zinc-400">
+                <div className="text-right text-xs text-gray-600 dark:text-zinc-400">
                   <div>
                     {order.MenuDays
                       ? new Date(order.MenuDays.date).toLocaleDateString()
@@ -333,7 +336,7 @@ export const PendingOrders = () => {
                           {item.Dishes?.name || "Unknown Dish"}
                         </span>
                       </div>
-                      <span className="text-gray-500 dark:text-zinc-400">
+                      <span className="text-gray-700 dark:text-zinc-300">
                         ${item.subtotal.toFixed(2)}
                       </span>
                     </li>
