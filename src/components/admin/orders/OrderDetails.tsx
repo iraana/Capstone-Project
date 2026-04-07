@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../../../../supabase-client.ts";
 import { Loader } from "../../Loader.tsx";
 import { ArrowLeft, Check, X, Archive } from "lucide-react";
+import { formatOrderDateTime } from "../../../utils/formatOrderDateTime.ts";
 
 interface Dish {
   dish_id: number;
@@ -151,14 +152,19 @@ export const OrderDetails = () => {
 
         <div className="p-6 space-y-6">
           <div className="grid grid-cols-2 gap-4 text-sm">
+            {/* Date Block */}
             <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <span className="block text-blue-600 dark:text-blue-400 font-bold text-xs uppercase">Date</span>
-                <span className="font-semibold text-gray-900 dark:text-white">{new Date(order.MenuDays.date).toLocaleDateString()}</span>
-            </div>
-            <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <span className="block text-blue-600 dark:text-blue-400 font-bold text-xs uppercase">Time Ordered</span>
+                <span className="block text-blue-600 dark:text-blue-400 font-bold text-xs uppercase mb-1">Date</span>
                 <span className="font-semibold text-gray-900 dark:text-white">
-                    {new Date(`${order.MenuDays.date}T${order.timestamp}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    {new Date(order.MenuDays.date).toLocaleDateString('en-US', { timeZone: 'UTC', month: 'numeric', day: 'numeric', year: 'numeric' })}
+                </span>
+            </div>
+
+            {/* Time Ordered Block */}
+            <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <span className="block text-blue-600 dark:text-blue-400 font-bold text-xs uppercase mb-1">Time Ordered</span>
+                <span className="font-semibold text-gray-900 dark:text-white">
+                    {new Date(order.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </span>
             </div>
           </div>
