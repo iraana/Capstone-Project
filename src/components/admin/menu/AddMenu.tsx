@@ -118,7 +118,13 @@ export const AddMenu = () => {
       setSuccessMsg('Menu saved successfully!');
       reset();
     } catch (err: any) {
+      if (err.code === '23505') {
+      setErrorMsg('A menu for this date already exists. Please choose another date.');
+    } else if (err.code === '23503') {
+      setErrorMsg('One or more dishes are invalid or do not exist.');
+    } else {
       setErrorMsg(err.message || 'Failed to create menu');
+    }
     } finally {
       setLoading(false);
     }
@@ -232,7 +238,7 @@ export const AddMenu = () => {
                   </td>
                   <td className="px-3 py-2 text-center">{item.name}</td>
                   <td className="px-3 py-2 text-center">{item.category}</td>
-                  <td className="px-3 py-2 text-center">{item.price}</td>
+                  <td className="px-3 py-2 text-center">{item.price.toFixed(2)}</td>
                   <td className="px-3 py-2 text-center">
                     <input
                       type="number"
@@ -294,7 +300,7 @@ export const AddMenu = () => {
                 <tr key={dish.dish_id} className="border-b border-gray-200">
                   <td className="px-3 py-2 text-center">{dish.name}</td>
                   <td className="px-3 py-2 text-center">{dish.category}</td>
-                  <td className="px-3 py-2 text-center">{dish.price}</td>
+                  <td className="px-3 py-2 text-center">{dish.price.toFixed(2)}</td>
                   <td className="px-3 py-2 text-center flex justify-center gap-2">
                     <button
                       type="button"
