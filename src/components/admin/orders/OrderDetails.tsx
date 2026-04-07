@@ -4,7 +4,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../../../../supabase-client.ts";
 import { Loader } from "../../Loader.tsx";
 import { ArrowLeft, Check, X, Archive } from "lucide-react";
-import { formatOrderDateTime } from "../../../utils/formatOrderDateTime.ts";
 
 interface Dish {
   dish_id: number;
