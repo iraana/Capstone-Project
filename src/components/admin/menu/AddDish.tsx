@@ -1,8 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { supabase } from "../../../../supabase-client.ts";
+import { toast } from "sonner";
 
 const dishSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -10,15 +10,12 @@ const dishSchema = z.object({
     .number("Price must be a number")
     .positive("Price must be positive")
     .refine((val) => Number((val * 100).toFixed(0)) === val * 100, "Max 2 decimal places"),
-  category: z.enum(['Other', 'Soups', 'Salads', 'Sandwiches', 'Entrees', 'Desserts', 'Bowls', 'Appetizers', 'Sides']),
+  category: z.enum(['Other', 'Soups', 'Salads', 'Sandwiches', 'Entrees', 'Desserts', 'Bowls', 'Appetizers', 'Sides'], ),
 });
 
 type DishFormData = z.infer<typeof dishSchema>;
 
 export const AddDish = () => {
-  const [successMsg, setSuccessMsg] = useState<string | null>(null);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
   const {
     register,
     handleSubmit,
@@ -29,19 +26,23 @@ export const AddDish = () => {
   });
 
   const onSubmit = async (data: DishFormData) => {
-    const { error } = await supabase.from("Dishes").insert({
-      name: data.name,
-      price: data.price,
-      category: data.category,
-    });
+    const toastId = toast.loading("Adding new dish...");
 
-    if (!error) {
-      setSuccessMsg("Dish added successfully!");
-      setErrorMsg(null);
-      reset();
-    } else {
-      setErrorMsg("Error adding dish");
-      setSuccessMsg(null);
+    try {
+      const { error } = await supabase.from("Dishes").insert({
+        name: data.name,
+        price: data.price,
+        category: data.category,
+      });
+
+      if (error) throw error;
+
+      toast.success("Dish added successfully!", { id: toastId });
+      reset(); // Clears the form so the admin can quickly add another dish
+      
+    } catch (error: any) {
+      console.error("Error adding dish:", error);
+      toast.error(error.message || "Failed to add dish. Please try again.", { id: toastId });
     }
   };
 
@@ -146,19 +147,6 @@ export const AddDish = () => {
             {isSubmitting ? "Submitting..." : "Add Dish"}
           </button>
         </form>
-
-        {/* Messages */}
-        {successMsg && (
-          <div className="text-sm text-green-600 bg-green-100 dark:bg-green-900/30 dark:text-green-400 px-4 py-2 rounded-lg">
-            {successMsg}
-          </div>
-        )}
-
-        {errorMsg && (
-          <div className="text-sm text-red-600 bg-red-100 dark:bg-red-900/30 dark:text-red-400 px-4 py-2 rounded-lg">
-            {errorMsg}
-          </div>
-        )}
       </div>
     </div>
   );

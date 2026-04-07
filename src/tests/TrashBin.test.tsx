@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { TrashBin } from '../components/admin/menu/TrashBin';
 import { supabase } from '../../supabase-client';
+import { toast } from 'sonner';
 
 vi.mock('../supabase-client', () => ({
   supabase: {
@@ -11,10 +12,14 @@ vi.mock('../supabase-client', () => ({
   },
 }));
 
-const mockConfirm = vi.fn();
-const mockAlert = vi.fn();
-global.window.confirm = mockConfirm;
-global.window.alert = mockAlert;
+// Mock sonner to handle toast calls in the updated component
+vi.mock('sonner', () => ({
+  toast: {
+    loading: vi.fn(() => 'toast-id'),
+    success: vi.fn(),
+    error: vi.fn(),
+  },
+}));
 
 describe('TrashBin', () => {
   let queryClient: QueryClient;
@@ -44,26 +49,25 @@ describe('TrashBin', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mockConfirm.mockReturnValue(true);
   });
 
   describe('Loading State', () => {
     it('displays loader while fetching data', () => {
-  const mockFrom = vi.fn(() => ({
-    select: vi.fn(() => ({
-      eq: vi.fn(() => ({
-        order: vi.fn(() => new Promise(() => {})), // Never resolves
-      })),
-    })),
-  }));
+      const mockFrom = vi.fn(() => ({
+        select: vi.fn(() => ({
+          eq: vi.fn(() => ({
+            order: vi.fn(() => new Promise(() => {})), // Never resolves
+          })),
+        })),
+      }));
 
-  (supabase.from as any) = mockFrom;
+      (supabase.from as any) = mockFrom;
 
-  const { container } = render(<TrashBin />, { wrapper: createWrapper() });
+      const { container } = render(<TrashBin />, { wrapper: createWrapper() });
 
-  expect(container.querySelector('.lucide-loader-circle')).toBeInTheDocument();
-});
+      expect(container.querySelector('.lucide-loader-circle')).toBeInTheDocument();
     });
+  });
 
   describe('Error States', () => {
     it('displays error message when dishes fail to load', async () => {
@@ -439,14 +443,13 @@ describe('TrashBin', () => {
       const deleteButtons = screen.getAllByTitle('Permanently delete menu');
       await user.click(deleteButtons[0]);
 
-      expect(mockConfirm).toHaveBeenCalledWith(
-        'Permanently delete this menu? This cannot be undone.'
-      );
+      expect(screen.getByText('Delete Menu')).toBeInTheDocument();
+      expect(screen.getByText(/This action cannot be undone/)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Yes, Delete' })).toBeInTheDocument();
     });
 
     it('does not delete when user cancels confirmation', async () => {
       const user = userEvent.setup();
-      mockConfirm.mockReturnValue(false);
       const mockDelete = vi.fn(() => Promise.resolve({ error: null }));
       const mockFrom = vi.fn((table: string) => ({
         select: vi.fn(() => ({
@@ -475,10 +478,14 @@ describe('TrashBin', () => {
       const deleteButtons = screen.getAllByTitle('Permanently delete menu');
       await user.click(deleteButtons[0]);
 
+      const cancelButton = screen.getByRole('button', { name: 'Cancel' });
+      await user.click(cancelButton);
+
       expect(mockDelete).not.toHaveBeenCalled();
+      expect(screen.queryByText('Delete Menu')).not.toBeInTheDocument();
     });
 
-    it('shows alert when foreign key constraint prevents deletion', async () => {
+    it('shows toast error when foreign key constraint prevents deletion', async () => {
       const user = userEvent.setup();
       const fkError = {
         code: '23503',
@@ -511,9 +518,13 @@ describe('TrashBin', () => {
       const deleteButtons = screen.getAllByTitle('Permanently delete menu');
       await user.click(deleteButtons[0]);
 
+      const confirmButton = screen.getByRole('button', { name: 'Yes, Delete' });
+      await user.click(confirmButton);
+
       await waitFor(() => {
-        expect(mockAlert).toHaveBeenCalledWith(
-          expect.stringContaining('cannot be deleted because there are related orders')
+        expect(toast.error).toHaveBeenCalledWith(
+          expect.stringContaining('cannot be deleted because there are related orders'),
+          expect.anything()
         );
       });
     });

@@ -2,15 +2,9 @@ import { type ChangeEvent, useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { supabase } from "../../../../supabase-client.ts";
 import init, { process_image } from "../../../../wasm-lib/pkg";
-
+import { toast } from "sonner";
 import { motion } from "framer-motion";
-import {
-  UploadCloud,
-  Image as ImageIcon,
-  CheckCircle,
-  AlertTriangle,
-  Loader2,
-} from "lucide-react";
+import { UploadCloud, Image as ImageIcon, CheckCircle, Loader2 } from "lucide-react";
 
 interface GalleryInput {
   caption: string;
@@ -58,36 +52,43 @@ export const AddToGallery = () => {
     init().then(() => setWasmReady(true)); // Loads the Rust WASM file
   },[]);
 
-  const { mutate, isPending, isError, isSuccess, reset } = useMutation({
-    // The mutation function takes the caption and image file, uploads the image, and creates a new gallery post
+  // We extract mutateAsync to await the promise in our submit handler
+  const { mutateAsync, isPending, reset } = useMutation({
     mutationFn: (data: { post: GalleryInput; imageFile: File }) => {
       return addToGallery(data.post, data.imageFile);
     },
-    // On success, we clear the form and reset the mutation state after a short delay
-    onSuccess: () => {
-      setCaption("");
-      setSelectedFile(null);
-      setTimeout(() => {
-        reset();
-      }, 3000);
-    },
   });
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault(); // Prevents page refresh
     if (!selectedFile) return; // Don't submit if no file is selected
 
-    // Calls the upload function
-    mutate({
-      post: { caption },
-      imageFile: selectedFile,
-    });
+    const toastId = toast.loading("Uploading image to gallery...");
+
+    try {
+      // Calls the upload function
+      await mutateAsync({
+        post: { caption },
+        imageFile: selectedFile,
+      });
+
+      toast.success("Image added to gallery successfully!", { id: toastId });
+      
+      // Reset form
+      setCaption("");
+      setSelectedFile(null);
+      reset();
+
+    } catch (error: any) {
+      console.error("Error adding to gallery:", error);
+      toast.error(error.message || "Failed to create post. Please try again.", { id: toastId });
+    }
   };
 
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
-    // If WASM isn't ready, alert the user
+    // If WASM isn't ready, alert the user using a toast warning
     if (!wasmReady) {
-      alert("Image processor is still loading, please try again in a moment.");
+      toast.warning("Image processor is still loading, please try again in a moment.");
       return;
     }
 
@@ -116,7 +117,7 @@ export const AddToGallery = () => {
         // Catch errors
       } catch (err) {
         console.error("Error processing image via WASM:", err);
-        alert("Failed to process image. Is it a valid image file?");
+        toast.error("Failed to process image. Is it a valid image file?");
       } finally {
         // Is processing is set to false, regardless of success or failure
         setIsProcessing(false);
@@ -277,9 +278,6 @@ export const AddToGallery = () => {
               whileHover={!isPending && !isProcessing && selectedFile ? buttonHover : {}}
               whileTap={buttonTap}
               className="inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed bg-primary text-white"
-              style={{
-                background: isPending || isProcessing || !selectedFile ? undefined : undefined,
-              }}
             >
               {isPending ? (
                 <>
@@ -302,24 +300,6 @@ export const AddToGallery = () => {
             >
               Clear
             </motion.button>
-
-            {isError && (
-              <div className="ml-auto flex items-center gap-2 text-sm text-red-600 dark:text-red-400">
-                <AlertTriangle className="w-4 h-4" />
-                <span>Error creating post.</span>
-              </div>
-            )}
-
-            {isSuccess && (
-              <motion.div 
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="ml-auto flex items-center gap-2 text-sm text-emerald-600 dark:text-emerald-500 font-medium"
-              >
-                <CheckCircle className="w-4 h-4" />
-                <span>Uploaded successfully!</span>
-              </motion.div>
-            )}
           </div>
         </motion.div>
       </div>

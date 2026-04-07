@@ -1,8 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../../supabase-client';
-import { Star, Filter, Download, Calendar, Trash2 } from 'lucide-react';
+import { Star, Filter, Download, Calendar, Trash2, AlertTriangle } from 'lucide-react';
 import { useState } from 'react';
-
+import { toast } from 'sonner';
 
 interface Dish {
   dish_id: number;
@@ -35,8 +35,8 @@ export const AdminReviews = () => {
   const [search, setSearch] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [reviewToDelete, setReviewToDelete] = useState<Review | null>(null);
 
-  
   const { data: reviews = [], isLoading } = useQuery<Review[]>({
     queryKey: ['admin_reviews', startDate, endDate],
     queryFn: async () => {
@@ -50,7 +50,6 @@ export const AdminReviews = () => {
         .eq('Dishes.dish_status', true)
         .order('timestamp', { ascending: false });
 
-      
       if (startDate) {
         query = query.gte('timestamp', startDate);
       }
@@ -65,7 +64,7 @@ export const AdminReviews = () => {
     },
   });
 
-   const deleteReviewMutation = useMutation({
+  const deleteReviewMutation = useMutation({
     mutationFn: async (reviewId: number) => {
       const { error } = await supabase
         .from('Reviews')
@@ -78,6 +77,20 @@ export const AdminReviews = () => {
     },
   });
 
+  const confirmDelete = async () => {
+    if (!reviewToDelete) return;
+    const reviewId = reviewToDelete.review_id;
+    setReviewToDelete(null);
+    const toastId = toast.loading("Deleting review...");
+
+    try {
+      await deleteReviewMutation.mutateAsync(reviewId);
+      toast.success("Review deleted successfully!", { id: toastId });
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || "Failed to delete review. Please try again.", { id: toastId });
+    }
+  };
 
   // --- Export to CSV 
   const exportToCSV = () => {
@@ -116,7 +129,6 @@ export const AdminReviews = () => {
     </div>
   );
   
-  
   const filteredReviews = reviews.filter((review) => {
     // Rating Filter
     if (filter !== 'all' && review.rating !== parseInt(filter)) return false;
@@ -136,13 +148,12 @@ export const AdminReviews = () => {
     return true;
   });
 
-
   if (isLoading) {
     return <div className="p-12 text-center text-zinc-500">Loading Reviews...</div>;
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
         <h2 className="text-2xl font-bold text-zinc-900 dark:text-white">
           Dish Reviews ({filteredReviews.length})
@@ -224,7 +235,6 @@ export const AdminReviews = () => {
         />
       </div>
 
-
       {/* Table Display */}
       {filteredReviews.length === 0 ? (
         <div className="p-12 text-center text-zinc-500 bg-white dark:bg-zinc-800/50 rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-700">
@@ -265,14 +275,11 @@ export const AdminReviews = () => {
                             <td className="px-6 py-4 whitespace-nowrap text-xs text-zinc-500 dark:text-zinc-400">
                                 {new Date(review.timestamp).toLocaleDateString()}
                             </td>
-                            {/* --- DELETE BUTTON --- */}
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        if (window.confirm(`Are you sure you want to delete review #${review.review_id}?`)) {
-                                            deleteReviewMutation.mutate(review.review_id);
-                                        }
+                                        setReviewToDelete(review);
                                     }}
                                     disabled={deleteReviewMutation.isPending}
                                     className="p-2 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 transition disabled:opacity-50"
@@ -285,6 +292,49 @@ export const AdminReviews = () => {
                     ))}
                 </tbody>
             </table>
+        </div>
+      )}
+
+      {/* Custom Delete Confirmation Modal */}
+      {reviewToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/40 dark:bg-black/60 backdrop-blur-sm transition-opacity">
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            
+            <div className="p-6">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="p-3 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full shrink-0">
+                  <AlertTriangle size={24} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">Delete Review</h3>
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400">This action cannot be undone.</p>
+                </div>
+              </div>
+              
+              <p className="text-sm text-zinc-600 dark:text-zinc-300">
+                Are you sure you want to permanently delete the review for: <br/>
+                <span className="font-semibold text-zinc-900 dark:text-white block mt-2">
+                  "{reviewToDelete.Dishes?.name || 'N/A'}"
+                </span>
+                by {reviewToDelete.profiles ? `${reviewToDelete.profiles.first_name} ${reviewToDelete.profiles.last_name}` : 'Unknown User'}?
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 px-6 py-4 bg-zinc-50 dark:bg-zinc-900/50 border-t border-zinc-100 dark:border-zinc-800">
+              <button
+                onClick={() => setReviewToDelete(null)}
+                className="px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-xl transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 text-sm font-bold text-white bg-red-600 hover:bg-red-700 shadow-md shadow-red-600/20 rounded-xl transition-all active:scale-95"
+              >
+                Yes, Delete
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

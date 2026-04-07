@@ -1,9 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { SecurityTab } from '../components/account/SecurityTab';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router';
 import { supabase } from '../../supabase-client';
+import { toast } from 'sonner';
 
 // Mock dependencies
 vi.mock('../context/AuthContext');
@@ -16,6 +18,15 @@ vi.mock('../../supabase-client', () => ({
   },
 }));
 
+// Mock sonner to handle toast calls
+vi.mock('sonner', () => ({
+  toast: {
+    loading: vi.fn(() => 'toast-id'),
+    success: vi.fn(),
+    error: vi.fn(),
+  },
+}));
+
 describe('SecurityTab', () => {
   const mockOnClose = vi.fn();
   const mockSignOut = vi.fn();
@@ -24,20 +35,11 @@ describe('SecurityTab', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     
-   
     (useAuth as any).mockReturnValue({
       signOut: mockSignOut,
     });
     
-  
     (useNavigate as any).mockReturnValue(mockNavigate);
-    
-   
-    vi.spyOn(window, 'confirm').mockImplementation(() => true);
-    
-   
-    vi.spyOn(window, 'alert').mockImplementation(() => {});
-    
     
     global.fetch = vi.fn();
   });
@@ -46,7 +48,7 @@ describe('SecurityTab', () => {
     it('renders the Security heading', () => {
       render(<SecurityTab onClose={mockOnClose} />);
       
-      expect(screen.getByText('Security')).toBeInTheDocument();
+      expect(screen.getByText('Security', { selector: 'h1' })).toBeInTheDocument();
     });
 
     it('renders the Change Password section', () => {
@@ -61,7 +63,7 @@ describe('SecurityTab', () => {
       
       expect(screen.getByText('Danger Zone')).toBeInTheDocument();
       expect(screen.getByText(/once you delete your account, there is no going back/i)).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /delete account/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /^delete account$/i })).toBeInTheDocument();
     });
   });
 
@@ -85,31 +87,56 @@ describe('SecurityTab', () => {
     });
   });
 
-  describe('Delete Account', () => {
-    it('shows confirmation dialog when clicking Delete Account', () => {
+  describe('Delete Account Modal', () => {
+    it('shows confirmation modal when clicking Delete Account', () => {
       render(<SecurityTab onClose={mockOnClose} />);
       
-      const deleteButton = screen.getByRole('button', { name: /delete account/i });
+      const deleteButton = screen.getByRole('button', { name: /^delete account$/i });
       fireEvent.click(deleteButton);
       
-      expect(window.confirm).toHaveBeenCalledWith(
-        'Are you sure? This action is irreversible. All your data and orders will be deleted.'
-      );
+      expect(screen.getByText('Delete Account', { selector: 'h3' })).toBeInTheDocument();
+      expect(screen.getByPlaceholderText('Delete my account')).toBeInTheDocument();
     });
 
-    it('does not delete account when confirmation is cancelled', async () => {
-      vi.spyOn(window, 'confirm').mockImplementation(() => false);
-      
+    it('does not delete account when modal is cancelled', () => {
       render(<SecurityTab onClose={mockOnClose} />);
       
-      const deleteButton = screen.getByRole('button', { name: /delete account/i });
-      fireEvent.click(deleteButton);
+      // Open modal
+      fireEvent.click(screen.getByRole('button', { name: /^delete account$/i }));
+      
+      // Click cancel
+      const cancelButton = screen.getByRole('button', { name: 'Cancel' });
+      fireEvent.click(cancelButton);
       
       expect(global.fetch).not.toHaveBeenCalled();
       expect(mockSignOut).not.toHaveBeenCalled();
+      expect(screen.queryByText('Delete Account', { selector: 'h3' })).not.toBeInTheDocument(); // Modal closes
+    });
+
+    it('requires exact text to enable the Confirm Deletion button', async () => {
+      const user = userEvent.setup();
+      render(<SecurityTab onClose={mockOnClose} />);
+      
+      fireEvent.click(screen.getByRole('button', { name: /^delete account$/i }));
+      
+      const confirmButton = screen.getByRole('button', { name: /confirm deletion/i });
+      const input = screen.getByPlaceholderText('Delete my account');
+      
+      // Initially disabled
+      expect(confirmButton).toBeDisabled();
+      
+      // Typing wrong text
+      await user.type(input, 'delete my accoun');
+      expect(confirmButton).toBeDisabled();
+      
+      // Type exact string
+      await user.clear(input);
+      await user.type(input, 'Delete my account');
+      expect(confirmButton).not.toBeDisabled();
     });
 
     it('successfully deletes account and signs out user', async () => {
+      const user = userEvent.setup();
       const mockSession = { access_token: 'test-token' };
       (supabase.auth.getSession as any).mockResolvedValue({
         data: { session: mockSession },
@@ -121,8 +148,12 @@ describe('SecurityTab', () => {
       
       render(<SecurityTab onClose={mockOnClose} />);
       
-      const deleteButton = screen.getByRole('button', { name: /delete account/i });
-      fireEvent.click(deleteButton);
+      // Open modal & fill out confirmation
+      fireEvent.click(screen.getByRole('button', { name: /^delete account$/i }));
+      await user.type(screen.getByPlaceholderText('Delete my account'), 'Delete my account');
+      
+      const confirmButton = screen.getByRole('button', { name: /confirm deletion/i });
+      fireEvent.click(confirmButton);
       
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith('/api/user/delete-account', {
@@ -139,33 +170,39 @@ describe('SecurityTab', () => {
       });
       
       await waitFor(() => {
-        expect(window.alert).toHaveBeenCalledWith('Your account has been deleted.');
+        expect(toast.success).toHaveBeenCalledWith('Your account has been deleted.', { id: 'toast-id' });
       });
     });
 
-    it('shows error alert when account deletion fails', async () => {
+    it('shows error toast when account deletion fails', async () => {
+      const user = userEvent.setup();
       const mockSession = { access_token: 'test-token' };
       (supabase.auth.getSession as any).mockResolvedValue({
         data: { session: mockSession },
       });
       
+      // Simulating a failed network request
       (global.fetch as any).mockResolvedValue({
         ok: false,
       });
       
       render(<SecurityTab onClose={mockOnClose} />);
       
-      const deleteButton = screen.getByRole('button', { name: /delete account/i });
-      fireEvent.click(deleteButton);
+      fireEvent.click(screen.getByRole('button', { name: /^delete account$/i }));
+      await user.type(screen.getByPlaceholderText('Delete my account'), 'Delete my account');
+      
+      const confirmButton = screen.getByRole('button', { name: /confirm deletion/i });
+      fireEvent.click(confirmButton);
       
       await waitFor(() => {
-        expect(window.alert).toHaveBeenCalledWith('Error deleting account.');
+        expect(toast.error).toHaveBeenCalledWith('Failed to delete account', { id: 'toast-id' });
       });
       
       expect(mockSignOut).not.toHaveBeenCalled();
     });
 
-    it('shows loading spinner while deleting account', async () => {
+    it('disables modal buttons and shows spinner while deleting account', async () => {
+      const user = userEvent.setup();
       const mockSession = { access_token: 'test-token' };
       (supabase.auth.getSession as any).mockResolvedValue({
         data: { session: mockSession },
@@ -180,43 +217,26 @@ describe('SecurityTab', () => {
       
       render(<SecurityTab onClose={mockOnClose} />);
       
-      const deleteButton = screen.getByRole('button', { name: /delete account/i });
-      fireEvent.click(deleteButton);
+      fireEvent.click(screen.getByRole('button', { name: /^delete account$/i }));
+      await user.type(screen.getByPlaceholderText('Delete my account'), 'Delete my account');
       
+      const confirmButton = screen.getByRole('button', { name: /confirm deletion/i });
+      const cancelButton = screen.getByRole('button', { name: 'Cancel' });
+      
+      fireEvent.click(confirmButton);
       
       await waitFor(() => {
-        expect(deleteButton).toBeDisabled();
+        expect(confirmButton).toBeDisabled();
+        expect(cancelButton).toBeDisabled();
+        expect(document.querySelector('.animate-spin')).toBeInTheDocument(); // Loader2 icon
       });
       
-      
+      // Resolve the request
       resolveDelete({ ok: true });
       
-      
       await waitFor(() => {
-        expect(deleteButton).not.toBeDisabled();
-      });
-    });
-
-    it('disables delete button while deletion is in progress', async () => {
-      const mockSession = { access_token: 'test-token' };
-      (supabase.auth.getSession as any).mockResolvedValue({
-        data: { session: mockSession },
-      });
-      
-      (global.fetch as any).mockImplementation(() => 
-        new Promise((resolve) => setTimeout(() => resolve({ ok: true }), 100))
-      );
-      
-      render(<SecurityTab onClose={mockOnClose} />);
-      
-      const deleteButton = screen.getByRole('button', { name: /delete account/i });
-      
-      expect(deleteButton).not.toBeDisabled();
-      
-      fireEvent.click(deleteButton);
-      
-      await waitFor(() => {
-        expect(deleteButton).toBeDisabled();
+        // Modal closes on success, checking it disappears
+        expect(screen.queryByText('Delete Account', { selector: 'h3' })).not.toBeInTheDocument();
       });
     });
   });

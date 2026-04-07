@@ -1,11 +1,11 @@
-import { NavLink, useParams } from "react-router";
+import { NavLink, useParams, useNavigate } from "react-router";
 import { supabase } from "../../../../supabase-client.ts";
 import { useEffect, useState } from "react";
 import * as z from "zod";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from '@tanstack/react-query';
-import { useNavigate } from "react-router";
+import { toast } from "sonner";
 
 const fetchMenu = async (menuDate: string) => {
   const { data, error } = await supabase
@@ -59,18 +59,18 @@ type MenuFormValues = z.infer<typeof menuSchema>;
 
 export const EditMenu = () => {
   const { date } = useParams<{ date: string }>();
-  const[menuDate, setMenuDate] = useState<string>(date || "");
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
-  const [successMsg, setSuccessMsg] = useState<string | null>(null);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const[hasMenu, setHasMenu] = useState<boolean>(false);
-  const [_isLoading, setLoading] = useState<boolean>(false);
+  const navigate = useNavigate();
 
-  const[dishSearch, setDishSearch] = useState('');
-  const[currentPage, setCurrentPage] = useState(1);
+  const [menuDate, setMenuDate] = useState<string>(date || "");
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [hasMenu, setHasMenu] = useState<boolean>(false);
+
+  const [dishSearch, setDishSearch] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const PAGE_SIZE = 10;
   
   const getDayFromDate = (date: string) => {
+    if (!date) return 'Monday';
     const [year, month, day] = date.split('-').map(Number);
     const newDate = new Date(year, month - 1, day);
     return newDate.toLocaleDateString('en-US', { weekday: 'long' }) as MenuFormValues['day'];
@@ -81,7 +81,7 @@ export const EditMenu = () => {
       handleSubmit,
       register,
       reset,
-      formState: { errors },
+      formState: { errors, isSubmitting },
       watch,
     } = useForm<MenuFormValues>({
       resolver: zodResolver(menuSchema),
@@ -91,8 +91,6 @@ export const EditMenu = () => {
         dishes:[],
       },
     });
-
-  const navigate = useNavigate();
   
   const { fields, append, remove } = useFieldArray({
       control,
@@ -158,6 +156,7 @@ export const EditMenu = () => {
             stock: md.stock,
             menu_id: md.MenuDays.menu_day_id,
           }));
+          
           setMenuItems(itemsForDate);
           reset({ dishes: itemsForDate, date: menuDate, day: getDayFromDate(menuDate) });
 
@@ -168,110 +167,109 @@ export const EditMenu = () => {
           }
       } catch (error) {
         console.error("Error loading menu items:", error);
-      } finally {
-        setLoading(false);
       }
     };
 
     loadMenuItems();
   }, [menuDate, reset]);
 
-  useEffect(() => {
-  const message = sessionStorage.getItem('successMsg');
-  if (message) {
-    setSuccessMsg(message);
-    sessionStorage.removeItem('successMsg');
-  }
-},[]);
-
   const handleRemoveItem = async (fieldIndex: number) => {
     remove(fieldIndex);
   };
 
   const checkForMenu = async (date: string) => {
-  try {
-    const { data } = await supabase
-      .from('MenuDays')
-      .select('menu_day_id')
-      .eq('date', date)
-      .eq('status', true)
-      .single();
-    return !!data;
-  } catch {
-    return false;
-  }
-};
+    try {
+      const { data } = await supabase
+        .from('MenuDays')
+        .select('menu_day_id')
+        .eq('date', date)
+        .eq('status', true)
+        .single();
+      return !!data;
+    } catch {
+      return false;
+    }
+  };
 
-const handleDateChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  const newDate = e.target.value;
-  setMenuDate(newDate);
-  const exists = await checkForMenu(newDate);
-  setHasMenu(exists);
-  // Optionally reset form state here if needed
-};
+  const handleDateChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newDate = e.target.value;
+    setMenuDate(newDate);
+    const exists = await checkForMenu(newDate);
+    setHasMenu(exists);
+  };
 
-const {data: associatedOrders} = useQuery({
-  queryKey: ['associatedOrders', menuDate],
-  queryFn: async () => {
-    const { data, error } = await supabase
-      .from('Orders')
-      .select('order_id, MenuDays!inner(date)')
-      .eq('MenuDays.date', menuDate);
-    if (error) throw error;
-    return data;
-  },
-  enabled: !!menuDate,
+  const { data: associatedOrders } = useQuery({
+    queryKey: ['associatedOrders', menuDate],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('Orders')
+        .select('order_id, MenuDays!inner(date)')
+        .eq('MenuDays.date', menuDate);
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!menuDate,
   });
 
-const handleDeleteMenu = async () => {
-  try {
-    if (Array.isArray(associatedOrders) && associatedOrders.length > 0) {
-      const confirmed = window.confirm("This menu has associated orders. Deleting it will make the menu unavailable but keep the data for existing orders. Do you want to proceed?");
-      if (!confirmed) return;
-      const {error: deleteMenuError} = await supabase
-        .from('MenuDays')
-        .update({ status: false})
-        .eq('date', menuDate);
-      if (deleteMenuError) {
-        console.error("Error deleting menu:", deleteMenuError);
-      } else {
-        sessionStorage.setItem('successMsg', 'Menu deleted successfully!');
-        window.location.reload();
-      }
-    } else {
-      const confirmed = window.confirm("Are you sure you want to delete this menu? This action cannot be undone.");
-      if (!confirmed) return;
-      const { error: deleteMenuError } = await supabase
-        .from('MenuDays')
-        .delete()
-        .eq('date', menuDate);  
-      if (deleteMenuError) {
-        console.error("Error deleting menu:", deleteMenuError);
-      } else {
-        sessionStorage.setItem('successMsg', 'Menu deleted successfully!');
-        window.location.reload();
-      }
+  const clearFormState = () => {
+    setMenuDate("");
+    setHasMenu(false);
+    reset({ date: "", day: "Monday", dishes: [] });
+    if (date) {
+      navigate('/admin/edit-menu', { replace: true });
     }
-  }catch (error) {
-    console.error("Error deleting menu:", error);
+  };
+
+  const handleDeleteMenu = async () => {
+    const hasOrders = Array.isArray(associatedOrders) && associatedOrders.length > 0;
+    const confirmMessage = hasOrders 
+      ? "This menu has associated orders. Deleting it will make the menu unavailable but keep the data for existing orders. Do you want to proceed?" 
+      : "Are you sure you want to delete this menu? This action cannot be undone.";
+
+    if (!window.confirm(confirmMessage)) return;
+
+    const toastId = toast.loading("Deleting menu...");
+
+    try {
+      if (hasOrders) {
+        const { error: deleteMenuError } = await supabase
+          .from('MenuDays')
+          .update({ status: false })
+          .eq('date', menuDate);
+        if (deleteMenuError) throw deleteMenuError;
+      } else {
+        const { error: deleteMenuError } = await supabase
+          .from('MenuDays')
+          .delete()
+          .eq('date', menuDate);  
+        if (deleteMenuError) throw deleteMenuError;
+      }
+
+      toast.success('Menu deleted successfully!', { id: toastId });
+      clearFormState();
+
+    } catch (error: any) {
+      console.error("Error deleting menu:", error);
+      toast.error(error.message || "Failed to delete menu. Please try again.", { id: toastId });
+    }
   }
-}
 
   const onSubmit = async (formData: MenuFormValues) => {
+    const toastId = toast.loading("Saving changes to menu...");
     const originalDishes = menuItems; 
     const updatedDishes = formData.dishes;
+
     try {
       for (const updatedDish of updatedDishes) {
         const original = originalDishes.find(o => o.dish_id === updatedDish.dish_id);
+        
         if (original) {
           if (original.stock !== updatedDish.stock) {
             const { error: updateError } = await supabase.from('MenuDayDishes')
               .update({ stock: updatedDish.stock })
               .eq('dish_id', updatedDish.dish_id)
               .eq('menu_id', original.menu_id);
-            if (updateError) {
-              console.error("Error updating menu item:", updateError);
-            }
+            if (updateError) throw updateError;
           }
         } else {
           const { error: insertError } = await supabase.from('MenuDayDishes')
@@ -280,9 +278,7 @@ const handleDeleteMenu = async () => {
               menu_id: originalDishes[0]?.menu_id, 
               stock: updatedDish.stock,
             });
-          if (insertError) {
-            console.error("Error adding menu item:", insertError);
-          }
+          if (insertError) throw insertError;
         }
       }
     
@@ -292,16 +288,17 @@ const handleDeleteMenu = async () => {
             .delete()
             .eq('dish_id', originalDish.dish_id)
             .eq('menu_id', originalDish.menu_id);
-          if (deleteError) {
-            console.error("Error deleting menu item:", deleteError);
-          }
+          if (deleteError) throw deleteError;
         }
       }
+
+      toast.success('Menu updated successfully!', { id: toastId });
+      clearFormState();
+
     } catch (error: any) {
-      setErrorMsg(error.message || 'Failed to update menu');
+      console.error(error);
+      toast.error(error.message || 'Failed to update menu', { id: toastId });
     }
-    sessionStorage.setItem('successMsg', 'Menu updated successfully!');
-    window.location.reload();
   };
 
   return (
@@ -315,18 +312,6 @@ const handleDeleteMenu = async () => {
             Select a date to update its menu items and stock.
           </p>
         </div>
-
-        {/* Success/Error messages */}
-        {successMsg && (
-          <div className="text-sm text-green-600 bg-green-100 dark:bg-green-900/30 dark:text-green-400 px-4 py-3 rounded-lg text-center font-medium">
-            {successMsg}
-          </div>
-        )}
-        {errorMsg && (
-          <div className="text-sm text-red-600 bg-red-100 dark:bg-red-900/30 dark:text-red-400 px-4 py-3 rounded-lg text-center font-medium">
-            {errorMsg}
-          </div>
-        )}
 
         <div className="bg-zinc-50 dark:bg-zinc-800/50 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-700 flex flex-col sm:flex-row items-center gap-6">
             <div className="w-full sm:w-1/2 space-y-1">
@@ -357,11 +342,11 @@ const handleDeleteMenu = async () => {
         </div>
 
         {!menuDate ? (
-            <div className="p-12 text-center bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700">
+            <div className="mt-8 p-12 text-center bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700">
                 <p className="text-zinc-500 dark:text-zinc-400">Please select a date above to view or edit its menu.</p>
             </div>
         ) : hasMenu ? (
-          <div className="space-y-8">
+          <div className="space-y-8 mt-8">
             
             <div>
               <h2 className="font-semibold text-lg mb-3 text-zinc-900 dark:text-white">Currently on Menu</h2>
@@ -416,6 +401,13 @@ const handleDeleteMenu = async () => {
                   </tbody>
                 </table>
               </div>
+              
+              {/* Array Validation Error Catch */}
+              {errors.dishes?.message && typeof errors.dishes.message === 'string' && (
+                <p className="text-red-500 text-sm font-medium mt-3 text-center">
+                  {errors.dishes.message}
+                </p>
+              )}
             </div>
 
             {/* --- Search Bar --- */}
@@ -535,15 +527,15 @@ const handleDeleteMenu = async () => {
               </button>
               <button
                 type="submit"
-                disabled={_isLoading}
-                className="px-8 py-2.5 rounded-xl font-bold bg-[#00659B] text-white shadow-lg shadow-blue-900/20 hover:bg-[#005082] transition-all active:scale-95 disabled:bg-zinc-300"
+                disabled={isSubmitting}
+                className="px-8 py-2.5 rounded-xl font-bold bg-[#00659B] text-white shadow-lg shadow-blue-900/20 hover:bg-[#005082] transition-all active:scale-95 disabled:bg-zinc-300 disabled:cursor-not-allowed"
               >
-                {_isLoading ? 'Saving...' : 'Save Changes'}
+                {isSubmitting ? 'Saving...' : 'Save Changes'}
               </button>
             </div>
           </div>
         ) : (
-          <div className="p-12 text-center bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl shadow-sm border border-dashed border-zinc-300 dark:border-zinc-700">
+          <div className="mt-8 p-12 text-center bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl shadow-sm border border-dashed border-zinc-300 dark:border-zinc-700">
             <div className="mb-4">
                 <span className="text-4xl">📅</span>
             </div>
