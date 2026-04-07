@@ -14,7 +14,7 @@ const footerLinks: FooterLink[] = [
 
 export const Footer = () => {
   return (
-    <footer className="bg-primary text-white mt-8 shadow-sm border-t border-blue-700">
+    <footer className="bg-primary text-white mt-8 shadow-sm border-t">
       <div className="w-full max-w-7xl mx-auto p-4 md:py-8">
         <div className="sm:flex sm:items-center sm:justify-between">
           <NavLink to="/" className="flex items-center mb-4 sm:mb-0 space-x-3">
@@ -37,7 +37,7 @@ export const Footer = () => {
           </ul>
         </div>
 
-        <hr className="my-6 border-blue-700 sm:mx-auto lg:my-8" />
+        <hr className="my-6 opacity-10 sm:mx-auto lg:my-8" />
 
         <span className="block text-sm sm:text-center">
           © 2026{" "}
