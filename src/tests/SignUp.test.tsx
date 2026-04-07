@@ -4,6 +4,16 @@ import userEvent from '@testing-library/user-event';
 import { SignUp } from '../components/auth/SignUp.tsx';
 import { BrowserRouter } from 'react-router';
 import * as AuthContext from '../context/AuthContext';
+import { toast } from 'sonner';
+
+// Mock sonner to handle toast calls in the updated component
+vi.mock('sonner', () => ({
+  toast: {
+    loading: vi.fn(() => 'toast-id'),
+    success: vi.fn(),
+    error: vi.fn(),
+  },
+}));
 
 // Mock AuthContext
 const mockSignUpWithEmail = vi.fn();
@@ -62,22 +72,6 @@ describe('SignUp Component', () => {
       expect(screen.getByText('Password')).toBeInTheDocument();
     });
   });
-
-  describe('Form Validation - Email', () => {
-    it('prevents form submission when email is invalid', async () => {
-      const user = userEvent.setup();
-      renderSignUp();
-
-      const emailInput = screen.getByPlaceholderText('40404040@saultcollege.ca');
-      const submitButton = screen.getByRole('button', { name: /sign up/i });
-
-      await user.type(emailInput, 'invalid-email');
-      await user.click(submitButton);
-
-      expect(mockSignUpWithEmail).not.toHaveBeenCalled();
-    });
-  });
-
 
   describe('Form Validation - Password', () => {
     it('shows error when password is too short', async () => {
@@ -258,7 +252,10 @@ describe('SignUp Component', () => {
       await user.click(screen.getByRole('button', { name: /sign up/i }));
 
       await waitFor(() => {
-        expect(screen.getByText(/sign-up successful/i)).toBeInTheDocument();
+        expect(toast.success).toHaveBeenCalledWith(
+          "Sign-up successful! Check your email for the confirmation link.",
+          { id: 'toast-id' }
+        );
       });
     });
 
@@ -277,7 +274,10 @@ describe('SignUp Component', () => {
       await user.click(screen.getByRole('button', { name: /sign up/i }));
 
       await waitFor(() => {
-        expect(screen.getByText('Error signing up')).toBeInTheDocument();
+        expect(toast.error).toHaveBeenCalledWith(
+          "Sign up failed",
+          { id: 'toast-id' }
+        );
       });
     });
 

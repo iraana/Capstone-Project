@@ -2,7 +2,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../../../../supabase-client.ts";
 import { useState } from "react";
 import { Loader } from "../../Loader.tsx";
-import { Trash2, Edit2, Check, X } from "lucide-react";
+import { Trash2, Edit2, Check, X, AlertTriangle } from "lucide-react";
+import { toast } from "sonner";
 
 interface GalleryPost {
   id: number;
@@ -12,12 +13,11 @@ interface GalleryPost {
 }
 
 export const ManageGallery = () => {
-  const[search, setSearch] = useState("");
-  // For tracking which post is being edited
+  const [search, setSearch] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
-  // For stroring the caption being edited
   const [editCaption, setEditCaption] = useState("");
-  // React Query client for cache management
+  const [postToDelete, setPostToDelete] = useState<GalleryPost | null>(null); 
+  
   const queryClient = useQueryClient();
 
   // Fetch gallery posts
@@ -38,38 +38,32 @@ export const ManageGallery = () => {
     mutationFn: async ({ id, newCaption }: { id: number; newCaption: string }) => {
       const { error } = await supabase
         .from("Gallery")
-        .update({ caption: newCaption }) // Update the caption with the new value
-        .eq("id", id); // Where the id matches
+        .update({ caption: newCaption })
+        .eq("id", id);
 
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["galleryPosts"] }); // Refetch posts after update
-      setEditingId(null); // Exit edit mode
+      queryClient.invalidateQueries({ queryKey: ["galleryPosts"] });
+      setEditingId(null);
     },
   });
 
   const deletePost = useMutation({
     mutationFn: async (post: GalleryPost) => {
-      // Splits the URL up by '/' and pop takes the last part which is the filename
       const rawFilename = post.image_url.split("/").pop();
-      // Handles encoded characters like spaces (%20) and decodes them back to normal characters
-      // If rawFilename is undefined, filename will be null
       const filename = rawFilename ? decodeURIComponent(rawFilename) : null;
 
-      // If the file exists, delete it from the storage bucket
       if (filename) {
         const { error: storageError } = await supabase.storage
           .from("gallery-images")
           .remove([filename]);
 
-        // We don't throw here because we want to try and delete the database record even if the storage deletion fails
         if (storageError) {
           console.error("Failed to delete image from storage:", storageError.message);
         }
       }
 
-      // Deleting the database record
       const { error: dbError } = await supabase
         .from("Gallery")
         .delete()
@@ -78,32 +72,60 @@ export const ManageGallery = () => {
       if (dbError) throw dbError;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["galleryPosts"] }); // Refetch posts after deletion
+      queryClient.invalidateQueries({ queryKey: ["galleryPosts"] });
     },
   });
 
-  // Enter edit mode
   const startEditing = (post: GalleryPost) => {
-    setEditingId(post.id); // Editing id is equal to the post id that is being edited
-    setEditCaption(post.caption); // Pre-fills the input with the current caption
+    setEditingId(post.id);
+    setEditCaption(post.caption);
   };
 
-  const handleSave = (id: number) => {
-    if (editCaption.trim() === "") return; // Stops empty captions from being saved
-    updateCaption.mutate({ id, newCaption: editCaption.trim() }); // Calls the mutation to update the caption
+  const handleSave = async (id: number) => {
+    if (editCaption.trim() === "") {
+      toast.error("Caption cannot be empty.");
+      return; 
+    }
+
+    const toastId = toast.loading("Updating caption...");
+
+    try {
+      await updateCaption.mutateAsync({ id, newCaption: editCaption.trim() });
+      toast.success("Caption updated successfully!", { id: toastId });
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || "Failed to update caption. Please try again.", { id: toastId });
+    }
+  };
+
+  const handleDeleteClick = (post: GalleryPost) => {
+    setPostToDelete(post);
+  };
+
+  const confirmDelete = async () => {
+    if (!postToDelete) return;
+    const post = postToDelete;
+    setPostToDelete(null);
+    const toastId = toast.loading("Deleting post...");
+
+    try {
+      await deletePost.mutateAsync(post);
+      toast.success("Post deleted successfully!", { id: toastId });
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || "Failed to delete post. Please try again.", { id: toastId });
+    }
   };
 
   if (isLoading) return <Loader fullScreen />;
-  if (error) return <p className="text-center mt-4 text-red-500">Error: {error.message}</p>;
+  if (error) return <p className="text-center mt-4 text-red-500 font-medium">Error: {error.message}</p>;
 
-  // Filters posts based on the search query
   const filteredPosts = posts?.filter((post) =>
     post.caption.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-    <div className="mt-10 max-w-4xl mx-auto space-y-4 px-4">
-      {/* Search input for filtering gallery posts */}
+    <div className="mt-10 max-w-4xl mx-auto space-y-4 px-4 relative">
       <input
         type="text"
         placeholder="Search gallery posts by caption..."
@@ -112,7 +134,6 @@ export const ManageGallery = () => {
         className="w-full mb-6 rounded-lg border border-blue-200 bg-white dark:bg-zinc-800 dark:border-zinc-700 px-4 py-2 text-sm text-zinc-900 dark:text-zinc-200 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
       />
 
-      {/* If no posts match the search query */}
       {filteredPosts?.length === 0 && (
         <p className="text-center text-sm text-gray-500 dark:text-zinc-400">
           No gallery posts found.
@@ -120,7 +141,6 @@ export const ManageGallery = () => {
       )}
 
       {filteredPosts?.map((post) => (
-        // Key is set to post.id to ensure each item is uniquely identified 
         <div
           key={post.id}
           className="flex flex-col sm:flex-row sm:items-center justify-between rounded-lg border border-blue-100 dark:border-zinc-700 bg-white dark:bg-zinc-800 p-4 shadow-sm hover:shadow-md transition gap-4"
@@ -138,8 +158,8 @@ export const ManageGallery = () => {
                 value={editCaption}
                 onChange={(e) => setEditCaption(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter") handleSave(post.id); // Save on Enter key
-                  if (e.key === "Escape") setEditingId(null); // Cancel editing on Escape key
+                  if (e.key === "Enter") handleSave(post.id);
+                  if (e.key === "Escape") setEditingId(null);
                 }}
                 className="flex-1 min-w-0 sm:w-64 rounded-md border border-blue-200 dark:border-zinc-600 bg-white dark:bg-zinc-900 px-3 py-1.5 text-sm text-zinc-900 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                 placeholder="Enter new caption..."
@@ -186,15 +206,7 @@ export const ManageGallery = () => {
                 </button>
                 <button
                   disabled={deletePost.isPending}
-                  onClick={() => {
-                    if (
-                      confirm(
-                        "Are you sure you want to delete this gallery post? This will permanently remove the image."
-                      )
-                    ) {
-                      deletePost.mutate(post);
-                    }
-                  }}
+                  onClick={() => handleDeleteClick(post)}
                   className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors disabled:opacity-50"
                   title="Delete Post"
                 >
@@ -205,6 +217,46 @@ export const ManageGallery = () => {
           </div>
         </div>
       ))}
+
+      {postToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/40 dark:bg-black/60 backdrop-blur-sm transition-opacity">
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            
+            <div className="p-6">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="p-3 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full shrink-0">
+                  <AlertTriangle size={24} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">Delete Post</h3>
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400">This action cannot be undone.</p>
+                </div>
+              </div>
+              
+              <p className="text-sm text-zinc-600 dark:text-zinc-300">
+                Are you sure you want to permanently remove the image for: <br/>
+                <span className="font-semibold text-zinc-900 dark:text-white block mt-2">"{postToDelete.caption}"?</span>
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 px-6 py-4 bg-zinc-50 dark:bg-zinc-900/50 border-t border-zinc-100 dark:border-zinc-800">
+              <button
+                onClick={() => setPostToDelete(null)}
+                className="px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-xl transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 text-sm font-bold text-white bg-red-600 hover:bg-red-700 shadow-md shadow-red-600/20 rounded-xl transition-all active:scale-95"
+              >
+                Yes, Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
     </div>
   );
 };

@@ -2,7 +2,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../../../../supabase-client.ts";
 import { useState } from "react";
 import { Loader } from "../../Loader.tsx";
-import { Trash2 } from "lucide-react";
+import { Trash2, AlertTriangle } from "lucide-react";
+import { toast } from "sonner";
 
 interface User {
   id: string;
@@ -15,6 +16,7 @@ interface User {
 
 export const ManageUsers = () => {
   const [search, setSearch] = useState("");
+  const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const queryClient = useQueryClient();
 
   const { data: users, isLoading, error } = useQuery({
@@ -42,24 +44,20 @@ export const ManageUsers = () => {
     }) => {
       const { data: { session } } = await supabase.auth.getSession();
       
-      // Calls the API route defined in our Flask backend
       const response = await fetch('/api/admin/toggle-ban', {
-        method: 'POST', // Using POST since we're updating data
+        method: 'POST', 
         headers: {
-          'Content-Type': 'application/json', // Sending JSON data
-          'Authorization': `Bearer ${session?.access_token}` // Includes the access token
+          'Content-Type': 'application/json', 
+          'Authorization': `Bearer ${session?.access_token}` 
         },
-        // If isBanned is true, we send false, and vice versa
         body: JSON.stringify({ userId, isBanned: !isBanned })
       });
 
-      // If the response isn't ok, we try to parse the error message and throw it
       if (!response.ok) {
         const err = await response.json();
         throw new Error(err.error || 'Failed to update ban status');
       }
     },
-    // On success, the users query is invalidated
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
     },
@@ -67,8 +65,6 @@ export const ManageUsers = () => {
 
   const deleteUser = useMutation({
     mutationFn: async (userId: string) => {
-      if(!confirm("Are you sure you want to delete this user? This cannot be undone.")) return;
-
       const { data: { session } } = await supabase.auth.getSession();
       
       const response = await fetch('/api/admin/delete-user', {
@@ -110,6 +106,43 @@ export const ManageUsers = () => {
     },
   });
 
+  const handleToggleBan = async (user: User) => {
+    const action = user.is_banned ? "Unbanning" : "Banning";
+    const toastId = toast.loading(`${action} user...`);
+    try {
+      await toggleBan.mutateAsync({ userId: user.id, isBanned: user.is_banned });
+      toast.success(`User ${user.is_banned ? "unbanned" : "banned"} successfully!`, { id: toastId });
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || `Failed to update ban status for ${user.first_name}.`, { id: toastId });
+    }
+  };
+
+  const handleChangeRole = async (userId: string, role: User["role"]) => {
+    const toastId = toast.loading("Updating role...");
+    try {
+      await changeRole.mutateAsync({ userId, role });
+      toast.success("User role updated successfully!", { id: toastId });
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || "Failed to update user role.", { id: toastId });
+    }
+  };
+
+  const confirmDelete = async () => {
+    if (!userToDelete) return;
+    const userId = userToDelete.id;
+    setUserToDelete(null);
+    const toastId = toast.loading("Deleting user...");
+
+    try {
+      await deleteUser.mutateAsync(userId);
+      toast.success("User deleted successfully!", { id: toastId });
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || "Failed to delete user. Please try again.", { id: toastId });
+    }
+  };
 
   if (isLoading) return <Loader fullScreen/>;
   if (error) return <p className="text-center mt-4">Error: {error.message}</p>;
@@ -124,8 +157,7 @@ export const ManageUsers = () => {
   });
 
   return (
-    <div className="mt-10 max-w-3xl mx-auto space-y-4">
-
+    <div className="mt-10 max-w-3xl mx-auto space-y-4 relative">
       <input
         type="text"
         placeholder="Search users by name or email..."
@@ -153,15 +185,9 @@ export const ManageUsers = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-
             <button
               disabled={toggleBan.isPending}
-              onClick={() =>
-                toggleBan.mutate({
-                  userId: user.id,
-                  isBanned: user.is_banned,
-                })
-              }
+              onClick={() => handleToggleBan(user)}
               className={`rounded-md px-3 py-1.5 text-xs font-semibold transition disabled:opacity-50
                 ${
                   user.is_banned
@@ -173,7 +199,6 @@ export const ManageUsers = () => {
               {toggleBan.isPending ? "Processing..." : user.is_banned ? "Unban" : "Ban"}
             </button>
 
-            {/* --- ADDED ACCESSIBILITY LABEL --- */}
             <label htmlFor={`role-select-${user.id}`} className="sr-only">
               Change role for {user.first_name}
             </label>
@@ -181,13 +206,9 @@ export const ManageUsers = () => {
             <select
               id={`role-select-${user.id}`}
               value={user.role}
-              onChange={(e) =>
-                changeRole.mutate({
-                  userId: user.id,
-                  role: e.target.value as User["role"],
-                })
-              }
-              className="rounded-md border border-blue-200 dark:border-zinc-600 bg-white dark:bg-zinc-900 px-2 py-1.5 text-xs font-semibold text-blue-900 dark:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+              onChange={(e) => handleChangeRole(user.id, e.target.value as User["role"])}
+              disabled={changeRole.isPending}
+              className="rounded-md border border-blue-200 dark:border-zinc-600 bg-white dark:bg-zinc-900 px-2 py-1.5 text-xs font-semibold text-blue-900 dark:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors disabled:opacity-50"
             >
               <option value="USER">User</option>
               <option value="ADMIN">Admin</option>
@@ -196,16 +217,59 @@ export const ManageUsers = () => {
 
             <button
               disabled={deleteUser.isPending}
-              onClick={() => deleteUser.mutate(user.id)}
+              onClick={() => setUserToDelete(user)}
               className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors disabled:opacity-50"
               title="Delete User"
             >
               <Trash2 size={16} />
             </button>
-
           </div>
         </div>
       ))}
+
+      {userToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/40 dark:bg-black/60 backdrop-blur-sm transition-opacity">
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            
+            <div className="p-6">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="p-3 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full shrink-0">
+                  <AlertTriangle size={24} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">Delete User</h3>
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400">This action cannot be undone.</p>
+                </div>
+              </div>
+              
+              <p className="text-sm text-zinc-600 dark:text-zinc-300">
+                Are you sure you want to permanently delete: <br/>
+                <span className="font-semibold text-zinc-900 dark:text-white block mt-2">
+                  {userToDelete.first_name} {userToDelete.last_name}
+                </span>
+                <span className="text-xs text-zinc-500 dark:text-zinc-400 block mt-1">
+                  ({userToDelete.email})
+                </span>
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 px-6 py-4 bg-zinc-50 dark:bg-zinc-900/50 border-t border-zinc-100 dark:border-zinc-800">
+              <button
+                onClick={() => setUserToDelete(null)}
+                className="px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-xl transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 text-sm font-bold text-white bg-red-600 hover:bg-red-700 shadow-md shadow-red-600/20 rounded-xl transition-all active:scale-95"
+              >
+                Yes, Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../../../../supabase-client.ts";
 import { Loader } from "../../Loader.tsx";
-import { Trash2, RotateCcw } from "lucide-react";
+import { Trash2, RotateCcw, AlertTriangle } from "lucide-react";
+import { toast } from "sonner";
 
 type Dish = {
   dish_id: number;
@@ -13,7 +14,7 @@ type Dish = {
 
 export interface MenuDay {
   menu_day_id: number;
-  date: string; 
+  date: string;
   day: 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
 }
 
@@ -27,11 +28,12 @@ const isForeignKeyError = (error: any) => {
 
 export const TrashBin = () => {
   const queryClient = useQueryClient();
-  const[searchDishes, setSearchDishes] = useState("");
+  const [searchDishes, setSearchDishes] = useState("");
   const [searchMenus, setSearchMenus] = useState("");
+  const [menuToDelete, setMenuToDelete] = useState<MenuDay | null>(null);
 
   const { data: dishes = [], isLoading: dishesLoading, error: dishesError } = useQuery({
-    queryKey:["dishes", "trash"],
+    queryKey: ["dishes", "trash"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("Dishes")
@@ -44,7 +46,7 @@ export const TrashBin = () => {
     },
   });
 
-  const { data: menuDays =[], isLoading: menusLoading, error: menusError } = useQuery({
+  const { data: menuDays = [], isLoading: menusLoading, error: menusError } = useQuery({
     queryKey: ["MenuDays", "trash"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -79,7 +81,7 @@ export const TrashBin = () => {
 
       if (error) throw error;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey:["MenuDays", "trash"] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["MenuDays", "trash"] }),
   });
 
   const hardDeleteMenuDay = useMutation<void, Error, number>({
@@ -94,18 +96,50 @@ export const TrashBin = () => {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["MenuDays", "trash"] }),
   });
 
-  const attemptHardDeleteMenuDay = async (menuDayId: number) => {
-    if (!window.confirm("Permanently delete this menu? This cannot be undone.")) return;
+  const handleRestoreDish = async (dishId: number) => {
+    const toastId = toast.loading("Recovering dish...");
+    try {
+      await restoreDish.mutateAsync(dishId);
+      toast.success("Dish recovered successfully!", { id: toastId });
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || "Failed to recover dish. Please try again.", { id: toastId });
+    }
+  };
+
+  const handleRestoreMenuDay = async (menuDayId: number) => {
+    const toastId = toast.loading("Recovering menu...");
+    try {
+      await restoreMenuDay.mutateAsync(menuDayId);
+      toast.success("Menu recovered successfully!", { id: toastId });
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || "Failed to recover menu. Please try again.", { id: toastId });
+    }
+  };
+
+  const handleDeleteClick = (menu: MenuDay) => {
+    setMenuToDelete(menu);
+  };
+
+  const confirmDelete = async () => {
+    if (!menuToDelete) return;
+    const menuId = menuToDelete.menu_day_id;
+    setMenuToDelete(null);
+    const toastId = toast.loading("Deleting menu...");
 
     try {
-      await hardDeleteMenuDay.mutateAsync(menuDayId);
+      await hardDeleteMenuDay.mutateAsync(menuId);
+      toast.success("Menu permanently deleted!", { id: toastId });
     } catch (err: any) {
+      console.error(err);
       if (isForeignKeyError(err)) {
-        window.alert(
-          "This menu cannot be deleted because there are related orders. You will need to delete these orders manually before deleting the menu."
+        toast.error(
+          "This menu cannot be deleted because there are related orders. You will need to delete these orders manually before deleting the menu.",
+          { id: toastId, duration: 6000 } 
         );
       } else {
-        window.alert("An unexpected error occurred while deleting the menu.");
+        toast.error("An unexpected error occurred while deleting the menu.", { id: toastId });
       }
     }
   };
@@ -156,7 +190,7 @@ export const TrashBin = () => {
               <div className="flex items-center gap-2">
                 <button
                   disabled={restoreDish.isPending}
-                  onClick={() => restoreDish.mutate(dish.dish_id)}
+                  onClick={() => handleRestoreDish(dish.dish_id)}
                   className="flex items-center rounded-md px-3 py-1.5 text-xs font-semibold transition disabled:opacity-50 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 hover:bg-green-200"
                 >
                   {restoreDish.isPending ? "Processing..." : (
@@ -199,7 +233,7 @@ export const TrashBin = () => {
               <div className="flex items-center gap-2">
                 <button
                   disabled={restoreMenuDay.isPending}
-                  onClick={() => restoreMenuDay.mutate(menu.menu_day_id)}
+                  onClick={() => handleRestoreMenuDay(menu.menu_day_id)}
                   className="flex items-center rounded-md px-3 py-1.5 text-xs font-semibold transition disabled:opacity-50 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 hover:bg-green-200"
                 >
                   {restoreMenuDay.isPending ? "Processing..." : (
@@ -209,7 +243,7 @@ export const TrashBin = () => {
 
                 <button
                   disabled={hardDeleteMenuDay.isPending}
-                  onClick={() => attemptHardDeleteMenuDay(menu.menu_day_id)}
+                  onClick={() => handleDeleteClick(menu)}
                   className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors disabled:opacity-50"
                   title="Permanently delete menu"
                 >
@@ -220,6 +254,47 @@ export const TrashBin = () => {
           ))}
         </div>
       </section>
+
+      {menuToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/40 dark:bg-black/60 backdrop-blur-sm transition-opacity">
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            
+            <div className="p-6">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="p-3 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full shrink-0">
+                  <AlertTriangle size={24} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">Delete Menu</h3>
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400">This action cannot be undone.</p>
+                </div>
+              </div>
+              
+              <p className="text-sm text-zinc-600 dark:text-zinc-300">
+                Are you sure you want to permanently delete the menu for: <br/>
+                <span className="font-semibold text-zinc-900 dark:text-white block mt-2">
+                  {menuToDelete.day} — {menuToDelete.date}?
+                </span>
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 px-6 py-4 bg-zinc-50 dark:bg-zinc-900/50 border-t border-zinc-100 dark:border-zinc-800">
+              <button
+                onClick={() => setMenuToDelete(null)}
+                className="px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-xl transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 text-sm font-bold text-white bg-red-600 hover:bg-red-700 shadow-md shadow-red-600/20 rounded-xl transition-all active:scale-95"
+              >
+                Yes, Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
