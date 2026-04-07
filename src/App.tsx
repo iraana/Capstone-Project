@@ -38,6 +38,7 @@ import { ReviewPage } from "./pages/ReviewPage";
 import { ResetPasswordPage } from "./pages/auth/ResetPasswordPage.tsx";
 import { TrashBinPage } from "./pages/admin/menu/TrashBinPage.tsx";
 import { AdminInboxPage } from "./pages/admin/AdminInboxPage";
+import { Toaster } from "sonner";
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
     <div className="min-h-screen flex flex-col font-serif bg-white dark:bg-zinc-900 text-black dark:text-white transition-colors duration-700 pt-20">
       <Navbar />
       <CartSidebar />
+      <Toaster position="bottom-right" theme="dark" />
       <div className="container mx-auto px-4 py-6 grow">
         {/*All the routes are defined here*/}
           <Routes>

@@ -3,8 +3,9 @@ import { cartStore } from "../../store/cartStore.ts";
 import { useAuth } from "../../context/AuthContext.tsx";
 import { supabase } from "../../../supabase-client.ts";
 import { useNavigate } from "react-router";
-import { ArrowLeft, ShoppingBag, AlertCircle, FileText } from "lucide-react";
+import { ArrowLeft, ShoppingBag, FileText } from "lucide-react";
 import { Loader } from "../Loader.tsx";
+import { toast } from "sonner";
 
 export const Checkout = () => {
   const { items, totalPrice, clearCart } = cartStore();
@@ -13,7 +14,6 @@ export const Checkout = () => {
   
   const [loading, setLoading] = useState(false);
   const [notes, setNotes] = useState("");
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const total = totalPrice();
     
@@ -21,8 +21,8 @@ export const Checkout = () => {
     // If user isn't logged in or items is 0, return
     if (!user || items.length === 0) return;
     
-    setLoading(true); // Shows loading state
-    setErrorMsg(null); // Clears error messages
+    setLoading(true); // Shows loading state on button
+    const toastId = toast.loading("Processing your order..."); // Triggers sonner toast
 
     try {
       const menuId = items[0].menu_id; // Gets the menu_id from the first item
@@ -57,6 +57,7 @@ export const Checkout = () => {
       }
 
       // Order was successfully placed
+      toast.success("Order confirmed!", { id: toastId });
       clearCart(); // Cart cleared
       navigate("/successful-order"); // User sent to SuccessfulOrderPage
       
@@ -66,9 +67,9 @@ export const Checkout = () => {
       // Check for Postgres Unique Violation (code 23505)
       // This handles the rare case where the random order_number collides
       if (err.code === '23505') {
-        setErrorMsg("Small issue processing your order, please try again.");
+        toast.error("Small issue processing your order, please try again.", { id: toastId });
       } else {
-        setErrorMsg(err.message || "Failed to place order. Please try again.");
+        toast.error(err.message || "Failed to place order. Please try again.", { id: toastId });
       }
     } finally {
       setLoading(false);
@@ -100,7 +101,6 @@ export const Checkout = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           <div className="lg:col-span-2 space-y-6">
-
             <div className="bg-white dark:bg-zinc-900 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-zinc-800">
               <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                 <FileText className="w-5 h-5 text-[#00659B]" />
@@ -152,13 +152,6 @@ export const Checkout = () => {
                   <span className="text-xl font-extrabold text-[#00659B]">${total.toFixed(2)}</span>
                 </div>
               </div>
-
-              {errorMsg && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-100 text-red-700 text-sm rounded-lg flex items-start gap-2">
-                    <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-                    <span>{errorMsg}</span>
-                </div>
-              )}
 
               <button
                 onClick={handleConfirmOrder}

@@ -2,7 +2,7 @@ import { Review } from "../components/Review"
 
 export const ReviewPage = () => {
     return (
-        <main className="min-h-screen bg-white dark:bg-zinc-950 transition-colors duration-300 py-10 px-4">
+        <main className="min-h-screen bg-white dark:bg-zinc-900 transition-colors duration-300 py-10 px-4">
             <div className="max-w-2xl mx-auto"> 
                 <div className="text-center space-y-2 mb-8">
                     <h1 className="text-3xl font-serif font-bold text-zinc-900 dark:text-white tracking-tight">

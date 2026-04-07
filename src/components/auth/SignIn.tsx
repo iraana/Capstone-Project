@@ -5,6 +5,7 @@ import { useNavigate } from "react-router";
 import { useAuth } from "../../context/AuthContext.tsx";
 import { useState } from "react";
 import { supabase } from "../../../supabase-client.ts";
+import { toast } from "sonner";
 
 const signInSchema = z.object({
   email: z
@@ -20,25 +21,25 @@ type SignInFormData = z.infer<typeof signInSchema>;
 export const SignIn = () => {
   const { signInWithEmail } = useAuth();
   const navigate = useNavigate();
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [email, setEmail] = useState("");
 
   const handleForgotPassword = async () => {
-    setErrorMsg(null);
-    setSuccessMsg(null);
-
     if (!email) {
-      setErrorMsg("Please enter your email.");
+      toast.error("Please enter your email address first.");
       return;
     }
+
+    const toastId = toast.loading("Sending reset email...");
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,
     });
 
-    if (error) setErrorMsg(error.message);
-    else setSuccessMsg("Password reset email sent! Check your inbox.");
+    if (error) {
+      toast.error(error.message, { id: toastId });
+    } else {
+      toast.success("Password reset email sent! Check your inbox.", { id: toastId });
+    }
   };
 
   const {
@@ -50,8 +51,15 @@ export const SignIn = () => {
   });
 
   const onSubmit = async (data: SignInFormData) => {
-    await signInWithEmail(data.email, data.password);
-    navigate("/"); 
+    const toastId = toast.loading("Signing in...");
+    
+    try {
+      await signInWithEmail(data.email, data.password);
+      toast.success("Successfully signed in!", { id: toastId });
+      navigate("/"); 
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to sign in. Please check your credentials.", { id: toastId });
+    }
   };
 
   const inputClasses = (error: any) => `
@@ -67,29 +75,6 @@ export const SignIn = () => {
       <h3 className="text-xl font-semibold text-center text-zinc-800 dark:text-zinc-200 mb-8">
         Welcome Back
       </h3>
-
-      {(errorMsg || successMsg) && (
-        <div className="mb-4">
-          {errorMsg && (
-            <div
-              role="alert"
-              aria-live="assertive"
-              className="text-red-700 bg-red-50 border border-red-100 px-4 py-2 rounded-md text-sm"
-            >
-              {errorMsg}
-            </div>
-          )}
-          {successMsg && (
-            <div
-              role="status"
-              aria-live="polite"
-              className="text-green-800 bg-green-50 border border-green-100 px-4 py-2 rounded-md text-sm"
-            >
-              {successMsg}
-            </div>
-          )}
-        </div>
-      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div>
@@ -121,6 +106,7 @@ export const SignIn = () => {
               placeholder="••••••••"
             />
           </div>
+          {errors.password && <p className="text-red-500 text-xs mt-1.5 ml-1">{errors.password.message}</p>}
         </div>
 
         <button
@@ -133,7 +119,6 @@ export const SignIn = () => {
       </form>
 
       <div className="mt-8 pt-6 border-t border-zinc-100 dark:border-zinc-800 text-center">
-
         <button
           type="button"
           onClick={handleForgotPassword}
@@ -143,13 +128,12 @@ export const SignIn = () => {
           Forgot your password?
         </button>
 
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
           Don't have an account?{" "}
           <a href="/sign-up" className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
             Sign Up
           </a>
         </p>
-        {errors.password && <p className="text-red-500 text-xs mt-1.5 ml-1">{errors.password.message}</p>}
       </div>
     </div>
   );

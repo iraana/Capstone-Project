@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
 import type { Dish } from "./Menu";
 import { Star, Utensils, MessageCircle } from "lucide-react";
+import { toast } from "sonner";
 
 const reviewSchema = z.object({
     rating: z.number().min(1, "Rating must be at least 1").max(5, "Rating cannot be more than 5"),
@@ -15,20 +16,18 @@ const reviewSchema = z.object({
 
 type ReviewFormData = z.infer<typeof reviewSchema>;
 
-
 export const Review = () => {
     const { user, role } = useAuth();
     const [rating, setRating] = useState(0);
     const [hoveredRating, setHoveredRating] = useState<number | null>(null);
     const [selectedDish, setSelectedDish] = useState<string>("");
-    const [successMessage, setSuccessMessage] = useState<string>("");
-    const [errorMessage, setErrorMessage] = useState<string>("");
 
     const {
         handleSubmit,
         register,
         setValue,
-        formState: { errors },
+        reset,
+        formState: { errors, isSubmitting },
     } = useForm<ReviewFormData>({
         resolver: zodResolver(reviewSchema),
         defaultValues: {
@@ -37,18 +36,18 @@ export const Review = () => {
         },
     });
 
-    const { data: dishes= [] } = useQuery({
+    const { data: dishes = [] } = useQuery({
         queryKey: ['dishes'],
         queryFn: async () => {
-        const { data, error } = await supabase
-            .from('Dishes')
-            .select('dish_id, name')
-            .eq('dish_status', true)
-            .order('name');
-    
-        if (error) throw error;
-    
-        return data as Dish[];
+            const { data, error } = await supabase
+                .from('Dishes')
+                .select('dish_id, name')
+                .eq('dish_status', true)
+                .order('name');
+        
+            if (error) throw error;
+        
+            return data as Dish[];
         },
         refetchOnWindowFocus: true,
     });
@@ -67,7 +66,7 @@ export const Review = () => {
         enabled: !!user,
     });
 
-    const {data: reviews} = useQuery({
+    const { data: reviews } = useQuery({
         queryKey: ['reviews', user?.id],
         queryFn: async () => {
             const { data, error } = await supabase
@@ -80,11 +79,17 @@ export const Review = () => {
         enabled: !!user,
     });
 
-    const reviewableDishes = dishes.filter(dish => orders?.some(order => order.OrderItems?.some(item => item.dish_id === dish.dish_id)) && !reviews?.some(review => review.dish_id === dish.dish_id));
+    const reviewableDishes = dishes.filter(
+        dish => 
+            orders?.some(order => order.OrderItems?.some(item => item.dish_id === dish.dish_id)) && 
+            !reviews?.some(review => review.dish_id === dish.dish_id)
+    );
 
     const isAuthorized = user && (role === "USER" || role === "ADMIN");
 
     const onSubmit = async (data: ReviewFormData) => {
+        const toastId = toast.loading("Submitting your review...");
+
         try {
             const { error } = await supabase.from("Reviews").insert({
                 user_id: user?.id,
@@ -93,14 +98,20 @@ export const Review = () => {
                 comment: data.comment,
                 timestamp: new Date().toISOString(),
             });
+            
             if (error) throw error;
-            setSuccessMessage("Review submitted successfully!");
-            setErrorMessage("");
-            } catch (error) {
-                console.error("Error submitting review:", error);
-                setErrorMessage("Failed to submit review. Please try again.");
-                setSuccessMessage("");
-            }
+            
+            toast.success("Review submitted successfully!", { id: toastId });
+            
+            setSelectedDish("");
+            setRating(0);
+            setValue("rating", 0);
+            reset();
+            
+        } catch (error: any) {
+            console.error("Error submitting review:", error);
+            toast.error(error.message || "Failed to submit review. Please try again.", { id: toastId });
+        }
     }
 
     const inputClasses = (error: any) => `
@@ -116,18 +127,6 @@ export const Review = () => {
                 className="bg-white dark:bg-zinc-900 rounded-[2.5rem] shadow-2xl border border-zinc-100 dark:border-zinc-800 overflow-hidden transition-all" 
                 onSubmit={handleSubmit(onSubmit)}
             >
-                {/* Status Messages */}
-                {successMessage && (
-                    <div className="mx-6 mt-6 p-4 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 rounded-2xl text-sm font-medium border border-emerald-100 dark:border-emerald-800/30 text-center">
-                        {successMessage}
-                    </div>
-                )}
-                {errorMessage && (
-                    <div className="mx-6 mt-6 p-4 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-2xl text-sm font-medium border border-red-100 dark:border-red-800/30 text-center">
-                        {errorMessage}
-                    </div>
-                )}
-
                 <div className="p-6 sm:p-8 space-y-6"> 
                     {/* Header Note */}
                     <div className="p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-100 dark:border-zinc-800">
@@ -200,7 +199,7 @@ export const Review = () => {
                                     Your Feedback
                                 </label>
                                 <textarea
-                                    className={`${inputClasses(errors.comment)} min-h-[120px] resize-none`}
+                                    className={`${inputClasses(errors.comment)} min-h-30 resize-none`}
                                     placeholder="Tell us what you liked (or what could be better)..."
                                     {...register("comment")}
                                 />
@@ -212,10 +211,10 @@ export const Review = () => {
                             {/* Submit Button */}
                             <button
                                 type="submit"
-                                disabled={!selectedDish || rating === 0}
+                                disabled={!selectedDish || rating === 0 || isSubmitting}
                                 className="w-full bg-linear-to-r from-blue-600 to-emerald-500 hover:from-blue-700 hover:to-emerald-600 text-white font-bold py-4 rounded-2xl shadow-xl shadow-blue-500/20 transition-all active:scale-[0.98] disabled:opacity-30 disabled:grayscale mt-4"
                             >
-                                Submit Review
+                                {isSubmitting ? "Submitting..." : "Submit Review"}
                             </button>
                         </>
                     ) : (
