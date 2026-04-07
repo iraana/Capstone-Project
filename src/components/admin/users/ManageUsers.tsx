@@ -179,6 +179,7 @@ export const ManageUsers = () => {
             </label>
 
             <select
+              id={`role-select-${user.id}`}
               value={user.role}
               onChange={(e) =>
                 changeRole.mutate({

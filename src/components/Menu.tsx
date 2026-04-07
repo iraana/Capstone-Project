@@ -267,7 +267,7 @@ export const Menu = () => {
                     <div className="absolute top-2 right-2 w-2 h-2 bg-[#00659B] rounded-full"></div>
                 )}
 
-               <span className={`text-xs uppercase font-bold tracking-wider mb-1 ${isSelected ? 'text-white opacity-90' : 'text-gray-600 dark:text-gray-400 opacity-60'}`}>
+               <span className={`text-xs uppercase font-bold tracking-wider mb-1 ${isSelected ? 'text-white' : 'text-black dark:text-white'}`}>
                  {day.day.substring(0, 3)}
                </span>
                <span className={`text-lg font-bold ${isSelected ? 'text-white' : 'text-gray-800 dark:text-white'}`}>

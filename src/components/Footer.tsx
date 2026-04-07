@@ -42,7 +42,7 @@ export const Footer = () => {
         <span className="block text-sm sm:text-center">
           © 2026{" "}
           <NavLink to="/" className="hover:underline">
-            Gourmet2Go™
+            Sault College™
           </NavLink>
           . All Rights Reserved.
         </span>

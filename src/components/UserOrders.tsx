@@ -298,7 +298,7 @@ export const UserOrders = () => {
                 <button
                 onClick={() => handleDelete(order)}
                 disabled={processingId === order.order_id || !canDelete}
-                className="text-xs font-normal text-red-500 hover:text-red-600 hover:underline disabled:opacity-50"
+                className="text-xs font-normal text-red-800 dark:text-red-300 hover:text-red-600 hover:underline disabled:opacity-50"
                 >
                 <Trash2 size={14} />
                 {processingId === order.order_id
@@ -359,7 +359,7 @@ export const UserOrders = () => {
               <button
                 onClick={() => handleDelete(order)}
                 disabled={processingId === order.order_id || !canDelete}
-                className="text-xs font-normal text-red-500 hover:text-red-600 hover:underline disabled:opacity-50"
+                className="text-xs font-normal text-red-800 dark:text-red-300 hover:text-red-600 hover:underline disabled:opacity-50"
               >
                 {processingId === order.order_id
                   ? "Cancelling..."

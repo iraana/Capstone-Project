@@ -83,9 +83,13 @@ export const Checkout = () => {
         <div className="flex items-center gap-4 mb-8">
           <button 
             onClick={() => navigate(-1)}
+            aria-label="Go back"
             className="group flex items-center justify-center w-10 h-10 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-full hover:border-[#00659B] hover:text-[#00659B] transition-all shadow-sm"
           >
-            <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-300 group-hover:text-[#00659B]" />
+            <ArrowLeft 
+              className="w-5 h-5 text-gray-600 dark:text-gray-300 group-hover:text-[#00659B]" 
+              aria-hidden="true"
+            />
           </button>
           <div>
             <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">Checkout</h1>
@@ -100,16 +104,16 @@ export const Checkout = () => {
             <div className="bg-white dark:bg-zinc-900 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-zinc-800">
               <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                 <FileText className="w-5 h-5 text-[#00659B]" />
-                Order Notes <span className="text-gray-400 font-normal text-sm ml-auto">(Optional)</span>
+                Order Notes <span className="text-zinc-900 dark:text-white font-normal text-sm ml-auto">(Optional)</span>
               </h2>
               <div className="relative">
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Anything else we need to know to make your order perfect..."
-                  className="w-full h-40 p-4 rounded-lg bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 focus:ring-2 focus:ring-[#00659B] focus:border-transparent focus:outline-none transition-all resize-none text-gray-900 dark:text-white placeholder-gray-400"
+                  className="w-full h-40 p-4 rounded-lg bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 focus:ring-2 focus:ring-[#00659B] focus:border-transparent focus:outline-none transition-all resize-none text-zinc-900 dark:text-white placeholder-gray-400"
                 />
-                <p className="text-xs text-gray-400 mt-2 text-right">
+                <p className="text-xs text-zinc-900 dark:text-white mt-2 text-right">
                   {notes.length} characters
                 </p>
               </div>

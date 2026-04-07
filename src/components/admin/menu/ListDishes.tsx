@@ -139,7 +139,7 @@ export const ListDishes = () => {
                       </NavLink>
                       <button
                         onClick={() => handleDelete(item.dish_id)}
-                        className="px-4 py-1.5 rounded-lg text-sm font-medium border border-rose-200 dark:border-rose-900/50 bg-rose-50/50 dark:bg-rose-900/10 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/20 transition-all active:scale-95"
+                        className="px-4 py-1.5 rounded-lg text-sm font-medium border border-rose-200 dark:border-rose-900/50 bg-rose-50/50 dark:bg-rose-900/10 text-rose-800 dark:text-rose-200 hover:bg-rose-100 dark:hover:bg-rose-900/20 transition-all active:scale-95"
                       >
                         Delete
                       </button>

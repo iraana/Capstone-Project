@@ -150,15 +150,18 @@ export const ArchivedOrders = () => {
         border border-gray-200 dark:border-zinc-700">
 
         <div className="flex items-center gap-3">
-          <span className="text-sm font-medium text-gray-900 dark:text-zinc-300">
+          <label
+            htmlFor="menu-filter"
+            className="text-sm font-medium text-gray-900 dark:text-zinc-300"
+          >
             Filter by Menu:
-          </span>
-
+          </label>
+          
           <select
             id="menu-filter"
             className="border border-gray-300 dark:border-zinc-600 
             bg-white dark:bg-zinc-700 
-            text-gray-800 dark:text-white
+            text-gray-900 dark:text-white
             rounded-md p-2 text-sm 
             focus:ring-2 focus:ring-blue-500 outline-none"
             value={selectedMenuId}
@@ -195,7 +198,7 @@ export const ArchivedOrders = () => {
       {/* Orders Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredOrders.length === 0 ? (
-          <div className="col-span-full text-center py-20 text-gray-400 dark:text-zinc-500">
+          <div className="col-span-full text-center py-20 text-gray-600 dark:text-zinc-300">
             No archived orders found.
           </div>
         ) : (
@@ -236,7 +239,7 @@ export const ArchivedOrders = () => {
                   </div>
                 </div>
 
-                <div className="text-right text-xs text-gray-400 dark:text-zinc-400">
+                <div className="text-right text-xs text-gray-600 dark:text-zinc-300">
                   <div>
                     {order.MenuDays
                       ? new Date(order.MenuDays.date).toLocaleDateString()
@@ -264,7 +267,7 @@ export const ArchivedOrders = () => {
                         </span>
                         <span>{item.Dishes?.name || "Unknown Dish"}</span>
                       </div>
-                      <span className="text-gray-500 dark:text-zinc-400">
+                      <span className="text-gray-700 dark:text-zinc-300">
                         ${item.subtotal.toFixed(2)}
                       </span>
                     </li>
@@ -288,7 +291,7 @@ export const ArchivedOrders = () => {
                 bg-gray-50 dark:bg-zinc-700">
 
                 <div className="flex justify-between items-center mb-4">
-                  <span className="text-sm text-gray-500 dark:text-zinc-400">
+                  <span className="text-sm text-gray-700 dark:text-zinc-300">
                     Total
                   </span>
                   <span className="text-xl font-bold text-gray-900 dark:text-white">
@@ -306,7 +309,7 @@ export const ArchivedOrders = () => {
                       });
                     }}
                     disabled={updateStatusMutation.isPending}
-                    className="bg-green-600 hover:bg-green-700 text-white py-2 rounded-md text-sm font-medium transition disabled:opacity-50"
+                    className="bg-green-800 hover:bg-green-700 text-white py-2 rounded-md text-sm font-medium transition disabled:opacity-50"
                   >
                     Reopen
                   </button>
@@ -322,7 +325,7 @@ export const ArchivedOrders = () => {
                     disabled={updateStatusMutation.isPending}
                     className="bg-white dark:bg-zinc-800 
                     border border-red-200 dark:border-red-700 
-                    text-red-600 dark:text-red-400 
+                    text-red-600 dark:text-red-200 
                     hover:bg-red-50 dark:hover:bg-red-900/30 
                     py-2 rounded-md text-sm font-medium transition"
                   >
