@@ -7,8 +7,13 @@ import { supabase } from "../../supabase-client";
 import { motion, type Variants } from "framer-motion";
 
 const contactSchema = z.object({
-  name: z.string().min(2, "Name is required"),
-  email: z.email("Invalid email address"),
+  name: z
+    .string()
+    .min(2, "Name is required")
+    .max(35, "Name is too long (max 35 characters)"),
+  email: z
+    .string()
+    .max(50, "Email is too long"),
   message: z
     .string()
     .min(10, "Message must be at least 10 characters")
@@ -106,13 +111,13 @@ export const Contact = () => {
         
         <div>
           <label className="block text-sm font-medium mb-1.5 text-zinc-700 dark:text-zinc-300">Name</label>
-          <input type="text" {...register("name")} className={inputClasses(errors.name)} placeholder="John Doe" />
+          <input type="text" {...register("name")} className={inputClasses(errors.name)} maxLength={35} placeholder="John Doe" />
           {errors.name && <p className="text-red-500 text-xs mt-1.5 ml-1">{errors.name.message}</p>}
         </div>
 
         <div>
           <label className="block text-sm font-medium mb-1.5 text-zinc-700 dark:text-zinc-300">Email</label>
-          <input type="email" {...register("email")} className={inputClasses(errors.email)} placeholder="john@example.com" />
+          <input type="email" {...register("email")} className={inputClasses(errors.email)} maxLength={50} placeholder="john@example.com" />
           {errors.email && <p className="text-red-500 text-xs mt-1.5 ml-1">{errors.email.message}</p>}
         </div>
 
