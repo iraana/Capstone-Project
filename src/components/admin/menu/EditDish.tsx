@@ -19,7 +19,7 @@ const dishSchema = z.object({
     .number("Price must be a number")
     .positive("Price must be positive")
     .refine((val) => Number((val * 100).toFixed(2)) === val * 100, "Max 2 decimal places"),
-  category: z.enum(['Other', 'Soups', 'Salads', 'Sandwiches', 'Entrees', 'Desserts', 'Bowls']),
+  category: z.enum(['Other', 'Soups', 'Salads', 'Sandwiches', 'Entrees', 'Desserts', 'Bowls', 'Appetizers', 'Sides']),
 });
 
 type DishFormData = z.infer<typeof dishSchema>;
@@ -149,6 +149,8 @@ export const EditDish = () => {
                     <option value="Entrees">Entrees</option>
                     <option value="Desserts">Desserts</option>
                     <option value="Bowls">Bowls</option>
+                    <option value="Appetizers">Appetizers</option>
+                    <option value="Sides">Sides</option>
                 </select>
                 {errors.category && (
                     <p className="text-sm text-red-500">{errors.category.message}</p>

@@ -284,7 +284,7 @@ export const CancelledOrders = () => {
                       }}
                       disabled={updateStatusMutation.isPending}
                       className="bg-green-600 hover:bg-green-700 text-white py-2 rounded-md text-sm font-medium transition disabled:opacity-50"
-                    >
+                  >
                       Reopen
                     </button>
                   )}
@@ -299,8 +299,11 @@ export const CancelledOrders = () => {
                         });
                       }}
                       disabled={updateStatusMutation.isPending}
-                      className="bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md text-sm font-medium transition disabled:opacity-50"
-                    >
+                      className="bg-white dark:bg-zinc-800 
+                      border border-red-200 dark:border-red-700 
+                      text-red-600 dark:text-red-400 
+                      hover:bg-red-50 dark:hover:bg-red-900/30 
+                      py-2 rounded-md text-sm font-medium transition">
                       Move to Archive
                     </button>
                   )}

@@ -299,15 +299,15 @@ export const AddMenu = () => {
                     <button
                       type="button"
                       onClick={() => handleAddToMenu(dish)}
-                      className="bg-[#00659B] text-white px-3 py-1 rounded hover:bg-[#005082]"
+                      className="px-4 py-1.5 rounded-lg text-sm font-bold bg-[#00659B] text-white hover:bg-[#005082] shadow-sm shadow-blue-900/10 transition-all active:scale-95"
                     >
-                      Add to Menu
+                      Add
                     </button>
                     <NavLink
                       to={`/admin/edit-dish/${dish.dish_id}`}
-                       className="bg-green-700 text-white px-3 py-1 rounded hover:bg-green-800"
+                      className="px-4 py-1.5 rounded-lg text-sm font-medium border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-all active:scale-95"
                     >
-                      Edit Item
+                      Edit
                     </NavLink>
                   </td>
                 </tr>
@@ -356,9 +356,8 @@ export const AddMenu = () => {
           <button
             type="submit"
             disabled={loading}
-            className="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-blue-500/20 hover:bg-blue-700 active:scale-95 transition-all disabled:bg-gray-400 disabled:cursor-not-allowed"
-          >
-            {loading ? 'Saving Menu...' : 'Save Menu'}
+            className="bg-[#00659B] hover:bg-[#005082] text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-blue-900/20 transition-all active:scale-95 disabled:bg-zinc-300 dark:disabled:bg-zinc-700">
+            {loading ? 'Saving...' : 'Save Menu'}
           </button>
         </div>
 

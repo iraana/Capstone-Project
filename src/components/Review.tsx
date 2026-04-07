@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
 import type { Dish } from "./Menu";
+import { Star, Utensils, MessageCircle } from "lucide-react";
 
 const reviewSchema = z.object({
     rating: z.number().min(1, "Rating must be at least 1").max(5, "Rating cannot be more than 5"),
@@ -102,50 +103,66 @@ export const Review = () => {
             }
     }
 
+    const inputClasses = (error: any) => `
+        w-full px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border transition-all text-sm
+        ${error ? "border-red-500 ring-1 ring-red-500" : "border-zinc-200 dark:border-zinc-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"}
+    `;
+
+    const labelClasses = "block text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-1.5";
+
     return (
-        <form className="p-6 space-y-6 max-w-xl mx-auto" onSubmit={handleSubmit(onSubmit)}>
-            <div className="bg-white dark:bg-zinc-800 rounded-2xl shadow-lg border border-gray-200 dark:border-zinc-700 overflow-hidden">
+        <div className="max-w-lg mx-auto">
+            <form 
+                className="bg-white dark:bg-zinc-900 rounded-[2.5rem] shadow-2xl border border-zinc-100 dark:border-zinc-800 overflow-hidden transition-all" 
+                onSubmit={handleSubmit(onSubmit)}
+            >
+                {/* Status Messages */}
                 {successMessage && (
-                    <div className="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800" role="alert">
+                    <div className="mx-6 mt-6 p-4 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 rounded-2xl text-sm font-medium border border-emerald-100 dark:border-emerald-800/30 text-center">
                         {successMessage}
                     </div>
                 )}
                 {errorMessage && (
-                    <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800" role="alert">
+                    <div className="mx-6 mt-6 p-4 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-2xl text-sm font-medium border border-red-100 dark:border-red-800/30 text-center">
                         {errorMessage}
                     </div>
                 )}
 
-                <div className="p-6 border-b border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-900/50">
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Your Review</h1>
-                    <h2 className="text-sm text-gray-500 dark:text-gray-400">(Disclaimer: Only one review can be submitted per dish, and all reviews are final)</h2>
-                    <p className="text-gray-500 dark:text-gray-400 mt-1">Share your thoughts about this dish:</p>
-                    {/* --- ADDED LABEL FOR ACCESSIBILITY --- */}
-                    <label 
-                        htmlFor="dish-select" 
-                        className="block text-blue-600 dark:text-blue-400 font-bold text-xs uppercase mb-1 mt-4"
-                    >
-                        Select a Dish
-                    </label>
-                    <select
-                        className="w-full border rounded px-3 py-2 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white"
-                        value={selectedDish}
-                        onChange={(e) => setSelectedDish(e.target.value)}
-                    >
-                        <option value="">Select a dish</option>
-                        {reviewableDishes?.map((dish) => (
-                            <option key={dish.dish_id} value={dish.dish_id}>
-                                {dish.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                <div className="p-6 space-y-6">
+                <div className="p-6 sm:p-8 space-y-6"> 
+                    {/* Header Note */}
+                    <div className="p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-100 dark:border-zinc-800">
+                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed text-center italic">
+                            Disclaimer: Only one review can be submitted per dish. All submissions are final.
+                        </p>
+                    </div>
+
                     {isAuthorized ? (
                         <>
-                            <div>
-                                <label className="block text-blue-600 dark:text-blue-400 font-bold text-xs uppercase mb-1">Rating</label>
-                                <div className="flex gap-2 mb-2">
+                            {/* Dish Selection */}
+                            <div className="space-y-2">
+                                <label htmlFor="dish-select" className={labelClasses}>
+                                    <Utensils size={14} className="inline mr-2 -mt-1" />
+                                    Select Dish
+                                </label>
+                                <select
+                                    id="dish-select"
+                                    className={inputClasses(false)}
+                                    value={selectedDish}
+                                    onChange={(e) => setSelectedDish(e.target.value)}
+                                >
+                                    <option value="">Choose a dish you've tried...</option>
+                                    {reviewableDishes?.map((dish) => (
+                                        <option key={dish.dish_id} value={dish.dish_id}>
+                                            {dish.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* Star Rating */}
+                            <div className="space-y-1 text-center py-2">
+                                <label className={labelClasses}>Overall Rating</label>
+                                <div className="flex justify-center gap-2">
                                     {[1, 2, 3, 4, 5].map((star) => (
                                         <button
                                             key={star}
@@ -156,54 +173,58 @@ export const Review = () => {
                                             }}
                                             onMouseEnter={() => setHoveredRating(star)}
                                             onMouseLeave={() => setHoveredRating(null)}
-                                            className="transition-colors"
-                                            style={{
-                                                color: (hoveredRating !== null ? star <= hoveredRating : star <= rating) ? '#FFD700' : '#CCC',
-                                                fontSize: '2rem',
-                                                background: 'none',
-                                                border: 'none',
-                                                cursor: 'pointer',
-                                                padding: 0,
-                                            }}
+                                            className="transition-all transform hover:scale-125 active:scale-95"
                                             aria-label={`Rate ${star} star${star > 1 ? 's' : ''}`}
                                         >
-                                            {(hoveredRating !== null ? star <= hoveredRating : star <= rating) ? '★' : '☆'}
+                                            <Star 
+                                                size={42} 
+                                                strokeWidth={1.5}
+                                                className={`transition-colors ${
+                                                    (hoveredRating !== null ? star <= hoveredRating : star <= rating) 
+                                                    ? 'fill-yellow-400 text-yellow-400' 
+                                                    : 'text-zinc-300 dark:text-zinc-700'
+                                                }`}
+                                            />
                                         </button>
                                     ))}
                                 </div>
                                 {errors.rating && (
-                                    <p className="text-red-600 text-sm mt-1">{errors.rating.message}</p>
+                                    <p className="text-red-500 text-xs mt-2">{errors.rating.message}</p>
                                 )}
                             </div>
 
-                            <div>
-                                <label className="block text-blue-600 dark:text-blue-400 font-bold text-xs uppercase mb-1 mt-4">Comment</label>
+                            {/* Comment Area */}
+                            <div className="space-y-2">
+                                <label className={labelClasses}>
+                                    <MessageCircle size={14} className="inline mr-2 -mt-1" />
+                                    Your Feedback
+                                </label>
                                 <textarea
-                                    className="w-full border rounded px-3 py-2 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white"
-                                    placeholder="Write your review here..."
+                                    className={`${inputClasses(errors.comment)} min-h-[120px] resize-none`}
+                                    placeholder="Tell us what you liked (or what could be better)..."
                                     {...register("comment")}
                                 />
                                 {errors.comment && (
-                                    <p className="text-red-600 text-sm mt-1">{errors.comment.message}</p>
+                                    <p className="text-red-500 text-xs mt-1">{errors.comment.message}</p>
                                 )}
                             </div>
 
-                            <div className="flex gap-4 mt-4">
-                                <button
-                                    type="submit"
-                                     className="bg-green-700 hover:bg-green-800 text-white cursor-pointer px-4 py-2 rounded-xl font-bold shadow-lg shadow-green-900/20 transition-all active:scale-95"
-                                >
-                                    Submit Review
-                                </button>
-                            </div>
+                            {/* Submit Button */}
+                            <button
+                                type="submit"
+                                disabled={!selectedDish || rating === 0}
+                                className="w-full bg-linear-to-r from-blue-600 to-emerald-500 hover:from-blue-700 hover:to-emerald-600 text-white font-bold py-4 rounded-2xl shadow-xl shadow-blue-500/20 transition-all active:scale-[0.98] disabled:opacity-30 disabled:grayscale mt-4"
+                            >
+                                Submit Review
+                            </button>
                         </>
                     ) : (
-                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                            You are not authorized to view this content.
+                        <div className="bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 p-6 rounded-2xl text-center">
+                            <p className="text-red-600 dark:text-red-400 font-medium">You must have an active student account and a fulfilled order to leave reviews.</p>
                         </div>
                     )}
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
     );
 }

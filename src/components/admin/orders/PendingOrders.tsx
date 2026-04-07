@@ -263,13 +263,10 @@ export const PendingOrders = () => {
             <div
               key={order.order_id}
               onClick={() => navigate(`/admin/order/${order.order_number}`)}
-              className={`rounded-xl shadow-sm border overflow-hidden flex flex-col transition
+              className={`rounded-xl shadow-sm border overflow-hidden flex flex-col transition-all duration-300 cursor-pointer
               bg-white dark:bg-zinc-800
-              ${
-                order.status === "FULFILLED"
-                  ? "border-green-200 dark:border-green-800 opacity-90"
-                  : "border-gray-200 dark:border-zinc-700"
-              }`}
+              border-zinc-200 dark:border-zinc-700
+              hover:shadow-md hover:border-[#009b22] dark:hover:border-[#06dc349e]`}
             >
 
               {/* Header */}
@@ -306,10 +303,10 @@ export const PendingOrders = () => {
                   </div>
                 </div>
 
-                <div className="text-sm text-gray-800 dark:text-zinc-300 mt-1">
+                <div className="text-right text-xs text-gray-400 dark:text-zinc-400">
                   <div>
                     {order.MenuDays
-                      ? "Menu day: " + new Date(order.MenuDays.date).toLocaleDateString()
+                      ? new Date(order.MenuDays.date).toLocaleDateString()
                       : "No Date"}
                   </div>
                   <div>
@@ -353,51 +350,23 @@ export const PendingOrders = () => {
               </div>
 
               {/* Footer */}
-              <div className="p-4 
-                border-t border-gray-100 dark:border-zinc-600 
-                bg-gray-50 dark:bg-zinc-700">
-
+              <div className="p-4 border-t border-zinc-100 dark:border-zinc-600 bg-zinc-50 dark:bg-zinc-700">
                 <div className="flex justify-between items-center mb-4">
-                  <span className="text-sm text-gray-500 dark:text-zinc-400">
-                    Total
-                  </span>
-                  <span className="text-xl font-bold text-gray-900 dark:text-white">
-                    ${order.total.toFixed(2)}
-                  </span>
+                  <span className="text-sm text-zinc-500  dark:text-zinc-400">Total</span>
+                  <span className="text-xl font-bold text-gray-900 dark:text-white">${order.total.toFixed(2)}</span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   {order.status !== "FULFILLED" && (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        updateStatusMutation.mutate({
-                          orderId: order.order_id,
-                          newStatus: "FULFILLED",
-                        });
+                        updateStatusMutation.mutate({ orderId: order.order_id, newStatus: "FULFILLED" });
                       }}
                       disabled={updateStatusMutation.isPending}
-                      className="bg-green-600 hover:bg-green-700 text-white py-2 rounded-md text-sm font-medium transition disabled:opacity-50"
-                    >
-                      Complete
-                    </button>
-                  )}
-
-                  {order.status === "FULFILLED" && (
-                    <button
-                      onClick={() =>
-                        updateStatusMutation.mutate({
-                          orderId: order.order_id,
-                          newStatus: "PENDING",
-                        })
-                      }
-                      disabled={updateStatusMutation.isPending}
-                      className="bg-gray-200 dark:bg-zinc-600 
-                      hover:bg-gray-300 dark:hover:bg-zinc-500 
-                      text-gray-700 dark:text-white 
-                      py-2 rounded-md text-sm font-medium transition"
-                    >
-                      Reopen Order
+                      className="col-span-2 bg-green-600 hover:bg-green-700 text-white py-2 rounded-md text-sm font-medium transition disabled:opacity-50"
+                  >
+                        Complete
                     </button>
                   )}
 
@@ -405,18 +374,13 @@ export const PendingOrders = () => {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        updateStatusMutation.mutate({
-                          orderId: order.order_id,
-                          newStatus: "INACTIVE",
-                        });
+                        updateStatusMutation.mutate({ orderId: order.order_id, newStatus: "INACTIVE" });
                       }}
-                      disabled={updateStatusMutation.isPending}
                       className="bg-white dark:bg-zinc-800 
                       border border-red-200 dark:border-red-700 
                       text-red-600 dark:text-red-400 
                       hover:bg-red-50 dark:hover:bg-red-900/30 
-                      py-2 rounded-md text-sm font-medium transition"
-                    >
+                      py-2 rounded-md text-sm font-medium transition">
                       Cancel
                     </button>
                   )}
@@ -427,15 +391,13 @@ export const PendingOrders = () => {
                         e.stopPropagation(); 
                         handleDelete(order);
                       }}
-
                       disabled={processingId === order.order_id}
                       className="bg-white dark:bg-zinc-800 
                       border border-red-200 dark:border-red-700 
                       text-red-600 dark:text-red-400 
                       hover:bg-red-50 dark:hover:bg-red-900/30 
-                      py-2 rounded-md text-sm font-medium transition"
-                    >
-                      {processingId === order.order_id ? "Cancelling..." : "Delete"}
+                      py-2 rounded-md text-sm font-medium transition">
+                      {processingId === order.order_id ? "..." : "Delete"}
                     </button>
                   )}
                 </div>
