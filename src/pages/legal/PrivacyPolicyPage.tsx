@@ -1,9 +1,13 @@
+import { useTranslation } from 'react-i18next';
+
 const LAST_UPDATED = 'February 17, 2026';
+
 export const PrivacyPolicyPage = () => {
+  const { t } = useTranslation();
+
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-zinc-900 -mt-20">
       
-     
       <div className="relative bg-primary text-white py-20">
         <div
           className="absolute inset-0 bg-cover bg-center opacity-20"
@@ -14,13 +18,13 @@ export const PrivacyPolicyPage = () => {
         
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-5xl font-display font-bold mb-4">
-            Privacy Policy
+            {t('privacy.title')}
           </h1>
           <p className="text-xl text-blue-100 max-w-2xl mx-auto">
-            Your privacy is important to us. Learn how we collect, use, and protect your information.
+            {t('privacy.subtitle')}
           </p>
           <p className="text-sm text-blue-200 mt-4">
-            Last Updated: {LAST_UPDATED}
+            {t('privacy.lastUpdated', { date: LAST_UPDATED })}
           </p>
         </div>
       </div>
@@ -32,43 +36,30 @@ export const PrivacyPolicyPage = () => {
          
           <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-zinc-700">
             <h2 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-4">
-              1. Introduction
+              {t('privacy.sections.intro.title')}
             </h2>
             <div className="prose prose-lg text-gray-700 dark:text-gray-300 leading-relaxed space-y-4">
-              <p>
-                Welcome to Gourmet2Go. We are committed to protecting your privacy and ensuring 
-                the security of your personal information. This Privacy Policy explains how we 
-                collect, use, disclose, and safeguard your information when you use our online 
-                food ordering platform.
-              </p>
-              <p>
-                By using our service, you agree to the collection and use of information in 
-                accordance with this policy. If you do not agree with our policies and practices, 
-                please do not use our service.
-              </p>
+              <p>{t('privacy.sections.intro.p1')}</p>
+              <p>{t('privacy.sections.intro.p2')}</p>
             </div>
           </div>
 
           
           <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-zinc-700">
             <h2 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-6">
-              2. Information We Collect
+              {t('privacy.sections.collect.title')}
             </h2>
             
             <div className="space-y-6">
               <div>
                 <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-3">
-                  2.1 Personal Information
+                  {t('privacy.sections.collect.personal.title')}
                 </h3>
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
-                  When you create an account or place an order, we may collect:
+                  {t('privacy.sections.collect.personal.desc')}
                 </p>
                 <ul className="space-y-2 text-gray-700 dark:text-gray-300">
-                  {[
-                    'Full name (first and last name)',
-                    'Email address',
-                    'Student ID number'
-                  ].map((item, index) => (
+                  {(t('privacy.sections.collect.personal.items', { returnObjects: true }) as string[]).map((item, index) => (
                     <li key={index} className="flex items-start">
                       <span className="text-green-500 mr-2 text-lg shrink-0">✓</span>
                       <span className="text-sm">{item}</span>
@@ -79,19 +70,13 @@ export const PrivacyPolicyPage = () => {
 
               <div>
                 <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-3">
-                  2.2 Order Information
+                  {t('privacy.sections.collect.order.title')}
                 </h3>
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
-                  We collect details about your orders, including:
+                  {t('privacy.sections.collect.order.desc')}
                 </p>
                 <ul className="space-y-2 text-gray-700 dark:text-gray-300">
-                  {[
-                    'Items ordered and quantities',
-                    'Order date and time',
-                    'Pickup location and time',
-                    'Order status and history',
-                    'Special instructions or requests'
-                  ].map((item, index) => (
+                  {(t('privacy.sections.collect.order.items', { returnObjects: true }) as string[]).map((item, index) => (
                     <li key={index} className="flex items-start">
                       <span className="text-green-500 mr-2 text-lg shrink-0">✓</span>
                       <span className="text-sm">{item}</span>
@@ -102,28 +87,22 @@ export const PrivacyPolicyPage = () => {
 
               <div>
                 <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-3">
-                  2.3 Payment Information
+                  {t('privacy.sections.collect.payment.title')}
                 </h3>
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                  Payment is required at pickup by card only (no cash accepted). We do not store your 
-                  credit card information on our servers. Payment processing is handled securely 
-                  through our payment provider in compliance with PCI DSS standards.
+                  {t('privacy.sections.collect.payment.desc')}
                 </p>
               </div>
 
               <div>
                 <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-3">
-                  2.4 Technical Information
+                  {t('privacy.sections.collect.technical.title')}
                 </h3>
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
-                  We automatically collect certain technical information, including:
+                  {t('privacy.sections.collect.technical.desc')}
                 </p>
                 <ul className="space-y-2 text-gray-700 dark:text-gray-300">
-                  {[
-                    'IP address and device information',
-                    'Browser type and version',
-                    'Operating system'
-                  ].map((item, index) => (
+                  {(t('privacy.sections.collect.technical.items', { returnObjects: true }) as string[]).map((item, index) => (
                     <li key={index} className="flex items-start">
                       <span className="text-green-500 mr-2 text-lg shrink-0">✓</span>
                       <span className="text-sm">{item}</span>
@@ -137,24 +116,12 @@ export const PrivacyPolicyPage = () => {
          
           <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-zinc-700">
             <h2 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-4">
-              3. How We Use Your Information
+              {t('privacy.sections.use.title')}
             </h2>
             <div className="prose prose-lg text-gray-700 dark:text-gray-300 leading-relaxed space-y-4">
-              <p className="mb-3">
-                We use the information we collect for the following purposes:
-              </p>
+              <p className="mb-3">{t('privacy.sections.use.desc')}</p>
               <ul className="space-y-2 text-gray-700 dark:text-gray-300">
-                {[
-                  'To process and fulfill your food orders',
-                  'To communicate order confirmations, updates, and pickup notifications',
-                  'To manage your account and provide customer support',
-                  'To improve our menu offerings based on ordering patterns',
-                  'To accommodate dietary restrictions and food allergies',
-                  'To send important updates about service hours or menu changes',
-                  'To maintain records for operational and compliance purposes',
-                  'To analyze usage patterns and improve our platform',
-                  'To prevent fraud and ensure system security'
-                ].map((item, index) => (
+                {(t('privacy.sections.use.items', { returnObjects: true }) as string[]).map((item, index) => (
                   <li key={index} className="flex items-start">
                     <span className="text-green-500 mr-2 text-lg shrink-0">✓</span>
                     <span className="text-sm">{item}</span>
@@ -167,26 +134,23 @@ export const PrivacyPolicyPage = () => {
         
           <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-zinc-700">
             <h2 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-4">
-              4. How We Share Your Information
+              {t('privacy.sections.share.title')}
             </h2>
             <div className="prose prose-lg text-gray-700 dark:text-gray-300 leading-relaxed space-y-4">
-              <p>
-                We do not sell, trade, or rent your personal information to third parties. 
-                We may share your information only in the following circumstances:
-              </p>
+              <p>{t('privacy.sections.share.desc')}</p>
               
               <div className="space-y-4 mt-4">
                 <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-primary p-4 rounded-r-lg">
-                  <p className="font-bold text-gray-900 dark:text-white mb-2">College Administration</p>
+                  <p className="font-bold text-gray-900 dark:text-white mb-2">{t('privacy.sections.share.admin.title')}</p>
                   <p className="text-sm text-gray-700 dark:text-gray-300">
-                    When required for institutional reporting or compliance purposes
+                    {t('privacy.sections.share.admin.desc')}
                   </p>
                 </div>
 
                 <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-primary p-4 rounded-r-lg">
-                  <p className="font-bold text-gray-900 dark:text-white mb-2">Emergency Situations</p>
+                  <p className="font-bold text-gray-900 dark:text-white mb-2">{t('privacy.sections.share.emergency.title')}</p>
                   <p className="text-sm text-gray-700 dark:text-gray-300">
-                    To protect health and safety in cases involving food allergies or medical emergencies
+                    {t('privacy.sections.share.emergency.desc')}
                   </p>
                 </div>
               </div>
@@ -195,54 +159,31 @@ export const PrivacyPolicyPage = () => {
 
           <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-zinc-700">
             <h2 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-4">
-              5. Data Security
+              {t('privacy.sections.security.title')}
             </h2>
             <div className="prose prose-lg text-gray-700 dark:text-gray-300 leading-relaxed space-y-4">
-              <p>
-                We implement appropriate technical and organizational security measures to protect 
-                your personal information against unauthorized access, alteration, disclosure, or 
-                destruction. These measures include:
-              </p>
+              <p>{t('privacy.sections.security.desc')}</p>
               <ul className="space-y-2 text-gray-700 dark:text-gray-300 mt-3">
-                {[
-                  'Encryption of data in transit and at rest',
-                  'Regular security audits and monitoring',
-                  'Access controls and authentication requirements',
-                  'Secure backup and recovery procedures',
-                  'Employee training on data protection practices'
-                ].map((item, index) => (
+                {(t('privacy.sections.security.items', { returnObjects: true }) as string[]).map((item, index) => (
                   <li key={index} className="flex items-start">
                     <span className="text-green-500 mr-2 text-lg shrink-0">✓</span>
                     <span className="text-sm">{item}</span>
                   </li>
                 ))}
               </ul>
-              <p className="mt-4">
-                However, no method of transmission over the Internet or electronic storage is 100% 
-                secure. While we strive to protect your personal information, we cannot guarantee 
-                absolute security.
-              </p>
+              <p className="mt-4">{t('privacy.sections.security.warning')}</p>
             </div>
           </div>
 
           
           <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-zinc-700">
             <h2 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-4">
-              6. Data Retention
+              {t('privacy.sections.retention.title')}
             </h2>
             <div className="prose prose-lg text-gray-700 dark:text-gray-300 leading-relaxed space-y-4">
-              <p>
-                We retain your personal information for as long as necessary to fulfill the purposes 
-                outlined in this Privacy Policy, unless a longer retention period is required or 
-                permitted by law. Specifically:
-              </p>
+              <p>{t('privacy.sections.retention.desc')}</p>
               <ul className="space-y-2 text-gray-700 dark:text-gray-300 mt-3">
-                {[
-                  'Account information is retained while your account is active',
-                  'Order history is kept for 2 years for operational and reporting purposes',
-                  'Payment records are retained as required by financial regulations',
-                  'Analytics data may be retained in aggregated, anonymized form indefinitely'
-                ].map((item, index) => (
+                {(t('privacy.sections.retention.items', { returnObjects: true }) as string[]).map((item, index) => (
                   <li key={index} className="flex items-start">
                     <span className="text-green-500 mr-2 text-lg shrink-0">✓</span>
                     <span className="text-sm">{item}</span>
@@ -255,28 +196,30 @@ export const PrivacyPolicyPage = () => {
          
           <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-zinc-700">
             <h2 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-4">
-              7. Your Privacy Rights
+              {t('privacy.sections.rights.title')}
             </h2>
             <div className="prose prose-lg text-gray-700 dark:text-gray-300 leading-relaxed space-y-4">
-              <p>
-                You have the following rights regarding your personal information:
-              </p>
+              <p>{t('privacy.sections.rights.desc')}</p>
               
               <div className="grid md:grid-cols-2 gap-4 mt-4">
                 {[
-                  { icon: '👁️', title: 'Access', desc: 'Request a copy of the personal information we hold about you' },
-                  { icon: '✏️', title: 'Correction', desc: 'Request correction of inaccurate or incomplete information' },
-                  { icon: '🗑️', title: 'Deletion', desc: 'Request deletion of your personal information (subject to legal obligations)' },
-                  { icon: '📦', title: 'Data Portability', desc: 'Receive your data in a structured, machine-readable format' },
-                  { icon: '🚫', title: 'Opt-out', desc: 'Unsubscribe from marketing communications' },
-                  { icon: '⏸️', title: 'Restriction', desc: 'Request restriction of processing in certain circumstances' }
+                  { icon: '👁️', key: 'access' },
+                  { icon: '✏️', key: 'correction' },
+                  { icon: '🗑️', key: 'deletion' },
+                  { icon: '📦', key: 'portability' },
+                  { icon: '🚫', key: 'optOut' },
+                  { icon: '⏸️', key: 'restriction' }
                 ].map((right, index) => (
                   <div key={index} className="bg-gray-50 dark:bg-zinc-700/50 p-4 rounded-lg">
                     <div className="flex items-start">
                       <span className="text-2xl mr-3 shrink-0">{right.icon}</span>
                       <div>
-                        <p className="font-bold text-gray-900 dark:text-white mb-1">{right.title}</p>
-                        <p className="text-sm text-gray-700 dark:text-gray-300">{right.desc}</p>
+                        <p className="font-bold text-gray-900 dark:text-white mb-1">
+                          {t(`privacy.sections.rights.items.${right.key}.title`)}
+                        </p>
+                        <p className="text-sm text-gray-700 dark:text-gray-300">
+                          {t(`privacy.sections.rights.items.${right.key}.desc`)}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -285,26 +228,19 @@ export const PrivacyPolicyPage = () => {
 
               <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 p-6 rounded-r-lg mt-6">
                 <p className="text-gray-700 dark:text-gray-300">
-                  <strong>To exercise any of these rights,</strong> please visit the Culinary Department staff in Room L1170.
+                  <strong>{t('privacy.sections.rights.contactBold')}</strong> {t('privacy.sections.rights.contactRest')}
                 </p>
-                </div>
-                </div>
               </div>
+            </div>
+          </div>
 
           <div className="bg-white dark:bg-zinc-800 rounded-lg shadow-md p-8 border border-gray-200 dark:border-zinc-700">
             <h2 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-4">
-              8. Changes to This Privacy Policy
+              {t('privacy.sections.changes.title')}
             </h2>
             <div className="prose prose-lg text-gray-700 dark:text-gray-300 leading-relaxed space-y-4">
-              <p>
-                We may update our Privacy Policy from time to time. We will notify you of any 
-                changes by posting the new Privacy Policy on this page and updating the "Last 
-                Updated" date at the top of this policy.
-              </p>
-              <p>
-                You are advised to review this Privacy Policy periodically for any changes. Changes 
-                to this Privacy Policy are effective when they are posted on this page.
-              </p>
+              <p>{t('privacy.sections.changes.p1')}</p>
+              <p>{t('privacy.sections.changes.p2')}</p>
             </div>
           </div>
         </div>

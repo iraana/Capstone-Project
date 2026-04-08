@@ -4,12 +4,14 @@ import { useState } from "react";
 import { Loader2, AlertTriangle } from "lucide-react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface SecurityTabProps {
   onClose: () => void;
 }
 
 export const SecurityTab = ({ onClose }: SecurityTabProps) => {
+  const { t } = useTranslation();
   const { signOut } = useAuth();
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -23,7 +25,7 @@ export const SecurityTab = ({ onClose }: SecurityTabProps) => {
 
   const confirmDeleteAccount = async () => {
     setIsDeleting(true);
-    const toastId = toast.loading("Deleting your account...");
+    const toastId = toast.loading(t("settings.security.toasts.deleting"));
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -41,11 +43,11 @@ export const SecurityTab = ({ onClose }: SecurityTabProps) => {
       }
 
       await signOut();
-      toast.success("Your account has been deleted.", { id: toastId });
+      toast.success(t("settings.security.toasts.success"), { id: toastId });
       setShowDeleteModal(false);
     } catch (error: any) {
       console.error(error);
-      toast.error(error.message || "Error deleting account. Please try again.", { id: toastId });
+      toast.error(error.message || t("settings.security.toasts.error"), { id: toastId });
     } finally {
       setIsDeleting(false);
     }
@@ -59,35 +61,35 @@ export const SecurityTab = ({ onClose }: SecurityTabProps) => {
   return (
     <div className="max-w-3xl relative">
       <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-        Security
+        {t("settings.security.title")}
       </h1>
 
       <div className="bg-gray-50 dark:bg-zinc-800/50 rounded-lg p-6 border border-gray-200 dark:border-zinc-700 space-y-8">
         
         <div>
           <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
-            Change Password
+            {t("settings.security.changePassword")}
           </h3>
           <button
             onClick={handlePasswordReset}
             className="bg-[#00659B] hover:bg-[#00527c] text-white px-4 py-2 rounded text-sm font-bold transition-colors"
           >
-            Go To Change Password
+            {t("settings.security.goToChange")}
           </button>
         </div>
 
         <div>
           <h3 className="text-lg font-bold text-red-600 mb-2">
-            Danger Zone
+            {t("settings.security.dangerZone")}
           </h3>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-            Once you delete your account, there is no going back. Please be certain.
+            {t("settings.security.dangerWarning")}
           </p>
           <button 
             onClick={openDeleteModal}
             className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-bold transition-colors flex items-center gap-2"
           >
-            Delete Account
+            {t("settings.security.deleteAccountBtn")}
           </button>
         </div>
 
@@ -103,18 +105,22 @@ export const SecurityTab = ({ onClose }: SecurityTabProps) => {
                   <AlertTriangle size={24} />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">Delete Account</h3>
-                  <p className="text-sm text-zinc-500 dark:text-zinc-400">This action cannot be undone.</p>
+                  <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+                    {t("settings.security.modal.title")}
+                  </h3>
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                    {t("settings.security.modal.cannotUndo")}
+                  </p>
                 </div>
               </div>
               
               <p className="text-sm text-zinc-600 dark:text-zinc-300 mb-5">
-                You are about to permanently delete your account, along with all of your associated data and past orders. 
+                {t("settings.security.modal.description")}
               </p>
 
               <div className="bg-zinc-50 dark:bg-zinc-800/50 p-4 rounded-xl border border-zinc-200 dark:border-zinc-700">
                 <label htmlFor="confirm-delete" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
-                  Please type <span className="font-bold text-red-600 dark:text-red-400 select-all">Delete my account</span> to confirm.
+                  {t("settings.security.modal.typePromptPart1")} <span className="font-bold text-red-600 dark:text-red-400 select-all">{t("settings.security.modal.targetPhrase")}</span> {t("settings.security.modal.typePromptPart2")}
                 </label>
                 <input
                   id="confirm-delete"
@@ -122,7 +128,7 @@ export const SecurityTab = ({ onClose }: SecurityTabProps) => {
                   value={confirmText}
                   onChange={(e) => setConfirmText(e.target.value)}
                   className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-600 rounded-lg bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 transition-shadow"
-                  placeholder="Delete my account"
+                  placeholder={t("settings.security.modal.targetPhrase")}
                   autoComplete="off"
                 />
               </div>
@@ -134,15 +140,15 @@ export const SecurityTab = ({ onClose }: SecurityTabProps) => {
                 disabled={isDeleting}
                 className="px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-xl transition-all disabled:opacity-50"
               >
-                Cancel
+                {t("settings.security.modal.cancel")}
               </button>
               <button
                 onClick={confirmDeleteAccount}
-                disabled={confirmText !== "Delete my account" || isDeleting}
+                disabled={confirmText !== t("settings.security.modal.targetPhrase") || isDeleting}
                 className="px-4 py-2 text-sm font-bold text-white bg-red-600 hover:bg-red-700 shadow-md shadow-red-600/20 rounded-xl transition-all active:scale-95 disabled:opacity-50 disabled:active:scale-100 flex items-center gap-2"
               >
                 {isDeleting && <Loader2 size={16} className="animate-spin" />}
-                Confirm Deletion
+                {t("settings.security.modal.confirm")}
               </button>
             </div>
 

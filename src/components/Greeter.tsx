@@ -4,12 +4,14 @@ import { motion, useReducedMotion, easeOut } from "framer-motion";
 import { Sun, Moon, Thermometer, Loader2, LogIn } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../../supabase-client";
+import { useTranslation } from "react-i18next";
 
 export const Greeter = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const shouldReduceMotion = useReducedMotion();
 
-  const [timeGreeting, setTimeGreeting] = useState("");
+  const [greetingKey, setGreetingKey] = useState("morning");
   const [isDaytime, setIsDaytime] = useState(true);
 
   const { data: profile } = useQuery({
@@ -41,20 +43,18 @@ export const Greeter = () => {
   });
 
   useEffect(() => {
-    const nameStr = profile?.first_name ? `, ${profile.first_name}` : ""; // If we have the user's first name, include it in the greeting
-
     const computeGreeting = () => {
       const hour = new Date().getHours();
       setIsDaytime(hour >= 6 && hour < 20); // Consider daytime to be between 6am and 8pm
 
       if (hour >= 4 && hour < 12) // Between 4am and 12pm is morning
-        setTimeGreeting(`Good morning${nameStr}`);
+        setGreetingKey("morning");
       else if (hour >= 12 && hour < 16) // Between 12pm and 4pm is afternoon
-        setTimeGreeting(`Good afternoon${nameStr}`);
+        setGreetingKey("afternoon");
       else if (hour >= 16 && hour < 23) // Between 4pm and 11pm is evening
-        setTimeGreeting(`Good evening${nameStr}`);
+        setGreetingKey("evening");
       else // Between 11pm and 4am is late night
-        setTimeGreeting(`It's late${nameStr}`);
+        setGreetingKey("late");
     };
 
     computeGreeting();
@@ -63,14 +63,14 @@ export const Greeter = () => {
   }, [profile]);
 
   // Weather messages based on temperature
-  const getWeatherMessage = (temp?: number) => {
-    if (temp === undefined) return "We hope you're having a great day!";
-    if (temp <= -10) return "It's freezing outside! Order a hot meal to warm up.";
-    if (temp < 0) return "It's quite cold out. A warm meal would be perfect.";
-    if (temp < 10) return "It's chilly outside. A warm dish would hit the spot!";
-    if (temp < 20) return "The weather is mild. Great time to try something new from the menu!";
-    if (temp < 30) return "It's warm outside! Enjoy one of our refreshing dishes.";
-    return "It's a scorcher! Stay hydrated and enjoy a refreshing meal.";
+  const getWeatherKey = (temp?: number) => {
+    if (temp === undefined) return "default";
+    if (temp <= -10) return "freezing";
+    if (temp < 0) return "cold";
+    if (temp < 10) return "chilly";
+    if (temp < 20) return "mild";
+    if (temp < 30) return "warm";
+    return "scorcher";
   };
 
   const containerVariants = {
@@ -98,16 +98,19 @@ export const Greeter = () => {
 
           {/* Prompt to sign in */}
           <h2 className="text-xl sm:text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
-            You must sign in with a Sault College email to order
+            {t("greeter.auth.title")}
           </h2>
 
           <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 max-w-md">
-            Please log in to add to your cart and place your order.
+            {t("greeter.auth.subtitle")}
           </p>
         </div>
       </motion.section>
     );
   }
+
+  // If we have the user's first name, include it in the greeting
+  const nameStr = profile?.first_name ? `, ${profile.first_name}` : "";
 
   return (
     <motion.section
@@ -135,7 +138,7 @@ export const Greeter = () => {
             className="text-2xl sm:text-3xl font-semibold text-zinc-900 dark:text-zinc-100"
             aria-live="polite"
           >
-            {timeGreeting}!
+            {t(`greeter.greetings.${greetingKey}`, { name: nameStr })}!
           </motion.h2>
         </div>
 
@@ -164,8 +167,8 @@ export const Greeter = () => {
         className="mt-4 text-sm sm:text-base text-zinc-700 dark:text-zinc-300 font-medium"
       >
         {weatherLoading
-          ? "Checking the weather outside..."
-          : getWeatherMessage(weather)}
+          ? t("greeter.weather.checking")
+          : t(`greeter.weather.${getWeatherKey(weather)}`)}
       </motion.p>
     </motion.section>
   );

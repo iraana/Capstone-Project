@@ -7,6 +7,7 @@ import { BrowserRouter as Router } from 'react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './context/AuthContext';
 import { registerSW } from 'virtual:pwa-register'
+import './i18n';  
 
 const client = new QueryClient();  // A QueryClient instance created, used to cache data
 

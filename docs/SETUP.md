@@ -138,8 +138,7 @@ pip install -r requirements.txt --user
 The application uses a Rust-based image processor compiled to WebAssembly for client-side image optimization.
 
 ```bash
-# Navigate to the Rust directory (if separate)
-# Or run from project root if wasm is in the root
+# Navigate to the Rust directory
 
 # Build the WASM package
 wasm-pack build --target web
@@ -165,7 +164,7 @@ The project uses a `.env` file in the **project root** directory for environment
 # Supabase Configuration
 VITE_SUPABASE_URL=your_supabase_project_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-VITE_SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
 # Flask API Configuration (Optional - for deployment)
 FLASK_ENV=development
@@ -185,7 +184,7 @@ VITE_APP_URL=http://localhost:5173  # For local development
 3. Copy the following:
    - **Project URL** → `VITE_SUPABASE_URL`
    - **anon/public key** → `VITE_SUPABASE_ANON_KEY`
-   - **service_role key** → `VITE_SUPABASE_SERVICE_ROLE_KEY` (keep this secret!)
+   - **service_role key** → `SUPABASE_SERVICE_ROLE_KEY` (keep this secret!)
 
 **Security Note:** Never commit the `.env` file to Git. It's already included in `.gitignore`.
 
@@ -269,44 +268,6 @@ This serves the `dist/` folder to verify the production build works correctly.
 
 ---
 
-## Project Structure
-
-```
-Capstone-Project/
-├── api/                        # Flask serverless API
-│   ├── app.py                  # Main Flask application
-│   └── requirements.txt        # Python dependencies
-├── docs/                       # Documentation
-│   ├── SETUP.md               # This file
-│   ├── TESTING.md             # Testing documentation
-│   └── images/                # Documentation images
-├── public/                     # Static assets
-│   ├── logo.svg               # App logo
-│   └── favicon.ico            # Favicon
-├── src/                        # Source code
-│   ├── components/            # React components
-│   ├── pages/                 # Page components
-│   ├── hooks/                 # Custom React hooks
-│   ├── context/               # React context providers
-│   ├── store/                 # Zustand stores
-│   ├── tests/                 # Test files
-│   ├── types/                 # TypeScript type definitions
-│   ├── App.tsx                # Main App component
-│   └── main.tsx               # Application entry point
-├── pkg/                        # Compiled WASM (generated)
-├── node_modules/              # Node dependencies (generated)
-├── .env                        # Environment variables
-├── .gitignore                 # Git ignore rules
-├── package.json               # Node.js dependencies
-├── requirements.txt           # Python dependencies
-├── tsconfig.json              # TypeScript configuration
-├── tailwind.config.js         # Tailwind CSS configuration
-├── vite.config.ts             # Vite configuration
-└── README.md                  # Project overview
-```
-
----
-
 ## Development Workflow
 
 ### Typical Development Session
@@ -345,7 +306,7 @@ Capstone-Project/
 
 If you make changes to the Rust image processor:
 
-1. **Edit Rust source files** (usually in `wasm/` or similar directory)
+1. **Edit Rust source files** (in `wasm-lib`)
 
 2. **Rebuild WASM:**
    ```bash
@@ -441,7 +402,7 @@ pip install -r requirements.txt
 cargo install wasm-pack --force
 
 # Make sure you're in the correct directory
-cd wasm/  # or wherever the Rust code is located
+cd wasm-lib/  
 
 # Try building with verbose output
 wasm-pack build --target web --verbose

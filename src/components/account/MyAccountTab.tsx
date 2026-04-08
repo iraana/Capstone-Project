@@ -7,15 +7,17 @@ import { User, Loader2, ShieldCheck, Mail } from "lucide-react";
 import { supabase } from "../../../supabase-client";
 import { useAuth } from "../../context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 const profileSchema = z.object({
-  first_name: z.string().min(1, "First name is required"),
-  last_name: z.string().min(1, "Last name is required"),
+  first_name: z.string().min(1, "settings.account.validation.firstNameRequired"),
+  last_name: z.string().min(1, "settings.account.validation.lastNameRequired"),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export const MyAccountTab = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
@@ -79,7 +81,7 @@ export const MyAccountTab = () => {
   return (
     <div className="max-w-3xl">
       <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-        My Account
+        {t("settings.account.title")}
       </h1>
 
       <div className="bg-[#00659B] h-24 rounded-t-xl relative mb-16">
@@ -97,7 +99,7 @@ export const MyAccountTab = () => {
             {profile?.first_name} {profile?.last_name}
             {profile?.role === "ADMIN" && (
               <span className="bg-blue-600 text-white text-[10px] px-1.5 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
-                <ShieldCheck size={10} /> Admin
+                <ShieldCheck size={10} /> {t("settings.account.adminRole")}
               </span>
             )}
           </h2>
@@ -109,7 +111,7 @@ export const MyAccountTab = () => {
 
       <div className="bg-gray-50 dark:bg-zinc-800/50 rounded-lg p-6 border border-gray-200 dark:border-zinc-700">
         <h3 className="text-lg font-bold text-gray-900 dark:text-white uppercase tracking-tight mb-4">
-          Profile Information
+          {t("settings.account.profileInfo")}
         </h3>
 
         {isLoading ? (
@@ -121,30 +123,30 @@ export const MyAccountTab = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-wider">
-                  First Name
+                  {t("settings.account.firstName")}
                 </label>
                 <input
                   {...register("first_name")}
                   className="w-full bg-gray-200 dark:bg-zinc-900 rounded-md px-3 py-2 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00659B]"
                 />
-                {errors.first_name && (
+                {errors.first_name?.message && (
                   <p className="text-red-500 text-xs mt-1">
-                    {errors.first_name.message}
+                    {t(errors.first_name.message)}
                   </p>
                 )}
               </div>
 
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-wider">
-                  Last Name
+                  {t("settings.account.lastName")}
                 </label>
                 <input
                   {...register("last_name")}
                   className="w-full bg-gray-200 dark:bg-zinc-900 rounded-md px-3 py-2 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00659B]"
                 />
-                {errors.last_name && (
+                {errors.last_name?.message && (
                   <p className="text-red-500 text-xs mt-1">
-                    {errors.last_name.message}
+                    {t(errors.last_name.message)}
                   </p>
                 )}
               </div>
@@ -152,9 +154,9 @@ export const MyAccountTab = () => {
 
             <div className="opacity-70 space-y-1.5">
               <label className="text-xs font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-wider flex items-center gap-1">
-                Email
+                {t("settings.account.email")}
                 <span className="normal-case font-normal text-[10px]">
-                  (Cannot be changed)
+                  {t("settings.account.cannotChange")}
                 </span>
               </label>
 
@@ -181,14 +183,14 @@ export const MyAccountTab = () => {
           >
             <div className="bg-zinc-900 rounded-lg shadow-2xl p-3 px-4 flex items-center justify-between border border-zinc-700/50">
               <p className="text-white text-sm font-medium">
-                Careful — you have unsaved changes!
+                {t("settings.account.unsavedChanges")}
               </p>
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => reset()}
                   className="text-white hover:underline text-sm"
                 >
-                  Reset
+                  {t("settings.account.reset")}
                 </button>
                 <button
                   onClick={handleSubmit(onSubmit)}
@@ -198,7 +200,7 @@ export const MyAccountTab = () => {
                   {updateProfile.isPending && (
                     <Loader2 size={14} className="animate-spin" />
                   )}
-                  Save Changes
+                  {t("settings.account.saveChanges")}
                 </button>
               </div>
             </div>

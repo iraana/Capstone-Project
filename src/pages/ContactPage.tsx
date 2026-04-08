@@ -1,7 +1,10 @@
 import { motion, type Variants } from "framer-motion";
 import { Contact } from "../components/Contact"; 
+import { useTranslation } from "react-i18next";
 
 export const ContactPage = () => {
+  const { t } = useTranslation();
+
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
@@ -37,16 +40,16 @@ export const ContactPage = () => {
         <div className="text-center space-y-4">
           <motion.h1
             variants={headerVariants}
-             className="text-4xl sm:text-5xl md:text-6xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-500 tracking-tight"
+             className="text-4xl sm:text-5xl md:text-6xl font-serif font-bold text-transparent bg-clip-text bg-linear-to-r from-blue-600 to-green-500 tracking-tight"
           >
-            Contact Us
+            {t("titles.contact")}
           </motion.h1>
 
           <motion.p
             variants={headerVariants}
             className="text-lg text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto"
           >
-            Have questions about Gourmet2Go or need help with your order? Send us a message and we'll get back to you shortly.
+            {t("titles.contactSubtitle")}
           </motion.p>
         </div>
 

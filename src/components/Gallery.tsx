@@ -4,6 +4,7 @@ import { supabase } from "../../supabase-client";
 import { motion, AnimatePresence } from "framer-motion";
 import { Maximize2, X, ChevronLeft, ChevronRight, Image as ImageIcon } from "lucide-react";
 import { Loader } from "./Loader";
+import { useTranslation } from "react-i18next";
 
 interface GalleryPost {
   id: number;
@@ -15,6 +16,8 @@ interface GalleryPost {
 export const Gallery = () => {
   // For the selected image in the lightbox
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
+  const { t } = useTranslation();
 
   // Fetch gallery posts
   const { data: galleryPosts, isLoading, error } = useQuery({
@@ -200,7 +203,7 @@ export const Gallery = () => {
                       {galleryPosts[selectedIndex].caption}
                     </p>
                     <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                      Image {selectedIndex + 1} of {galleryPosts.length}
+                      Image {selectedIndex + 1} {t("helperWords.outOf")} {galleryPosts.length}
                     </p>
                   </div>
                 </motion.div>
