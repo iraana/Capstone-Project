@@ -1,9 +1,11 @@
 import { motion, type Variants } from 'framer-motion';
 import { Lock, MoveLeft, Home } from 'lucide-react';
 import { useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 
 export const UnauthorizedPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -53,14 +55,14 @@ export const UnauthorizedPage = () => {
           variants={itemVariants}
           className="mt-4 text-3xl font-bold tracking-tight text-zinc-900 dark:text-white sm:text-4xl"
         >
-          Unauthorized Access
+          {t("titles.unauthorized")}
         </motion.h2>
 
         <motion.p
           variants={itemVariants}
           className="mx-auto mt-4 max-w-md text-base text-zinc-600 dark:text-zinc-400 sm:text-lg"
         >
-          You don't have to go home but you can't stay here (maybe check if you're logged in).
+          {t("titles.unauthorizedSubtitle")}
         </motion.p>
 
         <motion.div
@@ -72,7 +74,7 @@ export const UnauthorizedPage = () => {
             className="group flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-200 bg-white px-6 py-3 text-sm font-semibold text-zinc-700 transition-all hover:bg-zinc-50 hover:text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-200 focus:ring-offset-2 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700 dark:focus:ring-zinc-700 dark:focus:ring-offset-zinc-900 sm:w-auto"
           >
             <MoveLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-            Go Back
+            {t("helperWords.goBack")}
           </button>
 
           <a
@@ -80,7 +82,7 @@ export const UnauthorizedPage = () => {
             className="group flex w-full items-center justify-center gap-2 rounded-lg bg-linear-to-r from-blue-600 to-green-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 transition-all hover:scale-[1.02] hover:shadow-blue-500/30 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 sm:w-auto"
           >
             <Home className="h-4 w-4" />
-            Back to Home
+            {t("helperWords.backToHome")}
           </a>
         </motion.div>
       </motion.div>

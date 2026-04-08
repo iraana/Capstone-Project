@@ -6,30 +6,32 @@ import { useAuth } from "../../context/AuthContext.tsx";
 import { useState } from "react";
 import { supabase } from "../../../supabase-client.ts";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 const signInSchema = z.object({
   email: z
-    .email("Invalid email address")
+    .email("auth.validation.invalidEmail")
     .refine((email) => /^[0-9]{8}@saultcollege\.ca$/i.test(email), {
-      message: "You must use your 8-digit Sault College email to sign in",
+      message: "auth.validation.saultEmail",
     }),
-  password: z.string().min(1, "Password is required"),
+  password: z.string().min(1, "auth.validation.passwordRequired"),
 });
 
 type SignInFormData = z.infer<typeof signInSchema>;
 
 export const SignIn = () => {
+  const { t } = useTranslation();
   const { signInWithEmail } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
 
   const handleForgotPassword = async () => {
     if (!email) {
-      toast.error("Please enter your email address first.");
+      toast.error(t("auth.signIn.toasts.enterEmailFirst"));
       return;
     }
 
-    const toastId = toast.loading("Sending reset email...");
+    const toastId = toast.loading(t("auth.signIn.toasts.sendingReset"));
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,
@@ -38,7 +40,7 @@ export const SignIn = () => {
     if (error) {
       toast.error(error.message, { id: toastId });
     } else {
-      toast.success("Password reset email sent! Check your inbox.", { id: toastId });
+      toast.success(t("auth.signIn.toasts.resetSent"), { id: toastId });
     }
   };
 
@@ -51,14 +53,14 @@ export const SignIn = () => {
   });
 
   const onSubmit = async (data: SignInFormData) => {
-    const toastId = toast.loading("Signing in...");
+    const toastId = toast.loading(t("auth.signIn.toasts.signingIn"));
     
     try {
       await signInWithEmail(data.email, data.password);
-      toast.success("Successfully signed in!", { id: toastId });
+      toast.success(t("auth.signIn.toasts.success"), { id: toastId });
       navigate("/"); 
     } catch (error: any) {
-      toast.error(error?.message || "Failed to sign in. Please check your credentials.", { id: toastId });
+      toast.error(error?.message || t("auth.signIn.toasts.error"), { id: toastId });
     }
   };
 
@@ -73,13 +75,13 @@ export const SignIn = () => {
   return (
     <div className="bg-white dark:bg-zinc-900 px-8 py-10 shadow-xl border border-zinc-200 dark:border-zinc-800 rounded-2xl transition-all">
       <h3 className="text-xl font-semibold text-center text-zinc-800 dark:text-zinc-200 mb-8">
-        Welcome Back
+        {t("auth.signIn.title")}
       </h3>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div>
           <label htmlFor="email" className={labelClasses}>
-            Email Address
+            {t("auth.signIn.emailLabel")}
           </label>
           <input
             id="email"
@@ -90,12 +92,12 @@ export const SignIn = () => {
             className={inputClasses(errors.email)}
             placeholder="40404040@saultcollege.ca"
           />
-          {errors.email && <p className="text-red-500 text-xs mt-1.5 ml-1">{errors.email.message}</p>}
+          {errors.email?.message && <p className="text-red-500 text-xs mt-1.5 ml-1">{t(errors.email.message)}</p>}
         </div>
 
         <div>
           <label htmlFor="password" className={labelClasses}>
-            Password
+            {t("auth.signIn.passwordLabel")}
           </label>
           <div className="flex items-center gap-3">
             <input
@@ -106,7 +108,7 @@ export const SignIn = () => {
               placeholder="••••••••"
             />
           </div>
-          {errors.password && <p className="text-red-500 text-xs mt-1.5 ml-1">{errors.password.message}</p>}
+          {errors.password?.message && <p className="text-red-500 text-xs mt-1.5 ml-1">{t(errors.password.message)}</p>}
         </div>
 
         <button
@@ -114,7 +116,7 @@ export const SignIn = () => {
           disabled={isSubmitting}
           className="w-full bg-linear-to-r from-blue-600 to-emerald-500 hover:from-blue-700 hover:to-emerald-600 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all active:scale-[0.98] disabled:opacity-70"
         >
-          {isSubmitting ? "Signing in..." : "Sign In"}
+          {isSubmitting ? t("auth.signIn.signingInBtn") : t("auth.signIn.signInBtn")}
         </button>
       </form>
 
@@ -125,13 +127,13 @@ export const SignIn = () => {
           disabled={isSubmitting}
           className="text-sm text-blue-600 dark:text-blue-400 font-semibold hover:underline"
         >
-          Forgot your password?
+          {t("auth.signIn.forgotPassword")}
         </button>
 
         <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-          Don't have an account?{" "}
+          {t("auth.signIn.noAccount")}{" "}
           <a href="/sign-up" className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
-            Sign Up
+            {t("auth.signIn.signUpLink")}
           </a>
         </p>
       </div>

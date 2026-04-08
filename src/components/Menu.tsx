@@ -8,11 +8,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Loader } from "./Loader";
 import { Greeter } from "./Greeter";
 import { DateTime } from "luxon";
+import { useTranslation } from "react-i18next";
 
 export interface Dish {
   dish_id: number;
   name: string;
-  category: 'Other' | 'Soups' | 'Salads' | 'Sandwiches' | 'Entrees' | 'Desserts' | 'Bowls'; 
+  category: 'Other' | 'Soups' | 'Salads' | 'Sandwiches' | 'Entrees' | 'Desserts' | 'Bowls' | 'Sides' | 'Appetizers'; 
   price: number;
 }
 
@@ -64,10 +65,14 @@ const getMenuWindow = () => {
 const MAX_TOTAL_ITEMS = 5;
 
 export const Menu = () => {
+  const { t, i18n } = useTranslation();
   const { addItem, items: cartItems, clearCart, totalItems } = cartStore();
   const { user, role } = useAuth(); 
   const [selectedDayId, setSelectedDayId] = useState<number | null>(null);
   const { start, end } = getMenuWindow();
+
+  // Helper for localized date formatting
+  const currentLocale = i18n.language?.startsWith('fr') ? 'fr-CA' : 'en-US';
 
   // Selects from MenuDays and then the related MenuDayDishes and the related Dishes 
   const { data: menuDays, isLoading, error } = useQuery({
@@ -135,8 +140,8 @@ export const Menu = () => {
     // Find the menu that matches the one in the cart
     const lockedMenu = menuDays.find(d => d.menu_day_id === cartMenuId);
     // Converts date to a more readible format
-    return lockedMenu ? new Date(lockedMenu.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC'}) : "";
-  }, [cartMenuId, menuDays]); // Dependency array
+    return lockedMenu ? new Date(lockedMenu.date).toLocaleDateString(currentLocale, { month: 'short', day: 'numeric', timeZone: 'UTC'}) : "";
+  }, [cartMenuId, menuDays, currentLocale]); // Dependency array
 
   const dishesByCategory = useMemo(() => {
     // If no menu is selected, return an empty object
@@ -164,7 +169,7 @@ export const Menu = () => {
   }, [currentMenu]);
 
   const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('en-US', {
+    return new Date(dateStr).toLocaleDateString(currentLocale, {
       month: 'short',
       day: 'numeric',
       timeZone: 'UTC'
@@ -194,7 +199,7 @@ export const Menu = () => {
   if (error) {
     return (
       <div className="min-h-[50vh] flex items-center justify-center text-red-500">
-        <p>Something went wrong: {error.message}</p>
+        <p>{t("menu.error", { message: error.message })}</p>
       </div>
     );
   }
@@ -204,8 +209,8 @@ export const Menu = () => {
     return (
       <div className="min-h-[50vh] flex flex-col items-center justify-center text-gray-500">
         <UtensilsCrossed className="w-16 h-16 mb-4 opacity-20" />
-        <h3 className="text-xl font-bold">No Menus Available</h3>
-        <p>Come back another time</p>
+        <h3 className="text-xl font-bold">{t("menu.noMenus")}</h3>
+        <p>{t("menu.comeBack")}</p>
       </div>
     );
   }
@@ -226,8 +231,8 @@ export const Menu = () => {
               <div className="flex items-center gap-3 text-amber-800 dark:text-amber-200">
                 <AlertCircle className="w-5 h-5 shrink-0" />
                 <p className="text-sm font-medium">
-                  You have an active order for <span className="font-bold">{lockedDateString}</span>. 
-                  You must clear your cart to order from this date.
+                  {t("menu.activeOrderAlert.part1")} <span className="font-bold">{lockedDateString}</span>. 
+                  {" "}{t("menu.activeOrderAlert.part2")}
                 </p>
               </div>
               <button 
@@ -235,7 +240,7 @@ export const Menu = () => {
                 className="whitespace-nowrap flex items-center gap-2 px-3 py-1.5 bg-amber-100 hover:bg-amber-200 dark:bg-amber-800 dark:hover:bg-amber-700 text-amber-900 dark:text-amber-100 text-xs font-bold rounded transition-colors"
               >
                 <Trash2 className="w-3 h-3" />
-                Clear Cart
+                {t("menu.clearCart")}
               </button>
             </div>
           </motion.div>
@@ -268,7 +273,7 @@ export const Menu = () => {
                 )}
 
                <span className={`text-xs uppercase font-bold tracking-wider mb-1 ${isSelected ? 'text-white' : 'text-black dark:text-white'}`}>
-                 {day.day.substring(0, 3)}
+                 {t(`menu.days.${day.day}`)}
                </span>
                <span className={`text-lg font-bold ${isSelected ? 'text-white' : 'text-gray-800 dark:text-white'}`}>
                  {formatDate(day.date)}
@@ -299,14 +304,14 @@ export const Menu = () => {
             {Object.keys(dishesByCategory).length === 0 ? (
                 <div className="text-center py-20 text-gray-500 bg-gray-50 dark:bg-zinc-800/50 rounded-2xl border-dashed border-2 border-gray-200 dark:border-zinc-700">
                     <ShoppingBasket className="w-12 h-12 mx-auto mb-3 opacity-20" />
-                    <p>No dishes have been added to this menu yet.</p>
+                    <p>{t("menu.noDishes")}</p>
                 </div>
             ) : (
                 Object.entries(dishesByCategory).map(([category, dishes]) => (
                 <div key={category} className="scroll-mt-24">
                     <div className="flex items-center gap-3 mb-6">
                     <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
-                        {category}
+                        {t(`menu.categories.${category}`, category)}
                     </h2>
                     <div className="h-px flex-1 bg-gray-200 dark:bg-zinc-700 mt-2"></div>
                     </div>
@@ -315,28 +320,28 @@ export const Menu = () => {
                     {dishes.map((dishItem) => {
                         const isSoldOut = dishItem.stock <= 0;
                         
-                        let buttonText = "Add to Cart";
+                        let buttonText = t("menu.buttons.add");
                         let ButtonIcon = Plus;
                         let isDisabled = false;
 
                         if (!user) {
-                            buttonText = "Locked";
+                            buttonText = t("menu.buttons.locked");
                             ButtonIcon = Lock;
                             isDisabled = true;
                         } else if (role === "NO_ACCESS") {
-                            buttonText = "Locked";
+                            buttonText = t("menu.buttons.locked");
                             ButtonIcon = Lock;
                             isDisabled = true;
                         } else if (isMenuLocked) {
-                            buttonText = "Locked";
+                            buttonText = t("menu.buttons.locked");
                             ButtonIcon = Lock;
                             isDisabled = true;
                         } else if (isSoldOut) {
-                            buttonText = "Sold Out";
+                            buttonText = t("menu.buttons.soldOut");
                             ButtonIcon = Lock;
                             isDisabled = true;
                         } else if (isCartFull) {
-                            buttonText = "Cart Full";
+                            buttonText = t("menu.buttons.cartFull");
                             ButtonIcon = Lock;
                             isDisabled = true;
                         }
@@ -359,7 +364,7 @@ export const Menu = () => {
                                 </h3>
                                 <p className="text-sm font-medium text-gray-500 dark:text-gray-400 flex items-center gap-2">
                                 <UtensilsCrossed className="w-3 h-3" />
-                                {category}
+                                {t(`menu.categories.${category}`, category)}
                                 </p>
                             </div>
                             <div className="text-right">
@@ -376,7 +381,7 @@ export const Menu = () => {
                                 ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300" 
                                 : "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"}
                             `}>
-                                {isSoldOut ? "Sold Out" : `${dishItem.stock} remaining`}
+                                {isSoldOut ? t("menu.stock.soldOut") : t("menu.stock.remaining", { count: dishItem.stock })}
                             </div>
 
                             <motion.button

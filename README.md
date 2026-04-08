@@ -123,6 +123,8 @@
 ![GoTrue](https://img.shields.io/badge/GoTrue-3ECF8E?style=flat&logo=supabase&logoColor=white)
 ![Luxon](https://img.shields.io/badge/Luxon-F7DF1E?style=flat&logo=javascript&logoColor=black)
 ![Recharts](https://img.shields.io/badge/Recharts-0041C2?style=flat&logo=Soundcharts&logoColor=white)
+![Zustand](https://img.shields.io/badge/Zustand-F7DF1E?style=flat&logo=javascript&logoColor=black)
+![react-i18next](https://img.shields.io/badge/react%E2%80%93i18next-F7DF1E?style=flat&logo=javascript&logoColor=black)
 
 
 **Databases & DevOps**

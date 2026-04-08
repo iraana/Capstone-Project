@@ -3,11 +3,12 @@ import { useAuth } from "../context/AuthContext";
 import { useState, useEffect } from "react";
 import { DarkModeToggle } from "./DarkModeToggle";
 import { cartStore } from "../store/cartStore"; 
-import { ShoppingCart, Menu as MenuIcon, X, Settings } from "lucide-react"; 
+import { ShoppingCart, Menu as MenuIcon, X, Settings, ChevronDown } from "lucide-react"; 
 import { motion, AnimatePresence } from "framer-motion";
 import { AccountSettings } from "./account/AccountSettings"; 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "../../supabase-client";
+import { useTranslation } from "react-i18next";
 
 type Role = "NO_ACCESS" | "USER" | "ADMIN";
 
@@ -17,26 +18,29 @@ interface NavLinkType {
   roles?: Role[]; 
 }
 
-const getNavLinks = (): NavLinkType[] => [
-  { name: "Administration", path: "/admin", roles: ["ADMIN"] },
-  { name: "Gallery", path: "/gallery"},
-  { name: "Menu", path: "/" },
-  { name: "My Orders", path: "/my-orders", roles: ["USER", "ADMIN"]},
-  { name: "Review", path: "/review", roles: ["USER", "ADMIN"]},
-  { name: "Virtual Tour", path: "/virtualtour", roles: ["USER"]},
+const getNavLinks = (t: (key: string) => string): NavLinkType[] => [
+  { name: t("nav.admin"), path: "/admin", roles: ["ADMIN"] },
+  { name: t("nav.gallery"), path: "/gallery"},
+  { name: t("nav.menu"), path: "/" },
+  { name: t("nav.myOrders"), path: "/my-orders", roles: ["USER", "ADMIN"]},
+  { name: t("nav.review"), path: "/review", roles: ["USER", "ADMIN"]},
+  { name: t("nav.virtualTour"), path: "/virtualtour", roles: ["USER"]},
 ];
 
 export const Navbar = () => {
+  const { t, i18n } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false); 
-  const { user, role, signOut } = useAuth();
+  const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   
+  const { user, role, signOut } = useAuth();
   const { items, toggleCart } = cartStore(); 
+  
   const cartCount = items.reduce((acc, item) => acc + item.quantity, 0);
-
   const canAccessCart = user && (role === "USER" || role === "ADMIN");
 
   const [isBumped, setIsBumped] = useState(false);
+  
   useEffect(() => {
     if (cartCount === 0) return;
     setIsBumped(true);
@@ -44,7 +48,17 @@ export const Navbar = () => {
     return () => clearTimeout(timer);
   }, [cartCount]);
 
-  const userId = user?.id
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (!(e.target as Element).closest(".lang-dropdown")) {
+        setLangDropdownOpen(false);
+      }
+    };
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, []);
+
+  const userId = user?.id;
 
   const { data: profile } = useQuery({
     queryKey: ["profile", "navbar", userId],
@@ -64,11 +78,19 @@ export const Navbar = () => {
 
   const displayName = profile?.first_name || profile?.last_name || user?.email?.split('@')[0];
 
-  const navLinks = getNavLinks().filter((link) => {
+  const navLinks = getNavLinks(t).filter((link) => {
     if (!link.roles) return true;
     if (!role) return false;
     return link.roles.includes(role);
   });
+
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng);
+    localStorage.setItem("appLanguage", lng);
+    setLangDropdownOpen(false);
+  };
+
+  const isFrench = i18n.language?.startsWith("fr");
 
   return (
     <>
@@ -77,7 +99,7 @@ export const Navbar = () => {
           <div className="flex justify-between items-center h-16">
             
             <NavLink to="/" className="flex items-center gap-2 group">
-            <img src="/logo.svg" alt="Gourmet2Go Logo" className="w-12 h-12 object-contain" />
+              <img src="/logo.svg" alt="Gourmet2Go Logo" className="w-12 h-12 object-contain" />
               <span className="font-extrabold text-2xl tracking-tight group-hover:opacity-90 transition-opacity">
                 Gourmet2Go
               </span>
@@ -140,8 +162,8 @@ export const Navbar = () => {
                 <button
                   onClick={() => setSettingsOpen(true)}
                   className="p-2 hover:bg-white/10 rounded-full transition-colors group"
-                  aria-label="Account Settings"
-                  title="Account Settings"
+                  aria-label={t("nav.accountSettings")}
+                  title={t("nav.accountSettings")}
                 >
                   <Settings className="w-5 h-5 text-blue-100 group-hover:text-white transition-colors" />
                 </button>
@@ -149,18 +171,55 @@ export const Navbar = () => {
 
               <div className="h-6 w-px bg-white/20"></div>
 
+              {/* Desktop Language Switcher */}
+              <div className="relative lang-dropdown">
+                <button
+                  onClick={() => setLangDropdownOpen(!langDropdownOpen)}
+                  className="flex items-center gap-1 text-xs font-bold text-white bg-white/10 hover:bg-white/20 px-2 py-1.5 rounded transition-colors"
+                >
+                  {isFrench ? "FR" : "ENG"}
+                  <ChevronDown className="w-3 h-3" />
+                </button>
+                
+                <AnimatePresence>
+                  {langDropdownOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -5 }}
+                      className="absolute top-full right-0 mt-2 w-24 bg-white rounded-md shadow-lg py-1 z-50 overflow-hidden"
+                    >
+                      <button
+                        onClick={() => changeLanguage('en')}
+                        className={`w-full text-left px-4 py-2 text-sm text-gray-800 hover:bg-gray-100 transition-colors ${!isFrench ? "font-bold" : ""}`}
+                      >
+                        English
+                      </button>
+                      <button
+                        onClick={() => changeLanguage('fr')}
+                        className={`w-full text-left px-4 py-2 text-sm text-gray-800 hover:bg-gray-100 transition-colors ${isFrench ? "font-bold" : ""}`}
+                      >
+                        Français
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
               <DarkModeToggle />
 
               <div className="h-6 w-px bg-white/20"></div>
 
               {user ? (
                 <div className="flex items-center gap-4 pl-2">
-                  <span className="text-sm font-medium text-blue-100 hidden lg:block">Hi, {displayName}</span>
+                  <span className="text-sm font-medium text-blue-100 hidden lg:block">
+                    {t("nav.hi", { name: displayName })}
+                  </span>
                   <button
                     onClick={signOut}
                     className="px-4 py-2 rounded-lg bg-white/10 hover:bg-red-500 text-white text-sm font-medium transition-all"
                   >
-                    Sign Out
+                    {t("nav.signOut")}
                   </button>
                 </div>
               ) : (
@@ -168,11 +227,12 @@ export const Navbar = () => {
                   to="/sign-in"
                   className="px-5 py-2 rounded-lg bg-secondary hover:bg-green-500 text-white text-sm font-bold shadow-md shadow-amber-600/20 transition-all transform hover:-translate-y-0.5"
                 >
-                  Sign In
+                  {t("nav.signIn")}
                 </NavLink>
               )}
             </div>
 
+            {/* Mobile View Toggles */}
             <div className="md:hidden flex items-center gap-4">
               {canAccessCart && (
                 <button onClick={toggleCart} className="relative text-white p-1" aria-label="Open Cart">
@@ -196,6 +256,7 @@ export const Navbar = () => {
           </div>
         </div>
 
+        {/* Mobile Hamburger Dropdown Menu */}
         <AnimatePresence>
           {menuOpen && (
             <motion.div 
@@ -227,18 +288,36 @@ export const Navbar = () => {
                       className="w-full text-left px-4 py-3 rounded-lg text-blue-100 hover:bg-white/10 hover:text-white transition-colors font-medium flex items-center gap-2"
                     >
                       <Settings size={18} />
-                      Account Settings
+                      {t("nav.accountSettings")}
                     </button>
                   </li>
                 )}
 
-                <div className="pt-4 mt-4 border-t border-white/10 flex items-center justify-between px-4">
-                  <DarkModeToggle />
-                  {user ? (
-                    <button onClick={signOut} className="text-red-300 font-medium">Sign Out</button>
-                  ) : (
-                    <NavLink to="/sign-in" className="text-secondary font-bold">Sign In</NavLink>
-                  )}
+                <div className="pt-4 mt-4 border-t border-white/10 flex flex-col gap-4 px-4">
+                  
+                  {/* Mobile Language Dropdown */}
+                  <div>
+                    <label className="text-xs text-blue-100/70 uppercase tracking-wider mb-2 block font-medium">
+                      {t("nav.language")}
+                    </label>
+                    <select
+                      value={isFrench ? "fr" : "en"}
+                      onChange={(e) => changeLanguage(e.target.value)}
+                      className="w-full bg-white/10 text-white border border-white/20 rounded-lg px-3 py-2 outline-none appearance-none"
+                    >
+                      <option value="en" className="text-black">English</option>
+                      <option value="fr" className="text-black">Français</option>
+                    </select>
+                  </div>
+
+                  <div className="flex items-center justify-between mt-2">
+                    <DarkModeToggle />
+                    {user ? (
+                      <button onClick={signOut} className="text-red-300 font-medium">{t("nav.signOut")}</button>
+                    ) : (
+                      <NavLink to="/sign-in" className="text-secondary font-bold">{t("nav.signIn")}</NavLink>
+                    )}
+                  </div>
                 </div>
               </ul>
             </motion.div>

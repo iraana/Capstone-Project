@@ -1,18 +1,21 @@
 import { NavLink } from "react-router";
+import { useTranslation } from "react-i18next";
 
 interface FooterLink {
-  name: string;
+  key: string;
   path: string;
 }
 
 const footerLinks: FooterLink[] = [
-  { name: "About", path: "/about" },
-  { name: "Privacy Policy", path: "/privacy-policy" },
-  { name: "Terms of Service", path: "/terms-of-service" },
-  { name: "Contact", path: "/contact" },
+  { key: "footer.links.about", path: "/about" },
+  { key: "footer.links.privacy", path: "/privacy-policy" },
+  { key: "footer.links.terms", path: "/terms-of-service" },
+  { key: "footer.links.contact", path: "/contact" },
 ];
 
 export const Footer = () => {
+  const { t } = useTranslation();
+
   return (
     <footer className="bg-primary text-white mt-8 shadow-sm border-t">
       <div className="w-full max-w-7xl mx-auto p-4 md:py-8">
@@ -25,12 +28,12 @@ export const Footer = () => {
 
           <ul className="flex flex-wrap items-center mb-6 text-sm font-medium sm:mb-0">
             {footerLinks.map((link) => (
-              <li key={link.name} className="me-4 md:me-6">
+              <li key={link.key} className="me-4 md:me-6">
                 <NavLink
                   to={link.path}
                   className="hover:underline"
                 >
-                  {link.name}
+                  {t(link.key)}
                 </NavLink>
               </li>
             ))}
@@ -44,7 +47,7 @@ export const Footer = () => {
           <NavLink to="/" className="hover:underline">
             Sault College™
           </NavLink>
-          . All Rights Reserved.
+          . {t("footer.rights")}
         </span>
       </div>
     </footer>

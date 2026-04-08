@@ -4,6 +4,7 @@ import { useNavigate } from "react-router";
 import { useAuth } from "../../context/AuthContext.tsx";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "../../../supabase-client.ts";
+import { t } from "i18next";
 
 export const SuccessfulOrder = () => {
   const navigate = useNavigate();
@@ -73,21 +74,21 @@ export const SuccessfulOrder = () => {
           variants={itemVariants}
           className="text-6xl font-extrabold tracking-tight sm:text-7xl bg-linear-to-r from-green-700 to-emerald-500 bg-clip-text text-transparent select-none"
         >
-          Order Placed
+          {t("titles.successfulOrder")}
         </motion.h1>
 
         <motion.h2
           variants={itemVariants}
           className="mt-4 text-2xl font-semibold tracking-tight text-zinc-900 dark:text-white sm:text-3xl"
         >
-          Thank you — your order has been accepted!
+          {t("titles.successfulOrderSubtitle")}
         </motion.h2>
 
         <motion.p
           variants={itemVariants}
           className="mx-auto mt-4 max-w-md text-base text-zinc-600 dark:text-zinc-400 sm:text-lg"
         >
-          Come to L1170 on your selected menu day during our pickup hours to grab your meal.
+          {t("titles.successfulOrderSubtitle2")}
         </motion.p>
 
         <motion.div variants={itemVariants} className="mt-6">
@@ -127,7 +128,7 @@ export const SuccessfulOrder = () => {
             aria-label="Go back"
           >
             <MoveLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-            Go Back
+            {t("helperWords.goBack")}
           </button>
 
           <button
@@ -136,7 +137,7 @@ export const SuccessfulOrder = () => {
             aria-label="View my orders"
           >
             <List className="h-4 w-4" />
-            View My Orders
+            {t("helperWords.viewMyOrders")}
           </button>
 
           <a
@@ -145,7 +146,7 @@ export const SuccessfulOrder = () => {
             aria-label="Back to home"
           >
             <Home className="h-4 w-4" />
-            Back to Home
+            {t("helperWords.backToHome")}
           </a>
         </motion.div>
       </motion.div>

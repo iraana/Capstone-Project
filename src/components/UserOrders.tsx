@@ -8,6 +8,7 @@ import { motion, type Variants } from "framer-motion";
 import { useNavigate } from "react-router"; 
 import { DateTime } from "luxon";
 import { formatOrderDateTime } from "../utils/formatOrderDateTime";
+import { useTranslation } from "react-i18next";
 
 interface Dish {
   dish_id: number;
@@ -69,12 +70,15 @@ export const canModifyOrder = (menuDate: string) => {
 };
 
 export const UserOrders = () => {
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [showHistory, setShowHistory] = useState(false);
   const[processingId, setProcessingId] = useState<number | null>(null);
   const [activeQrId, setActiveQrId] = useState<number | null>(null);
+
+  const currentLocale = i18n.language?.startsWith('fr') ? 'fr-CA' : 'en-US';
 
   // --- ANIMATION VARIANTS (Matching SuccessfulOrder) ---
   const containerVariants: Variants = {
@@ -124,7 +128,7 @@ export const UserOrders = () => {
 
   const handleDelete = async (order: Order) => {
     if (!canModifyOrder(order.MenuDays.date)) {
-        alert("Order cancellation cutoff has passed.");
+        alert(t("orders.alerts.cutoffPassed"));
         return;
       }
 
@@ -153,15 +157,15 @@ export const UserOrders = () => {
       queryClient.invalidateQueries({ queryKey: ["user_orders"] });
     } catch (err) {
       console.error("Action failed:", err);
-      alert("Failed to delete order. Please try again.");
+      alert(t("orders.alerts.deleteFailed"));
     } finally {
       setProcessingId(null);
     }
   };
 
   if (!user) return null;
-  if (isLoading) return <div className="p-6">Loading orders...</div>;
-  if (error) return <div className="p-6 text-red-500">Error loading orders</div>;
+  if (isLoading) return <div className="p-6">{t("orders.loading")}</div>;
+  if (error) return <div className="p-6 text-red-500">{t("orders.error")}</div>;
 
   // NEW NO ORDERS 
   if (!orders || orders.length === 0) {
@@ -190,21 +194,21 @@ export const UserOrders = () => {
               variants={itemVariants}
               className="text-5xl font-extrabold tracking-tight sm:text-6xl bg-linear-to-r from-blue-700 to-indigo-500 bg-clip-text text-transparent select-none pb-2"
             >
-              No Orders Yet
+              {t("orders.empty.title")}
             </motion.h1>
     
             <motion.h2
               variants={itemVariants}
               className="mt-4 text-xl font-semibold tracking-tight text-zinc-900 dark:text-white sm:text-2xl"
             >
-              Looks like you haven't placed any orders.
+              {t("orders.empty.subtitle")}
             </motion.h2>
     
             <motion.p
               variants={itemVariants}
               className="mx-auto mt-4 max-w-md text-base text-zinc-600 dark:text-zinc-400 sm:text-lg"
             >
-              Browse our menu to find your next favorite meal and place your first order today!
+              {t("orders.empty.description")}
             </motion.p>
     
             {/* Buttons */}
@@ -218,7 +222,7 @@ export const UserOrders = () => {
                 aria-label="Go back"
               >
                 <MoveLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-                Go Back
+                {t("orders.empty.goBack")}
               </button>
     
               <button
@@ -227,7 +231,7 @@ export const UserOrders = () => {
                 aria-label="Browse Menu"
               >
                 <Utensils className="h-4 w-4" />
-                Browse Menu
+                {t("orders.empty.browseMenu")}
               </button>
             </motion.div>
           </motion.div>
@@ -259,6 +263,13 @@ export const UserOrders = () => {
     const qrUrl = `${window.location.origin}/admin/order/${order.order_number}`;
 
     const canDelete = canModifyOrder(order.MenuDays.date);
+    
+    // Formatting the menu date nicely to current locale
+    const formattedDate = new Date(order.MenuDays.date).toLocaleDateString(currentLocale, {
+      month: 'short',
+      day: 'numeric',
+      timeZone: 'UTC'
+    });
 
     return (
       <div
@@ -268,7 +279,7 @@ export const UserOrders = () => {
         <div className="flex justify-between items-start mb-4">
           <div>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Order #{order.order_number}
+              {t("orders.card.orderNumber", { number: order.order_number })}
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               {formatOrderDateTime(order.timestamp)}
@@ -281,7 +292,7 @@ export const UserOrders = () => {
                 order.status
               )}`}
             >
-              {order.status}
+              {t(`orders.status.${order.status}`)}
             </span>
 
             {order.status === "PENDING" && (
@@ -290,7 +301,7 @@ export const UserOrders = () => {
                   className="flex items-center gap-1 text-xs font-bold text-[#00659B] hover:text-[#005082] dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
                 >
                   <QrCode size={16} />
-                  {activeQrId === order.order_id ? "Hide QR" : "Show QR"}
+                  {activeQrId === order.order_id ? t("orders.card.hideQr") : t("orders.card.showQr")}
                 </button>
             )}
             
@@ -302,10 +313,10 @@ export const UserOrders = () => {
                 >
                 <Trash2 size={14} />
                 {processingId === order.order_id
-                  ? "Cancelling..."
+                  ? t("orders.card.cancelling")
                   : canDelete
-                    ? "Cancel Order"
-                    : "Cutoff Passed"}
+                    ? t("orders.card.cancelOrder")
+                    : t("orders.card.cutoffPassed")}
                 </button>
             )}
           </div>
@@ -314,7 +325,7 @@ export const UserOrders = () => {
         {activeQrId === order.order_id && order.status === "PENDING" && (
             <div className="mb-6 bg-gray-50 dark:bg-black/30 p-4 rounded-xl border border-gray-200 dark:border-zinc-700 flex flex-col items-center animate-in fade-in zoom-in duration-300">
                 <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 font-medium">
-                    Show this to the staff at pickup
+                    {t("orders.card.qrInstruction")}
                 </p>
                 <div className="bg-white p-3 rounded-lg shadow-sm">
                     <QRCode
@@ -329,8 +340,8 @@ export const UserOrders = () => {
 
         <div className="mb-4 text-sm text-gray-600 dark:text-gray-300">
           <p>
-            <strong>Menu Day:</strong>{" "}
-            {order.MenuDays?.day} ({order.MenuDays?.date})
+            <strong>{t("orders.card.menuDay")}</strong>{" "}
+            {t(`menu.days.${order.MenuDays?.day}`, order.MenuDays?.day)} ({formattedDate})
           </p>
         </div>
 
@@ -350,7 +361,7 @@ export const UserOrders = () => {
 
         {order.notes && (
           <div className="mb-4 text-sm text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-zinc-700/50 p-3 rounded border border-gray-100 dark:border-zinc-700">
-            <strong>Notes:</strong> {order.notes}
+            <strong>{t("orders.card.notes")}</strong> {order.notes}
           </div>
         )}
 
@@ -362,17 +373,17 @@ export const UserOrders = () => {
                 className="text-xs font-normal text-red-800 dark:text-red-300 hover:text-red-600 hover:underline disabled:opacity-50"
               >
                 {processingId === order.order_id
-                  ? "Cancelling..."
+                  ? t("orders.card.cancelling")
                   : canDelete
-                    ? "Cancel Order"
-                    : "Cutoff Passed"}
+                    ? t("orders.card.cancelOrder")
+                    : t("orders.card.cutoffPassed")}
               </button>
             ) : (
               <span></span>
             )}
          
           <div className="flex gap-4">
-             <span>Total</span>
+             <span>{t("orders.card.total")}</span>
              <span>${order.total.toFixed(2)}</span>
           </div>
         </div>
@@ -382,13 +393,13 @@ export const UserOrders = () => {
 
   return (
     <div className="max-w-3xl mx-auto p-6 min-h-screen">
-      <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">My Orders</h1>
+      <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">{t("orders.title")}</h1>
 
       <div>
-        <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Pending Orders</h2>
+        <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">{t("orders.pendingTitle")}</h2>
         {pendingOrders.length === 0 ? (
           <div className="p-8 text-center bg-gray-50 dark:bg-zinc-800/50 rounded-xl border-dashed border-2 border-gray-200 dark:border-zinc-700">
-            <p className="text-gray-500 dark:text-gray-400">You have no pending orders.</p>
+            <p className="text-gray-500 dark:text-gray-400">{t("orders.noPending")}</p>
           </div>
         ) : (
           pendingOrders.map(renderOrderCard)
@@ -402,8 +413,8 @@ export const UserOrders = () => {
             className="text-[#00659B] dark:text-blue-400 font-semibold hover:underline mb-4 flex items-center gap-2 text-sm"
           >
             {showHistory
-              ? "Hide Fulfilled & Inactive Orders ▲"
-              : "Show Fulfilled & Inactive Orders ▼"}
+              ? t("orders.toggleHistory.hide")
+              : t("orders.toggleHistory.show")}
           </button>
 
           {showHistory && (

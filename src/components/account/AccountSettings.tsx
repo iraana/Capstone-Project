@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { MyAccountTab } from "./MyAccountTab";
 import { SecurityTab } from "./SecurityTab";
+import { useTranslation } from "react-i18next";
 
 interface AccountSettingsProps {
   isOpen: boolean;
@@ -13,6 +14,7 @@ export const AccountSettings = ({
   isOpen,
   onClose,
 }: AccountSettingsProps) => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<"my-account" | "security">(
     "my-account"
   );
@@ -41,7 +43,7 @@ export const AccountSettings = ({
             <div className="w-64 bg-gray-50 dark:bg-zinc-950 flex flex-col pt-10 pb-6 px-3 border-r border-gray-200 dark:border-zinc-800">
               <div className="px-3 mb-6">
                 <h2 className="text-xs font-bold text-gray-500 dark:text-zinc-500 uppercase tracking-wider mb-2">
-                  User Settings
+                  {t("settings.sidebar.title")}
                 </h2>
 
                 <button
@@ -52,7 +54,7 @@ export const AccountSettings = ({
                       : "text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800 hover:text-gray-900 dark:hover:text-zinc-200"
                   }`}
                 >
-                  My Account
+                  {t("settings.sidebar.myAccount")}
                 </button>
 
                 <button
@@ -63,7 +65,7 @@ export const AccountSettings = ({
                       : "text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800 hover:text-gray-900 dark:hover:text-zinc-200"
                   }`}
                 >
-                  Security
+                  {t("settings.sidebar.security")}
                 </button>
               </div>
             </div>

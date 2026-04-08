@@ -132,6 +132,7 @@ Capstone-Project/
 │   │   └── checkout
 │   ├── context
 │   ├── hooks
+│   ├── locales
 │   ├── pages/
 │   │   ├── admin/
 │   │   │   ├── gallery
@@ -614,4 +615,59 @@ You can view this schedule with this query
 SELECT jobid, schedule, command, nodename, active
 FROM cron.job
 ORDER BY jobid;
+```
+
+## RLS Policies 
+
+### All the RLS policies we have for our tables. This can be ran directly in the SQL editor.
+
+```sql
+CREATE POLICY "Anyone can read dishes" ON public."Dishes" FOR SELECT USING (true);
+CREATE POLICY "Admins can create dishes" ON public."Dishes" FOR INSERT TO authenticated WITH CHECK (public.is_admin());
+CREATE POLICY "Admins can update dishes" ON public."Dishes" FOR UPDATE TO authenticated USING (public.is_admin());
+
+CREATE POLICY "Anyone can read gallery posts" ON public."Gallery" FOR SELECT USING (true);
+CREATE POLICY "Admins can create gallery posts" ON public."Gallery" FOR INSERT TO authenticated WITH CHECK (public.is_admin());
+CREATE POLICY "Admins can update gallery posts" ON public."Gallery" FOR UPDATE TO authenticated USING (public.is_admin());
+CREATE POLICY "Admins can delete gallery posts" ON public."Gallery" FOR DELETE TO authenticated USING (public.is_admin());
+
+CREATE POLICY "Anyone can read menu days" ON public."MenuDays" FOR SELECT USING (true);
+CREATE POLICY "Admins can create menu days" ON public."MenuDays" FOR INSERT TO authenticated WITH CHECK (public.is_admin());
+CREATE POLICY "Admins can update menu days" ON public."MenuDays" FOR UPDATE TO authenticated USING (public.is_admin());
+CREATE POLICY "Admins can delete menu days" ON public."MenuDays" FOR DELETE TO authenticated USING (public.is_admin());
+
+CREATE POLICY "Anyone can read menu day dishes" ON public."MenuDayDishes" FOR SELECT USING (true);
+CREATE POLICY "Admins can create menu day dishes" ON public."MenuDayDishes" FOR INSERT TO authenticated WITH CHECK (public.is_admin());
+CREATE POLICY "Admins can update menu day dishes" ON public."MenuDayDishes" FOR UPDATE TO authenticated USING (public.is_admin());
+CREATE POLICY "Admins can delete menu day dishes" ON public."MenuDayDishes" FOR DELETE TO authenticated USING (public.is_admin());
+
+CREATE POLICY "Users can read their own orders" ON public."Orders" FOR SELECT TO authenticated USING (user_id = auth.uid());
+CREATE POLICY "Users can place an order" ON public."Orders" FOR INSERT TO authenticated WITH CHECK (user_id = auth.uid());
+CREATE POLICY "Users can hard delete their own order" ON public."Orders" FOR DELETE TO authenticated USING (user_id = auth.uid());
+CREATE POLICY "Users can soft delete their own order" ON public."Orders" FOR UPDATE TO authenticated USING (user_id = auth.uid());
+CREATE POLICY "Admins can read all orders" ON public."Orders" FOR SELECT TO authenticated USING (public.is_admin());
+CREATE POLICY "Admins can delete all orders" ON public."Orders" FOR DELETE TO authenticated USING (public.is_admin());
+CREATE POLICY "Admins can update all orders" ON public."Orders" FOR UPDATE TO authenticated USING (public.is_admin());
+
+CREATE POLICY "Users can read their own order items" ON public."OrderItems" FOR SELECT TO authenticated USING (EXISTS (SELECT 1 FROM public."Orders" WHERE "Orders".order_id = "OrderItems".order_id AND "Orders".user_id = auth.uid()));
+CREATE POLICY "Users can insert their own order items" ON public."OrderItems" FOR INSERT TO authenticated WITH CHECK (EXISTS (SELECT 1 FROM public."Orders" WHERE "Orders".order_id = "OrderItems".order_id AND "Orders".user_id = auth.uid()));
+CREATE POLICY "Users can delete their own order items" ON public."OrderItems" FOR DELETE TO authenticated USING (EXISTS (SELECT 1 FROM public."Orders" WHERE "Orders".order_id = "OrderItems".order_id AND "Orders".user_id = auth.uid()));
+CREATE POLICY "Admins can read all order items" ON public."OrderItems" FOR SELECT TO authenticated USING (public.is_admin());
+CREATE POLICY "Admins can delete all order items" ON public."OrderItems" FOR DELETE TO authenticated USING (public.is_admin());
+
+CREATE POLICY "Anyone can read reviews" ON public."Reviews" FOR SELECT USING (true);
+CREATE POLICY "Users can leave reviews" ON public."Reviews" FOR INSERT TO authenticated WITH CHECK (user_id = auth.uid());
+CREATE POLICY "Admins can delete all reviews" ON public."Reviews" FOR DELETE TO authenticated USING (public.is_admin());
+
+CREATE POLICY "Anyone can leave a contact message" ON public.contact_messages FOR INSERT WITH CHECK (true);
+CREATE POLICY "Admins can read all contact messages" ON public.contact_messages FOR SELECT TO authenticated USING (public.is_admin());
+CREATE POLICY "Admins can delete all contact messages" ON public.contact_messages FOR DELETE TO authenticated USING (public.is_admin());
+CREATE POLICY "Admins can update all contact messages" ON public.contact_messages FOR UPDATE TO authenticated USING (public.is_admin());
+
+CREATE POLICY "Users can read their own profile" ON public.profiles FOR SELECT TO authenticated USING (id = auth.uid());
+CREATE POLICY "Users can update their own profile" ON public.profiles FOR UPDATE TO authenticated USING (id = auth.uid());
+CREATE POLICY "Users can delete themselves" ON public.profiles FOR DELETE TO authenticated USING (id = auth.uid());
+CREATE POLICY "Admins can read all profiles" ON public.profiles FOR SELECT TO authenticated USING (public.is_admin());
+CREATE POLICY "Admins can delete all profiles" ON public.profiles FOR DELETE TO authenticated USING (public.is_admin());
+CREATE POLICY "Admins can update all profiles" ON public.profiles FOR UPDATE TO authenticated USING (public.is_admin());
 ```

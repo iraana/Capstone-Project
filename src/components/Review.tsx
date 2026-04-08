@@ -8,15 +8,17 @@ import { useQuery } from "@tanstack/react-query";
 import type { Dish } from "./Menu";
 import { Star, Utensils, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 const reviewSchema = z.object({
-    rating: z.number().min(1, "Rating must be at least 1").max(5, "Rating cannot be more than 5"),
-    comment: z.string().max(500, "Comment cannot exceed 500 characters").optional(),
+    rating: z.number().min(1, "review.validation.minRating").max(5, "review.validation.maxRating"),
+    comment: z.string().max(500, "review.validation.maxComment").optional(),
 });
 
 type ReviewFormData = z.infer<typeof reviewSchema>;
 
 export const Review = () => {
+    const { t } = useTranslation();
     const { user, role } = useAuth();
     const [rating, setRating] = useState(0);
     const [hoveredRating, setHoveredRating] = useState<number | null>(null);
@@ -88,7 +90,7 @@ export const Review = () => {
     const isAuthorized = user && (role === "USER" || role === "ADMIN");
 
     const onSubmit = async (data: ReviewFormData) => {
-        const toastId = toast.loading("Submitting your review...");
+        const toastId = toast.loading(t("review.toasts.submitting"));
 
         try {
             const { error } = await supabase.from("Reviews").insert({
@@ -101,7 +103,7 @@ export const Review = () => {
             
             if (error) throw error;
             
-            toast.success("Review submitted successfully!", { id: toastId });
+            toast.success(t("review.toasts.success"), { id: toastId });
             
             setSelectedDish("");
             setRating(0);
@@ -110,7 +112,7 @@ export const Review = () => {
             
         } catch (error: any) {
             console.error("Error submitting review:", error);
-            toast.error(error.message || "Failed to submit review. Please try again.", { id: toastId });
+            toast.error(error.message || t("review.toasts.error"), { id: toastId });
         }
     }
 
@@ -131,7 +133,7 @@ export const Review = () => {
                     {/* Header Note */}
                     <div className="p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-100 dark:border-zinc-800">
                         <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed text-center italic">
-                            Disclaimer: Only one review can be submitted per dish. All submissions are final.
+                            {t("review.disclaimer")}
                         </p>
                     </div>
 
@@ -141,7 +143,7 @@ export const Review = () => {
                             <div className="space-y-2">
                                 <label htmlFor="dish-select" className={labelClasses}>
                                     <Utensils size={14} className="inline mr-2 -mt-1" />
-                                    Select Dish
+                                    {t("review.selectDish")}
                                 </label>
                                 <select
                                     id="dish-select"
@@ -149,7 +151,7 @@ export const Review = () => {
                                     value={selectedDish}
                                     onChange={(e) => setSelectedDish(e.target.value)}
                                 >
-                                    <option value="">Choose a dish you've tried...</option>
+                                    <option value="">{t("review.chooseDish")}</option>
                                     {reviewableDishes?.map((dish) => (
                                         <option key={dish.dish_id} value={dish.dish_id}>
                                             {dish.name}
@@ -160,7 +162,7 @@ export const Review = () => {
 
                             {/* Star Rating */}
                             <div className="space-y-1 text-center py-2">
-                                <label className={labelClasses}>Overall Rating</label>
+                                <label className={labelClasses}>{t("review.overallRating")}</label>
                                 <div className="flex justify-center gap-2">
                                     {[1, 2, 3, 4, 5].map((star) => (
                                         <button
@@ -173,7 +175,7 @@ export const Review = () => {
                                             onMouseEnter={() => setHoveredRating(star)}
                                             onMouseLeave={() => setHoveredRating(null)}
                                             className="transition-all transform hover:scale-125 active:scale-95"
-                                            aria-label={`Rate ${star} star${star > 1 ? 's' : ''}`}
+                                            aria-label={t("review.rateStar", { star, suffix: star > 1 ? 's' : '' })}
                                         >
                                             <Star 
                                                 size={42} 
@@ -187,8 +189,8 @@ export const Review = () => {
                                         </button>
                                     ))}
                                 </div>
-                                {errors.rating && (
-                                    <p className="text-red-500 text-xs mt-2">{errors.rating.message}</p>
+                                {errors.rating?.message && (
+                                    <p className="text-red-500 text-xs mt-2">{t(errors.rating.message)}</p>
                                 )}
                             </div>
 
@@ -196,15 +198,15 @@ export const Review = () => {
                             <div className="space-y-2">
                                 <label className={labelClasses}>
                                     <MessageCircle size={14} className="inline mr-2 -mt-1" />
-                                    Your Feedback
+                                    {t("review.yourFeedback")}
                                 </label>
                                 <textarea
                                     className={`${inputClasses(errors.comment)} min-h-30 resize-none`}
-                                    placeholder="Tell us what you liked (or what could be better)..."
+                                    placeholder={t("review.placeholder")}
                                     {...register("comment")}
                                 />
-                                {errors.comment && (
-                                    <p className="text-red-500 text-xs mt-1">{errors.comment.message}</p>
+                                {errors.comment?.message && (
+                                    <p className="text-red-500 text-xs mt-1">{t(errors.comment.message)}</p>
                                 )}
                             </div>
 
@@ -214,12 +216,12 @@ export const Review = () => {
                                 disabled={!selectedDish || rating === 0 || isSubmitting}
                                 className="w-full bg-linear-to-r from-blue-600 to-emerald-500 hover:from-blue-700 hover:to-emerald-600 text-white font-bold py-4 rounded-2xl shadow-xl shadow-blue-500/20 transition-all active:scale-[0.98] disabled:opacity-30 disabled:grayscale mt-4"
                             >
-                                {isSubmitting ? "Submitting..." : "Submit Review"}
+                                {isSubmitting ? t("review.submittingBtn") : t("review.submitBtn")}
                             </button>
                         </>
                     ) : (
                         <div className="bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 p-6 rounded-2xl text-center">
-                            <p className="text-red-600 dark:text-red-400 font-medium">You must have an active student account and a fulfilled order to leave reviews.</p>
+                            <p className="text-red-600 dark:text-red-400 font-medium">{t("review.unauthorized")}</p>
                         </div>
                     )}
                 </div>

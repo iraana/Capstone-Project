@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { Sun, Moon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export const DarkModeToggle = () => {
   const [isDark, setIsDark] = useState<boolean>(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const storedTheme = localStorage.getItem("theme");
@@ -68,7 +70,7 @@ export const DarkModeToggle = () => {
         />
       </span>
       <span className="select-none">
-        {isDark ? "Dark" : "Light"}
+        {isDark ? t("helperWords.dark") : t("helperWords.light")}
       </span>
     </button>
   );

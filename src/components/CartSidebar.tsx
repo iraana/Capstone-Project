@@ -5,11 +5,14 @@ import { useAuth } from "../context/AuthContext"
 import { useNavigate } from "react-router";
 import { supabase } from "../../supabase-client";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 
 const MAX_QTY_PER_ITEM = 5;
 const MAX_TOTAL_ITEMS = 5;
 
 export const CartSidebar = () => {
+  const { t } = useTranslation();
+  
   const {
     items,
     isOpen,
@@ -83,10 +86,10 @@ export const CartSidebar = () => {
                 </div>
                 <div>
                   <h2 className="text-lg font-bold text-gray-900 dark:text-white leading-tight">
-                    {displayName}'s Order
+                    {t("cart.header.orderTitle", { name: displayName })}
                   </h2>
                   <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                    {currentTotalItems}/{MAX_TOTAL_ITEMS} items {isCartFull && "(Limit Reached)"}
+                    {currentTotalItems}/{MAX_TOTAL_ITEMS} {t("cart.header.items")} {isCartFull && `(${t("cart.header.limitReached")})`}
                   </p>
                 </div>
               </div>
@@ -106,17 +109,17 @@ export const CartSidebar = () => {
                   </div>
                   <div className="space-y-2">
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                      Cart is Empty
+                      {t("cart.empty.title")}
                     </h3>
                     <p className="text-gray-500 dark:text-gray-400 max-w-200px mx-auto">
-                      If you're hungry, I suggest you browse our menu
+                      {t("cart.empty.subtitle")}
                     </p>
                   </div>
                   <button
                     onClick={handleBrowseMenu} 
                     className="px-6 py-2.5 bg-primary text-white rounded-full font-semibold hover:bg-[#005082] transition-colors shadow-lg shadow-blue-900/20"
                   >
-                    Browse Menu
+                    {t("cart.empty.browseBtn")}
                   </button>
                 </div>
               ) : (
@@ -149,7 +152,7 @@ export const CartSidebar = () => {
                           </div>
 
                           <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide font-medium">
-                            {item.category}
+                            {t(`menu.categories.${item.category}`, { defaultValue: item.category })}
                           </p>
 
                           <div className="flex items-center justify-between pt-2">
@@ -175,8 +178,8 @@ export const CartSidebar = () => {
                                 disabled={cannotAdd}
                                 title={
                                   isItemMaxed
-                                    ? "Maximum 5 per item"
-                                    : "Add one"
+                                    ? t("cart.items.maxLimitHover")
+                                    : t("cart.items.addHover")
                                 }
                                 className="w-7 h-7 flex items-center justify-center bg-white dark:bg-zinc-700 rounded-md shadow-sm hover:shadow text-gray-600 dark:text-gray-200 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                               >
@@ -187,7 +190,7 @@ export const CartSidebar = () => {
                             <button
                               onClick={() => removeItem(item.dish_id)}
                               className="text-gray-400 hover:text-red-500 transition-colors p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20"
-                              title="Remove Item"
+                              title={t("cart.items.removeHover")}
                             >
                               <Trash2 size={16} />
                             </button>
@@ -204,7 +207,7 @@ export const CartSidebar = () => {
               <div className="p-6 border-t border-gray-100 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-900/50 backdrop-blur-sm">
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400">
-                    <span>Subtotal</span>
+                    <span>{t("cart.footer.subtotal")}</span>
                     <span>${subtotal.toFixed(2)}</span>
                   </div>
                 </div>
@@ -213,7 +216,7 @@ export const CartSidebar = () => {
                   className="group w-full bg-linear-to-r from-[#00659B] to-[#005082] text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-blue-900/20 hover:shadow-xl hover:shadow-blue-900/30 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
                   onClick={handleCheckout}
                 >
-                  Checkout
+                  {t("cart.footer.checkoutBtn")}
                   <ArrowRight
                     size={20}
                     className="group-hover:translate-x-1 transition-transform"
