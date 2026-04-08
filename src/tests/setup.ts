@@ -1,7 +1,20 @@
-import { expect, afterEach, vi} from 'vitest';
+import { expect, afterEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import * as matchers from '@testing-library/jest-dom/matchers';
 import '@testing-library/jest-dom';
+import i18next from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import { enTranslations } from '../locales/en';
+
+i18next.use(initReactI18next).init({
+  lng: 'en',
+  fallbackLng: 'en',
+  resources: {
+    en: { translation: enTranslations },
+  },
+  interpolation: { escapeValue: false },
+  react: { useSuspense: false }, 
+});
 
 expect.extend(matchers);
 
