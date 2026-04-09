@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import * as z from "zod";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query'; 
 import { toast } from "sonner";
+import { AlertTriangle } from "lucide-react"; // Added for modal icon
 
 const fetchMenu = async (menuDate: string) => {
   const { data, error } = await supabase
@@ -60,10 +61,12 @@ type MenuFormValues = z.infer<typeof menuSchema>;
 export const EditMenu = () => {
   const { date } = useParams<{ date: string }>();
   const navigate = useNavigate();
+  const queryClient = useQueryClient(); 
 
   const [menuDate, setMenuDate] = useState<string>(date || "");
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [hasMenu, setHasMenu] = useState<boolean>(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // Modal State
 
   const [dishSearch, setDishSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -125,7 +128,6 @@ export const EditMenu = () => {
         return nameMatch || categoryMatch;
     });
 
-  // --- Pagination Logic ---
   const totalAvailableDishes = availableDishes.length;
   const totalPages = Math.ceil(totalAvailableDishes / PAGE_SIZE);
   const isFirstPage = currentPage === 1;
@@ -220,14 +222,15 @@ export const EditMenu = () => {
     }
   };
 
-  const handleDeleteMenu = async () => {
+  // Trigger modal
+  const handleDeleteMenu = () => {
+    setIsDeleteModalOpen(true);
+  }
+
+  // Actual logic executed from modal button
+  const confirmDeleteMenu = async () => {
+    setIsDeleteModalOpen(false);
     const hasOrders = Array.isArray(associatedOrders) && associatedOrders.length > 0;
-    const confirmMessage = hasOrders 
-      ? "This menu has associated orders. Deleting it will make the menu unavailable but keep the data for existing orders. Do you want to proceed?" 
-      : "Are you sure you want to delete this menu? This action cannot be undone.";
-
-    if (!window.confirm(confirmMessage)) return;
-
     const toastId = toast.loading("Deleting menu...");
 
     try {
@@ -244,6 +247,8 @@ export const EditMenu = () => {
           .eq('date', menuDate);  
         if (deleteMenuError) throw deleteMenuError;
       }
+
+      queryClient.invalidateQueries({ queryKey: ['menuDays', menuDate] });
 
       toast.success('Menu deleted successfully!', { id: toastId });
       clearFormState();
@@ -292,6 +297,8 @@ export const EditMenu = () => {
         }
       }
 
+      queryClient.invalidateQueries({ queryKey: ['menuDays', menuDate] });
+
       toast.success('Menu updated successfully!', { id: toastId });
       clearFormState();
 
@@ -301,7 +308,10 @@ export const EditMenu = () => {
     }
   };
 
+  const hasOrders = Array.isArray(associatedOrders) && associatedOrders.length > 0;
+
   return (
+    <>
       <form onSubmit={handleSubmit(onSubmit)}>
         
         <div className="text-center space-y-2  mb-8">
@@ -324,7 +334,7 @@ export const EditMenu = () => {
                     {...register('date')}
                     onChange={handleDateChange}
                     value={menuDate}
-                    className="w-full rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                    className="w-full rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                 />
                 {errors.date && (
                   <p className="text-red-500 text-xs mt-1">{errors.date.message}</p>
@@ -402,7 +412,6 @@ export const EditMenu = () => {
                 </table>
               </div>
               
-              {/* Array Validation Error Catch */}
               {errors.dishes?.message && typeof errors.dishes.message === 'string' && (
                 <p className="text-red-500 text-sm font-medium mt-3 text-center">
                   {errors.dishes.message}
@@ -410,7 +419,6 @@ export const EditMenu = () => {
               )}
             </div>
 
-            {/* --- Search Bar --- */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded-xl border border-zinc-200 dark:border-zinc-700">
                 <div className="grow w-full md:max-w-md">
                     <input
@@ -474,7 +482,6 @@ export const EditMenu = () => {
                 </table>
               </div>
               
-              {/* Pagination Controls */}
               {availableDishes.length > 0 && (
                 <div className="flex justify-center items-center pt-4">
                     <div className="flex items-center gap-4 border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 rounded-xl p-1.5 shadow-sm">
@@ -509,7 +516,6 @@ export const EditMenu = () => {
               )}
             </div>
 
-            {/* Action Buttons */}
             <div className="pt-6 border-t border-zinc-100 dark:border-zinc-800 flex flex-col sm:flex-row justify-end gap-4 mt-6">
               <button
                 type="button"
@@ -553,5 +559,49 @@ export const EditMenu = () => {
           </div>
         )}
       </form>
+
+      {/* Custom Deletion Modal */}
+      {isDeleteModalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/40 dark:bg-black/60 backdrop-blur-sm transition-opacity">
+                <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                    
+                    <div className="p-6">
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="p-3 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full shrink-0">
+                                <AlertTriangle size={24} />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">Delete Menu</h3>
+                                <p className="text-sm text-zinc-500 dark:text-zinc-400">This action cannot be undone.</p>
+                            </div>
+                        </div>
+                        
+                        <div className="text-sm text-zinc-600 dark:text-zinc-300">
+                            {hasOrders ? (
+                              <p>This menu has <strong>associated orders</strong>. Deleting it will make the menu unavailable but keep the data for existing orders. Do you want to proceed?</p>
+                            ) : (
+                              <p>Are you sure you want to remove the menu for <span className="font-semibold text-zinc-900 dark:text-white">"{menuDate}"</span> from the system?</p>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="flex items-center justify-end gap-3 px-6 py-4 bg-zinc-50 dark:bg-zinc-900/50 border-t border-zinc-100 dark:border-zinc-800">
+                        <button
+                            onClick={() => setIsDeleteModalOpen(false)}
+                            className="px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-xl transition-all"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={confirmDeleteMenu}
+                            className="px-4 py-2 text-sm font-bold text-white bg-red-600 hover:bg-red-700 shadow-md shadow-red-600/20 rounded-xl transition-all active:scale-95"
+                        >
+                            Yes, Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )}
+    </>
   );
 };

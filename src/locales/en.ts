@@ -1,3 +1,4 @@
+
 export const enTranslations = {
   nav: {
     admin: "Administration",
@@ -26,7 +27,10 @@ export const enTranslations = {
     pageNotFoundSubtitle: "Couldn't find the specified page. Which dev should pay for this?",
     successfulOrder: "Order Placed",
     successfulOrderSubtitle: "Thank you — your order has been accepted!",
-    successfulOrderSubtitle2: "Come to L1170 on your selected menu day during our pickup hours to grab your meal."
+    successfulOrderSubtitle2: "Come to L1170 on your selected menu day during our pickup hours to grab your meal.",
+    signIn: "Sign In",
+    signUp: "Sign Up",
+    resetPassword: "Set New Password",
   },
   helperWords: {
     outOf: "out of",
@@ -606,6 +610,24 @@ export const enTranslations = {
     feedback: {
       success: "Your message has been sent successfully!",
       error: "Failed to send message. Please try again later."
+    }
+  },
+  resetPassword: {
+    title: "Secure Your Account",
+    newPassword: "New Password",
+    confirmPassword: "Confirm New Password",
+    update: "Update Password",
+    updating: "Updating...",
+    backToSignIn: "Return to Sign In",
+    success: "Password updated! You can now log in.",
+
+    validation: {
+      min: "Password must be at least 8 characters",
+      number: "Password must contain at least one number",
+      lowercase: "Password must contain at least one lowercase letter",
+      uppercase: "Password must contain at least one uppercase letter",
+      special: "Password must contain at least one special character",
+      match: "Passwords do not match"
     }
   }
 };

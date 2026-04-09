@@ -165,16 +165,16 @@ export const ListDishes = () => {
                         type="button"
                         onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                         disabled={isFirstPage} 
-                        className="p-2 px-3 rounded-lg text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 disabled:opacity-30 transition-all"
+                        className="p-2 px-3 rounded-lg text-zinc-600 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-700 disabled:opacity-30 transition-all"
                     >
                         &lt;&lt;
                     </button>
                     
                     <div className='text-center min-w-70px'> 
-                        <span className='text-sm font-bold text-zinc-700 dark:text-zinc-300 block leading-tight'>
+                        <span className='text-sm font-bold text-zinc-700 dark:text-white block leading-tight'>
                             Page {currentPage}
                         </span>
-                        <span className='text-xs text-zinc-500 dark:text-zinc-500 block leading-tight'>
+                        <span className='text-xs text-zinc-500 dark:text-white block leading-tight'>
                             of {totalPages}
                         </span>
                     </div>
@@ -183,7 +183,7 @@ export const ListDishes = () => {
                         type="button"
                         onClick={() => setCurrentPage(prev => Math.min(totalPages, prev - -1))}
                         disabled={isLastPage} 
-                        className="p-2 px-3 rounded-lg text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 disabled:opacity-30 transition-all"
+                        className="p-2 px-3 rounded-lg text-zinc-600 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-700 disabled:opacity-30 transition-all"
                     >
                         &gt;&gt;
                     </button>

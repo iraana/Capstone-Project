@@ -91,11 +91,11 @@ export const AdminInbox = () => {
 
       {/* Empty State Check */}
       {messages.length === 0 ? (
-        <div className="p-12 text-center text-zinc-500 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-700">
+        <div className="p-12 text-center text-zinc-500 dark:text-white bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-700">
           No messages in your inbox!
         </div>
       ) : filteredMessages.length === 0 ? (
-        <div className="p-12 text-center text-zinc-500 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-700">
+        <div className="p-12 text-center text-zinc-500 dark:text-white bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-700">
           No messages found for the filter "{filter}".
         </div>
       ) : (

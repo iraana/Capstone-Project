@@ -297,16 +297,16 @@ export const PendingOrders = () => {
                     </span>
                   </div>
 
-                  <div className="text-sm text-gray-800 dark:text-zinc-300 mt-1">
+                  <div className="text-sm text-gray-800 dark:text-white mt-1">
                     {order.profiles?.first_name} {order.profiles?.last_name}
                   </div>
 
-                  <div className="text-sm text-gray-600 dark:text-zinc-300 mt-1">
+                  <div className="text-sm text-gray-600 dark:text-white mt-1">
                     {order.profiles?.email}
                   </div>
                 </div>
 
-                <div className="text-right text-xs text-gray-600 dark:text-zinc-400">
+                <div className="text-right text-xs text-gray-600 dark:text-white">
                   <div>
                     {order.MenuDays
                       ? new Date(order.MenuDays.date).toLocaleDateString()
@@ -355,7 +355,7 @@ export const PendingOrders = () => {
               {/* Footer */}
               <div className="p-4 border-t border-zinc-100 dark:border-zinc-600 bg-zinc-50 dark:bg-zinc-700">
                 <div className="flex justify-between items-center mb-4">
-                  <span className="text-sm text-zinc-500  dark:text-zinc-400">Total</span>
+                  <span className="text-sm text-zinc-500 dark:text-white">Total</span>
                   <span className="text-xl font-bold text-gray-900 dark:text-white">${order.total.toFixed(2)}</span>
                 </div>
 
@@ -367,7 +367,7 @@ export const PendingOrders = () => {
                         updateStatusMutation.mutate({ orderId: order.order_id, newStatus: "FULFILLED" });
                       }}
                       disabled={updateStatusMutation.isPending}
-                      className="col-span-2 bg-green-600 hover:bg-green-700 text-white py-2 rounded-md text-sm font-medium transition disabled:opacity-50"
+                      className="col-span-2 bg-green-800 hover:bg-green-500 text-white py-2 rounded-md text-sm font-medium transition disabled:opacity-50"
                   >
                         Complete
                     </button>
