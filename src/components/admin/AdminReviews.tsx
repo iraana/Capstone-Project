@@ -170,21 +170,21 @@ export const AdminReviews = () => {
             </button>
 
             {/* Rating Filters */}
-            <div className='flex items-center gap-1 border border-zinc-200 dark:border-zinc-700 rounded-xl p-1 bg-white dark:bg-zinc-800'>
-                <Filter size={16} className="text-zinc-400 ml-1" />
-                {(['all', '5', '4', '3', '2', '1'] as FilterType[]).map((f) => (
-                    <button
-                        key={f}
-                        onClick={() => setFilter(f)}
-                        className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
-                            filter === f
-                                ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-900'
-                                : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700'
-                        }`}
-                    >
-                        {f === 'all' ? 'All' : `${f} Star`}
-                    </button>
-                ))}
+            <div className='flex items-center gap-0.5 sm:gap-1 border border-zinc-200 dark:border-zinc-700 rounded-lg sm:rounded-xl p-0.5 sm:p-1 bg-white dark:bg-zinc-800'>
+              <Filter size={14} className="text-zinc-400 ml-0.5 sm:ml-1" />
+              {(['all', '5', '4', '3', '2', '1'] as FilterType[]).map((f) => (
+                <button
+                  key={f}
+                  onClick={() => setFilter(f)}
+                  className={`px-2 sm:px-3 py-0.5 sm:py-1 rounded-md sm:rounded-lg text-[10px] sm:text-xs font-medium transition-all ${
+                  filter === f
+                      ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-900'
+                      : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700'
+                  }`}
+              >
+                  {f === 'all' ? 'All' : `${f} Star`}
+                </button>
+              ))}
             </div>
         </div>
       </div>
@@ -202,7 +202,7 @@ export const AdminReviews = () => {
       <div className='flex flex-wrap items-center gap-4 p-3 border border-zinc-200 dark:border-zinc-700 rounded-xl bg-white dark:bg-zinc-800'>
         <Calendar size={20} className="text-zinc-500 shrink-0" />
         
-        <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300 shrink-0">
+        <span className="text-sm font-medium text-zinc-700 dark:text-white shrink-0">
           Date Range:
         </span>
         
@@ -216,10 +216,10 @@ export const AdminReviews = () => {
           type="date"
           value={startDate}
           onChange={(e) => setStartDate(e.target.value)}
-          className="p-1.5 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 text-sm"
+          className="p-1.5 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white text-sm"
         />
         
-        <span className="text-gray-900 dark:text-zinc-500">to</span>
+        <span className="text-gray-900 dark:text-white">to</span>
         
         {/* End Date */}
         <label htmlFor="end-date" className="sr-only">
@@ -231,7 +231,7 @@ export const AdminReviews = () => {
           type="date"
           value={endDate}
           onChange={(e) => setEndDate(e.target.value)}
-          className="p-1.5 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 text-sm"
+          className="p-1.5 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white text-sm"
         />
       </div>
 
@@ -241,7 +241,8 @@ export const AdminReviews = () => {
             No reviews match your current filter/search criteria.
         </div>
       ) : (
-        <div className="overflow-x-auto shadow-xl rounded-2xl border border-zinc-100 dark:border-zinc-800">
+        <>
+          <div className="hidden md:block overflow-x-auto shadow-xl rounded-2xl border border-zinc-100 dark:border-zinc-800">
             <table className="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
                 <thead className="bg-zinc-50 dark:bg-zinc-800/80">
                     <tr>
@@ -292,7 +293,60 @@ export const AdminReviews = () => {
                     ))}
                 </tbody>
             </table>
-        </div>
+          </div>
+
+          {/* Mobile Reviews Display */}
+          <div className="md:hidden space-y-4">
+            {filteredReviews.map((review) => (
+              <div 
+                key={review.review_id} 
+                className="border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 rounded-2xl p-6 shadow-sm flex flex-col"
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <span className="px-3 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white text-xs font-mono rounded-2xl">
+                    #{review.review_id}
+                  </span>
+                  <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                    {new Date(review.timestamp).toLocaleDateString()}
+                  </span>
+                </div>
+                
+                <div className="mb-3">
+                  <div className="font-semibold text-lg text-zinc-900 dark:text-white">
+                    {review.Dishes?.name || 'N/A'}
+                  </div>
+                  <div className="mt-2">
+                    <StarRating rating={review.rating} />
+                  </div>
+                </div>
+                
+                <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed mb-6">
+                  {review.comment}
+                </p>
+                
+                <div className="flex items-center justify-between pt-4 border-t border-zinc-100 dark:border-zinc-700 mt-auto">
+                  <div className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+                    {review.profiles 
+                        ? `${review.profiles.first_name} ${review.profiles.last_name}`.substring(0, 20)
+                        : review.user_id.substring(0, 8)}
+                  </div>
+                  
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setReviewToDelete(review);
+                    }}
+                    disabled={deleteReviewMutation.isPending}
+                    className="flex items-center gap-2 px-5 py-2.5 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 transition-all active:scale-95 rounded-2xl disabled:opacity-50 text-sm font-medium"
+                  >
+                    <Trash2 size={18} />
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       {/* Custom Delete Confirmation Modal */}

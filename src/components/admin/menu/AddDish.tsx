@@ -5,7 +5,7 @@ import { supabase } from "../../../../supabase-client.ts";
 import { toast } from "sonner";
 
 const dishSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().min(1, "Name is required").max(30, "Name must be 30 characters or less"),
   price: z
     .number("Price must be a number")
     .positive("Price must be positive")

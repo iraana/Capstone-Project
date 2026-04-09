@@ -26,7 +26,10 @@ export const frTranslations = {
     pageNotFoundSubtitle: "On a pas trouvé la page demandée… c’est quel dev qui paie pour ça?",
     successfulOrder: "Commande passée",
     successfulOrderSubtitle: "Merci — ta commande est acceptée!",
-    successfulOrderSubtitle2: "Passez au local L1170 le jour choisi de votre menu pendant nos heures de pickup pour venir chercher votre repas."
+    successfulOrderSubtitle2: "Passez au local L1170 le jour choisi de votre menu pendant nos heures de pickup pour venir chercher votre repas.",
+    signIn: "Se connecter",
+    signUp: "S'inscrire",
+    resetPassword: "Définir un nouveau mot de passe",
   },
   helperWords: {
     outOf: "sur",
@@ -607,5 +610,23 @@ export const frTranslations = {
   feedback: {
     success: "Votre message a été envoyé avec succès!",
     error: "Échec de l’envoi du message. Veuillez réessayer plus tard."
+  },
+  resetPassword: {
+    title: "Sécurisez votre compte",
+    newPassword: "Nouveau mot de passe",
+    confirmPassword: "Confirmer le nouveau mot de passe",
+    update: "Mettre à jour le mot de passe",
+    updating: "Mise à jour...",
+    backToSignIn: "Retour à la connexion",
+    success: "Mot de passe mis à jour! Vous pouvez maintenant vous connecter.",
+
+    validation: {
+      min: "Le mot de passe doit contenir au moins 8 caractères",
+      number: "Le mot de passe doit inclure au moins un chiffre",
+      lowercase: "Le mot de passe doit inclure au moins une lettre minuscule",
+      uppercase: "Le mot de passe doit inclure au moins une lettre majuscule",
+      special: "Le mot de passe doit inclure au moins un caractère spécial",
+      match: "Les mots de passe ne correspondent pas"
+    }
   }
 };
