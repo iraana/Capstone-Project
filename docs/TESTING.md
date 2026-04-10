@@ -48,7 +48,7 @@ All tests run automatically on every push via GitHub Actions. Check the "Actions
 - **Lines:** ~81%
 
 ### Coverage Report Screenshot
-- ![Coverage Report](./coverage-screenshot.png)
+- ![Coverage Report](../assets/coverage-screenshot.png)
 
 ### High-Coverage Areas
 
