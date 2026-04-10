@@ -10,9 +10,6 @@ important for the client and users.
 
 ## TODO
 
-- Mobile responsiveness, ensure there is a good UI/UX on mobile devices
-- Accessibility standards (can navigate with keyboard, alt-text for images, etc.)
-- Favicon 
 
 ## Library Choices
 

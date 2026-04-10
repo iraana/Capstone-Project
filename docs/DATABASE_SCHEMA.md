@@ -1,6 +1,6 @@
 # Database 
 
-![alt text](image.png)
+![alt text](../assets/erd.png)
 
 ## Database SQL
 
