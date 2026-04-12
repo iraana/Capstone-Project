@@ -69,19 +69,19 @@ We utilized a **Dual-Font Strategy** to balance professional branding with techn
 ### Admin Dashboard (Tile System)
 The "Command Centre" utilizes a modular tile system. Each tile features a distinct linear gradient and a Lucide icon for intuitive navigation.
 
-<img src="./assets/admin-dashboard.png" alt="Admin Dashboard" width="800" style="border-radius: 8px; border: 1px solid #333;" />
+<img src="../assets/admin-dashboard.png" alt="Admin Dashboard" width="800" style="border-radius: 8px; border: 1px solid #333;" />
 
 ### Business Intelligence (Analytics)
 Our data visualization uses `Recharts` and `Luxon`. The charts dynamically adjust their stroke and fill colors based on the current theme (Light/Dark).
 
-<img src="./assets/analytics.png" alt="Analytics Page" width="800" style="border-radius: 8px; border: 1px solid #333;" />
+<img src="../assets/analytics.png" alt="Analytics Page" width="800" style="border-radius: 8px; border: 1px solid #333;" />
 
 ### The Navigation & Cart
 The mobile experience focuses on accessibility, using an `AnimatePresence` drawer for the cart and a full-screen overlay for mobile navigation.
 
-<img src="./assets/mobile-nav.png" alt="Mobile Experience" width="320" style="border-radius: 20px; border: 1px solid #333;" />
+<img src="../assets/mobile-nav.png" alt="Mobile Experience" width="320" style="border-radius: 20px; border: 1px solid #333;" />
 
 ### Order Tracking & QR Codes
 The "My Orders" interface provides high-contrast badges for status tracking and a dynamically generated QR code for contactless kitchen pickup.
 
-<img src="./assets/orders.png" alt="Order History" width="320" style="border-radius: 20px; border: 1px solid #333;" />
+<img src="../assets/orders.png" alt="Order History" width="320" style="border-radius: 20px; border: 1px solid #333;" />
