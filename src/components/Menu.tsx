@@ -128,7 +128,6 @@ export const Menu = () => {
     return menuDays?.find(d => d.menu_day_id === selectedDayId);
   }, [menuDays, selectedDayId]);
 
-  // Locks UI if cart has a different menu
   const isMenuLocked = cartMenuId !== null && currentMenu?.menu_day_id !== cartMenuId;
 
   // If user is a USER or ADMIN they'll be authorized
