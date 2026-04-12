@@ -64,17 +64,13 @@
     </div>
 </div>
 
-### Mobile Experience
+### 📱 Mobile Experience
 
-<div style="display: flex; justify-content: center; gap: 20px;">
-    <div style="width: 250px;">
-        <img src="assets/mobile-nav.png" alt="Mobile Nav">
-        <p><i>Responsive navigation</i></p>
-    </div>
-    <div style="width: 250px;">
-        <img src="assets/orders.png" alt="Order History" >
-        <p><i>Track orders</i></p>
-    </div>
+<div align="center">
+  <img src="assets/mobile-nav.png" alt="Mobile Nav" width="300" style="border-radius: 12px; margin: 10px;">
+  <img src="assets/orders.png" alt="Order History" width="300" style="border-radius: 12px; margin: 10px;">
+  <br>
+  <p><i>Responsive navigation and real-time order tracking</i></p>
 </div>
 
 
