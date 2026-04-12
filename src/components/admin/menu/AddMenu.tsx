@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { supabase } from '../../../../supabase-client.ts';
@@ -47,7 +47,19 @@ export const AddMenu = () => {
 
   // pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const PAGE_SIZE = 10
+  const PAGE_SIZE = 10;
+
+  // responsive check to avoid duplicating React Hook Form inputs
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== 'undefined' ? window.innerWidth < 768 : false
+  );
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
  
   const {
     control,
@@ -197,103 +209,106 @@ export const AddMenu = () => {
 
           <div>
             <h2 className="font-semibold text-lg mb-2">Current Menu Preview</h2>
-            <table className="hidden md:table min-w-full border border-gray-200 shadow-md rounded-lg">
-              <thead className="bg-gray-100 dark:bg-zinc-700">
-                <tr>
-                  <th></th>
-                  <th className="px-3 py-2 text-center">Dish</th>
-                  <th className="px-3 py-2 text-center">Category</th>
-                  <th className="px-3 py-2 text-center">Price</th>
-                  <th className="px-3 py-2 text-center">Stock</th>
-                </tr>
-              </thead>
-              <tbody>
-                {selectedDishes.length === 0 ? (
+            {!isMobile ? (
+              <table className="min-w-full border border-gray-200 shadow-md rounded-lg">
+                <thead className="bg-gray-100 dark:bg-zinc-700">
                   <tr>
-                    <td colSpan={5} className="px-4 py-6 text-center text-zinc-500 dark:text-white">
-                      No dishes added to the menu yet.
-                    </td>
+                    <th></th>
+                    <th className="px-3 py-2 text-center">Dish</th>
+                    <th className="px-3 py-2 text-center">Category</th>
+                    <th className="px-3 py-2 text-center">Price</th>
+                    <th className="px-3 py-2 text-center">Stock</th>
                   </tr>
+                </thead>
+                <tbody>
+                  {selectedDishes.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="px-4 py-6 text-center text-zinc-500 dark:text-white">
+                        No dishes added to the menu yet.
+                      </td>
+                    </tr>
+                  ) : (
+                    selectedDishes.map((item) => (
+                      <tr key={item.fieldIndex} className="border-b border-gray-200">
+                        <td className="px-3 py-2 text-center">
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveFromMenu(item.fieldIndex)}
+                            className="px-3 py-1 rounded hover:bg-gray-200 transition-colors"
+                          >
+                            ❌
+                          </button>
+                        </td>
+                        <td className="px-3 py-2 text-center">{item.name}</td>
+                        <td className="px-3 py-2 text-center">{item.category}</td>
+                        <td className="px-3 py-2 text-center">{item.price.toFixed(2)}</td>
+                        <td className="px-3 py-2 text-center">
+                          <input
+                            type="number"
+                            min={1}
+                            {...register(`dishes.${item.fieldIndex}.stock`, { valueAsNumber: true })}
+                            className="w-16 px-2 py-1 text-sm border rounded text-center dark:bg-zinc-800 dark:border-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          />
+                          {errors.dishes?.[item.fieldIndex]?.stock && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {errors.dishes[item.fieldIndex]?.stock?.message}
+                            </p>
+                          )}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            ) : (
+              <div className="mt-4 space-y-4">
+                {selectedDishes.length === 0 ? (
+                  <div className="px-4 py-6 text-center text-zinc-500 dark:text-white border border-gray-200 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-800">
+                    No dishes added to the menu yet.
+                  </div>
                 ) : (
                   selectedDishes.map((item) => (
-                    <tr key={item.fieldIndex} className="border-b border-gray-200">
-                      <td className="px-3 py-2 text-center">
+                    <div 
+                      key={item.fieldIndex} 
+                      className="border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 rounded-xl p-4 shadow-sm"
+                    >
+                      <div className="flex items-center justify-between mb-4">
                         <button
                           type="button"
                           onClick={() => handleRemoveFromMenu(item.fieldIndex)}
-                          className="px-3 py-1 rounded hover:bg-gray-200 transition-colors"
+                          className="px-3 py-1 rounded hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors text-2xl leading-none"
                         >
                           ❌
                         </button>
-                      </td>
-                      <td className="px-3 py-2 text-center">{item.name}</td>
-                      <td className="px-3 py-2 text-center">{item.category}</td>
-                      <td className="px-3 py-2 text-center">{item.price.toFixed(2)}</td>
-                      <td className="px-3 py-2 text-center">
-                        <input
-                          type="number"
-                          min={1}
-                          {...register(`dishes.${item.fieldIndex}.stock`, { valueAsNumber: true })}
-                          className="w-16 px-2 py-1 text-sm border rounded text-center dark:bg-zinc-800 dark:border-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                        {errors.dishes?.[item.fieldIndex]?.stock && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {errors.dishes[item.fieldIndex]?.stock?.message}
-                          </p>
-                        )}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-            {/* Mobile Current Menu Preview */}
-            <div className="md:hidden mt-4 space-y-4">
-              {selectedDishes.length === 0 ? (
-                <div className="px-4 py-6 text-center text-zinc-500 dark:text-white border border-gray-200 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-800">
-                  No dishes added to the menu yet.
-                </div>
-              ) : (
-                selectedDishes.map((item) => (
-                  <div 
-                    key={item.fieldIndex} 
-                    className="border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 rounded-xl p-4 shadow-sm"
-                  >
-                    <div className="flex items-center justify-between mb-4">
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveFromMenu(item.fieldIndex)}
-                        className="px-3 py-1 rounded hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors text-2xl leading-none"
-                      >
-                        ❌
-                      </button>
-                      <div>
-                        <span className="text-xs uppercase tracking-widest text-zinc-500 dark:text-zinc-400 block mb-1">Stock</span>
-                        <input
-                          type="number"
-                          min={1}
-                          {...register(`dishes.${item.fieldIndex}.stock`, { valueAsNumber: true })}
-                          className="w-20 px-4 py-2 text-sm border border-zinc-300 dark:border-zinc-600 rounded-lg text-center dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                        {errors.dishes?.[item.fieldIndex]?.stock && (
-                          <p className="text-red-500 text-xs mt-1 text-center">
-                            {errors.dishes[item.fieldIndex]?.stock?.message}
-                          </p>
-                        )}
+                        <div>
+                          <span className="text-xs uppercase tracking-widest text-zinc-500 dark:text-zinc-400 block mb-1">Stock</span>
+                          <input
+                            type="number"
+                            min={1}
+                            {...register(`dishes.${item.fieldIndex}.stock`, { valueAsNumber: true })}
+                            className="w-20 px-4 py-2 text-sm border border-zinc-300 dark:border-zinc-600 rounded-lg text-center dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          />
+                          {errors.dishes?.[item.fieldIndex]?.stock && (
+                            <p className="text-red-500 text-xs mt-1 text-center">
+                              {errors.dishes[item.fieldIndex]?.stock?.message}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-y-3 text-sm">
+                        <div className="font-medium text-zinc-700 dark:text-zinc-300">Dish</div>
+                        <div className="text-right text-zinc-900 dark:text-white">{item.name}</div>
+                        <div className="font-medium text-zinc-700 dark:text-zinc-300">Category</div>
+                        <div className="text-right text-zinc-900 dark:text-white">{item.category}</div>
+                        <div className="font-medium text-zinc-700 dark:text-zinc-300">Price</div>
+                        <div className="text-right text-zinc-900 dark:text-white">{item.price.toFixed(2)}</div>
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-y-3 text-sm">
-                      <div className="font-medium text-zinc-700 dark:text-zinc-300">Dish</div>
-                      <div className="text-right text-zinc-900 dark:text-white">{item.name}</div>
-                      <div className="font-medium text-zinc-700 dark:text-zinc-300">Category</div>
-                      <div className="text-right text-zinc-900 dark:text-white">{item.category}</div>
-                      <div className="font-medium text-zinc-700 dark:text-zinc-300">Price</div>
-                      <div className="text-right text-zinc-900 dark:text-white">{item.price.toFixed(2)}</div>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
+                  ))
+                )}
+              </div>
+            )}
+            
             {/* Array Validation Error Catch */}
             {errors.dishes?.message && typeof errors.dishes.message === 'string' && (
               <p className="text-red-500 text-sm font-medium mt-3 text-center">
@@ -323,93 +338,94 @@ export const AddMenu = () => {
 
         <div className="space-y-4">
           <h2 className="font-semibold text-lg mt-6 mb-2">Available Menu Items</h2>
-            <table className="hidden md:table min-w-full border border-gray-200 shadow-md rounded-lg">
-              <thead className="bg-gray-100 dark:bg-zinc-700">
-                <tr>
-                  <th className="px-3 py-2 text-center">Dish</th>
-                  <th className="px-3 py-2 text-center">Category</th>
-                  <th className="px-3 py-2 text-center">Price</th>
-                  <th className="px-3 py-2 text-center">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginatedDishes.length === 0 ? (
+            {!isMobile ? (
+              <table className="min-w-full border border-gray-200 shadow-md rounded-lg">
+                <thead className="bg-gray-100 dark:bg-zinc-700">
                   <tr>
-                      <td colSpan={4} className="px-4 py-8 text-center text-zinc-500">
-                          No dishes found matching your search.
-                      </td>
+                    <th className="px-3 py-2 text-center">Dish</th>
+                    <th className="px-3 py-2 text-center">Category</th>
+                    <th className="px-3 py-2 text-center">Price</th>
+                    <th className="px-3 py-2 text-center">Action</th>
                   </tr>
+                </thead>
+                <tbody>
+                  {paginatedDishes.length === 0 ? (
+                    <tr>
+                        <td colSpan={4} className="px-4 py-8 text-center text-zinc-500">
+                            No dishes found matching your search.
+                        </td>
+                    </tr>
+                  ) : (
+                    paginatedDishes.map((dish) => ( 
+                    <tr key={dish.dish_id} className="border-b border-gray-200">
+                      <td className="px-3 py-2 text-center">{dish.name}</td>
+                      <td className="px-3 py-2 text-center">{dish.category}</td>
+                      <td className="px-3 py-2 text-center">{dish.price.toFixed(2)}</td>
+                      <td className="px-3 py-2 text-center flex justify-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleAddToMenu(dish)}
+                          className="px-4 py-1.5 rounded-lg text-sm font-bold bg-[#00659B] text-white hover:bg-[#005082] shadow-sm shadow-blue-900/10 transition-all active:scale-95"
+                        >
+                          Add
+                        </button>
+                        <NavLink
+                          to={`/admin/edit-dish/${dish.dish_id}`}
+                          className="px-4 py-1.5 rounded-lg text-sm font-medium border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-all active:scale-95"
+                        >
+                          Edit
+                        </NavLink>
+                      </td>
+                    </tr>
+                  ))
+                  )}
+                </tbody>
+              </table>
+            ) : (
+              <div className="mt-2 space-y-4">
+                {paginatedDishes.length === 0 ? (
+                  <div className="px-4 py-8 text-center text-zinc-500 border border-gray-200 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-800">
+                    No dishes found matching your search.
+                  </div>
                 ) : (
                   paginatedDishes.map((dish) => ( 
-                  <tr key={dish.dish_id} className="border-b border-gray-200">
-                    <td className="px-3 py-2 text-center">{dish.name}</td>
-                    <td className="px-3 py-2 text-center">{dish.category}</td>
-                    <td className="px-3 py-2 text-center">{dish.price.toFixed(2)}</td>
-                    <td className="px-3 py-2 text-center flex justify-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => handleAddToMenu(dish)}
-                        className="px-4 py-1.5 rounded-lg text-sm font-bold bg-[#00659B] text-white hover:bg-[#005082] shadow-sm shadow-blue-900/10 transition-all active:scale-95"
-                      >
-                        Add
-                      </button>
-                      <NavLink
-                        to={`/admin/edit-dish/${dish.dish_id}`}
-                        className="px-4 py-1.5 rounded-lg text-sm font-medium border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-all active:scale-95"
-                      >
-                        Edit
-                      </NavLink>
-                    </td>
-                  </tr>
-                ))
+                    <div key={dish.dish_id} className="border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 rounded-xl p-4 shadow-sm flex flex-col">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <div className="font-semibold text-zinc-900 dark:text-white text-lg">{dish.name}</div>
+                          <div className="text-sm text-zinc-500 dark:text-zinc-400">{dish.category}</div>
+                        </div>
+                        <div className="text-right font-medium text-zinc-900 dark:text-white text-lg">
+                          {dish.price.toFixed(2)}
+                        </div>
+                      </div>
+                      <div className="flex gap-3 mt-6">
+                        <button
+                          type="button"
+                          onClick={() => handleAddToMenu(dish)}
+                          className="flex-1 px-4 py-1.5 rounded-lg text-sm font-bold bg-[#00659B] text-white hover:bg-[#005082] shadow-sm shadow-blue-900/10 transition-all active:scale-95"
+                        >
+                          Add
+                        </button>
+                        <NavLink
+                          to={`/admin/edit-dish/${dish.dish_id}`}
+                          className="flex-1 px-4 py-1.5 text-center rounded-lg text-sm font-medium border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-all active:scale-95"
+                        >
+                          Edit
+                        </NavLink>
+                      </div>
+                    </div>
+                  ))
                 )}
-              </tbody>
-            </table>
-
-            {/* Mobile Available Menu Items */}
-            <div className="md:hidden mt-2 space-y-4">
-              {paginatedDishes.length === 0 ? (
-                <div className="px-4 py-8 text-center text-zinc-500 border border-gray-200 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-800">
-                  No dishes found matching your search.
-                </div>
-              ) : (
-                paginatedDishes.map((dish) => ( 
-                  <div key={dish.dish_id} className="border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 rounded-xl p-4 shadow-sm flex flex-col">
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <div className="font-semibold text-zinc-900 dark:text-white text-lg">{dish.name}</div>
-                        <div className="text-sm text-zinc-500 dark:text-zinc-400">{dish.category}</div>
-                      </div>
-                      <div className="text-right font-medium text-zinc-900 dark:text-white text-lg">
-                        {dish.price.toFixed(2)}
-                      </div>
-                    </div>
-                    <div className="flex gap-3 mt-6">
-                      <button
-                        type="button"
-                        onClick={() => handleAddToMenu(dish)}
-                        className="flex-1 px-4 py-1.5 rounded-lg text-sm font-bold bg-[#00659B] text-white hover:bg-[#005082] shadow-sm shadow-blue-900/10 transition-all active:scale-95"
-                      >
-                        Add
-                      </button>
-                      <NavLink
-                        to={`/admin/edit-dish/${dish.dish_id}`}
-                        className="flex-1 px-4 py-1.5 text-center rounded-lg text-sm font-medium border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-all active:scale-95"
-                      >
-                        Edit
-                      </NavLink>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
+              </div>
+            )}
 
             {/* --- THE PAGINATION CONTROLS --- */}
             {availableDishes.length > 0 && (
               <div className="flex justify-center items-center pt-2">
                   <div className="flex items-center gap-4 border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 rounded-xl p-1 shadow-sm">
                       <button
-                          type="button" // Prevents form submission
+                          type="button" 
                           onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                           disabled={isFirstPage || isDishesLoading} 
                           className="p-2 px-3 rounded-lg text-zinc-600 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-700 disabled:opacity-30 transition"
@@ -427,7 +443,7 @@ export const AddMenu = () => {
                       </div>
                       
                       <button
-                          type="button" // Prevents form submission
+                          type="button"
                           onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                           disabled={isLastPage || isDishesLoading} 
                           className="p-2 px-3 rounded-lg text-zinc-600 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-700 disabled:opacity-30 transition"
